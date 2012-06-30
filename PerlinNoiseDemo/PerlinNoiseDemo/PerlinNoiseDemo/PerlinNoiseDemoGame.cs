@@ -15,15 +15,13 @@ namespace PerlinNoiseDemo
     {
         GraphicsDeviceManager graphics;
 
-        int heightMapSize = 256 + 1;
-
-        float[] heights;
-
         PerlinNoise perlinNoise = new PerlinNoise();
 
         ImprovedPerlinNoise improvedPerlinNoise = new ImprovedPerlinNoise();
 
         Turbulence turbulence = new Turbulence();
+
+        HeightMap heightMap = new HeightMap();
 
         HeightMapImage heightMapImage;
 
@@ -57,24 +55,17 @@ namespace PerlinNoiseDemo
             base.Initialize();
         }
 
+        float GetValue2(float x, float y)
+        {
+            return turbulence.GetValue3(x, y, 0);
+        }
+
         protected override void LoadContent()
         {
-            heights = new float[heightMapSize * heightMapSize];
-
             // ノイズから height map を生成。
-            for (int i = 0; i < heightMapSize; i++)
-            {
-                for (int j = 0; j < heightMapSize; j++)
-                {
-                    var inverseSize = 1 / (float) heightMapSize;
-                    var index = i + j * heightMapSize;
-                    var x = i * inverseSize;
-                    var y = j * inverseSize;
-                    //heights[index] = turbulence.GetValue2D(x, y);
-                    //heights[index] = turbulence.GetValue3D(x, 0, y);
-                    heights[index] = turbulence.GetValue3(x, y, 0);
-                }
-            }
+            heightMap.GetValue2 = GetValue2;
+            heightMap.Size = 256 + 1;
+            heightMap.Build();
 
             // normalize.
             //float minHeight = float.MaxValue;
@@ -104,12 +95,12 @@ namespace PerlinNoiseDemo
             heightMapImage.HeightColors.AddColor(1.0000f, new Color(255, 255, 255));
             heightMapImage.LightingEnabled = true;
             heightMapImage.LightContrast = 3;
-            heightMapImage.Build(heightMapSize, heights);
+            heightMapImage.Build(heightMap.Size, heightMap.Heights);
 
             // 色付けされた height map を画像として実行ディレクトリに保存 (上書き保存)。
             using (var stream = new FileStream("ColoredHeightMap.png", FileMode.Create))
             {
-                heightMapImage.ColoredHeightMap.SaveAsPng(stream, heightMapSize, heightMapSize);
+                heightMapImage.ColoredHeightMap.SaveAsPng(stream, heightMap.Size, heightMap.Size);
             }
 
             // height map を貼り付ける正方形を作成。

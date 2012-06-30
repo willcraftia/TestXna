@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HeightColorCollection.cs" />
+    <Compile Include="HeightMap.cs" />
     <Compile Include="ImprovedPerlinNoise.cs" />
     <Compile Include="HeightMapImage.cs" />
     <Compile Include="PerlinNoise.cs" />
