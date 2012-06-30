@@ -55,15 +55,10 @@ namespace PerlinNoiseDemo
             base.Initialize();
         }
 
-        float GetValue2(float x, float y)
-        {
-            return turbulence.GetValue3(x, y, 0);
-        }
-
         protected override void LoadContent()
         {
             // ƒmƒCƒY‚©‚ç height map ‚ð¶¬B
-            heightMap.GetValue2 = GetValue2;
+            heightMap.GetValue2 = (x, y) => { return turbulence.GetValue3(x, y, 0); };
             heightMap.Size = 256 + 1;
             heightMap.Build();
 
