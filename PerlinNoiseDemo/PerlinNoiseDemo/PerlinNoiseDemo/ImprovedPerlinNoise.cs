@@ -7,6 +7,9 @@ using Microsoft.Xna.Framework;
 
 namespace PerlinNoiseDemo
 {
+    /// <summary>
+    /// Improved Perlin Noise を生成するクラスです。
+    /// </summary>
     public sealed class ImprovedPerlinNoise
     {
         const int wrapIndex = 256;
@@ -21,20 +24,33 @@ namespace PerlinNoiseDemo
 
         bool initialized;
 
+        /// <summary>
+        /// 乱数のシードを取得または設定します。
+        /// </summary>
         public int Seed
         {
             get { return seed; }
             set { seed = value; }
         }
 
+        /// <summary>
+        /// Seed プロパティに基いて乱数を初期化します。
+        /// </summary>
         public void Reseed()
         {
             random = new Random(seed);
-            InitializeLookupTables();
+            InitializePermutationTables();
 
             initialized = true;
         }
 
+        /// <summary>
+        /// 3 次元ノイズを生成します。
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <returns></returns>
         public float Noise3(float x, float y, float z)
         {
             if (!initialized) Reseed();
@@ -87,11 +103,24 @@ namespace PerlinNoiseDemo
             return MathHelper.Lerp(l4, l5, w);
         }
 
+        /// <summary>
+        /// フェード カーブに基づいた値を算出します。
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
         float CalculateFadeCurve(float t)
         {
             return t * t * t * (t * (t * 6 - 15) + 10);
         }
 
+        /// <summary>
+        /// Gradient を算出します。
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <returns></returns>
         float CalculateGradient(int hash, float x, float y, float z)
         {
             int h = hash & 15;
@@ -100,7 +129,10 @@ namespace PerlinNoiseDemo
             return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
         }
 
-        void InitializeLookupTables()
+        /// <summary>
+        /// 乱数テーブルを初期化します。
+        /// </summary>
+        void InitializePermutationTables()
         {
             for (int i = 0; i < wrapIndex; i++)
             {

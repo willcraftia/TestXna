@@ -6,6 +6,9 @@ using System;
 
 namespace PerlinNoiseDemo
 {
+    /// <summary>
+    /// Height map を管理するクラスです。
+    /// </summary>
     public sealed class HeightMap
     {
         public delegate float DelegateGetValue2(float x, float y);
@@ -22,12 +25,19 @@ namespace PerlinNoiseDemo
 
         float[] heights;
 
+        /// <summary>
+        /// 各 height 値を生成するためのメソッドを取得または設定します。
+        /// </summary>
         public DelegateGetValue2 GetValue2
         {
             get { return getValue2; }
             set { getValue2 = value; }
         }
 
+        /// <summary>
+        /// サイズを取得または設定します。
+        /// Heights プロパティの長さは Size * Size となります。
+        /// </summary>
         public int Size
         {
             get { return size; }
@@ -41,16 +51,25 @@ namespace PerlinNoiseDemo
             }
         }
 
+        /// <summary>
+        /// Height 値の配列を取得します。
+        /// </summary>
         public float[] Heights
         {
             get { return heights; }
         }
 
+        /// <summary>
+        /// インスタンスを生成します。
+        /// </summary>
         public HeightMap()
         {
             Size = defaultSize;
         }
 
+        /// <summary>
+        /// Height map を生成します。
+        /// </summary>
         public void Build()
         {
             if (heights == null || heights.Length != length)

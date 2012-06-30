@@ -7,6 +7,10 @@ using Microsoft.Xna.Framework;
 
 namespace PerlinNoiseDemo
 {
+    /// <summary>
+    /// Perlin Noise を生成するクラスです。
+    /// このクラスが生成するノイズは、オリジナルの Perlin Noise に基づきます。
+    /// </summary>
     public sealed class PerlinNoise
     {
         const int wrapIndex = 256;
@@ -22,23 +26,25 @@ namespace PerlinNoiseDemo
         int[] permutation = new int[wrapIndex * 2 + 2];
 
         float[] gradients1 = new float[wrapIndex * 2 + 2];
-        
+
         Vector2[] gradients2 = new Vector2[wrapIndex * 2 + 2];
-        
+
         Vector3[] gradients3 = new Vector3[wrapIndex * 2 + 2];
 
         bool initialized;
 
+        /// <summary>
+        /// 乱数のシードを取得または設定します。
+        /// </summary>
         public int Seed
         {
             get { return seed; }
             set { seed = value; }
         }
 
-        public PerlinNoise()
-        {
-        }
-
+        /// <summary>
+        /// Seed プロパティに基いて乱数を初期化します。
+        /// </summary>
         public void Reseed()
         {
             random = new Random(seed);
@@ -47,6 +53,11 @@ namespace PerlinNoiseDemo
             initialized = true;
         }
 
+        /// <summary>
+        /// 1 次元ノイズを生成します。
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
         public float Noise1(float x)
         {
             if (!initialized) Reseed();
@@ -65,6 +76,12 @@ namespace PerlinNoiseDemo
             return MathHelper.Lerp(u, v, sx);
         }
 
+        /// <summary>
+        /// 2 次元ノイズを生成します。
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public float Noise2(float x, float y)
         {
             if (!initialized) Reseed();
@@ -113,6 +130,13 @@ namespace PerlinNoiseDemo
             return MathHelper.Lerp(a, b, sy);
         }
 
+        /// <summary>
+        /// 3 次元ノイズを生成します。
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <returns></returns>
         public float Noise3(float x, float y, float z)
         {
             if (!initialized) Reseed();
@@ -188,12 +212,19 @@ namespace PerlinNoiseDemo
             return MathHelper.Lerp(c, d, sz);
         }
 
+        /// <summary>
+        /// Gradient を生成します。
+        /// </summary>
+        /// <returns></returns>
         float GenerateGradientValue()
         {
             // [-1, 1] の乱数。
             return (float) ((random.Next() % (wrapIndex + wrapIndex)) - wrapIndex) / wrapIndex;
         }
 
+        /// <summary>
+        /// 乱数テーブルを初期化します。
+        /// </summary>
         void InitializeLookupTables()
         {
             for (int i = 0; i < wrapIndex; i++)
@@ -233,6 +264,11 @@ namespace PerlinNoiseDemo
             }
         }
 
+        /// <summary>
+        /// S カーブに基づく値を算出します。
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
         float EaseCurve(float t)
         {
             return t * t * (3.0f - 2.0f * t);

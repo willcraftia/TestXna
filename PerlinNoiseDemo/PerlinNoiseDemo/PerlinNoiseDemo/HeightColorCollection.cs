@@ -8,14 +8,31 @@ using Microsoft.Xna.Framework;
 
 namespace PerlinNoiseDemo
 {
+    /// <summary>
+    /// 高度に対応する色のコレクションを管理するクラスです。
+    /// </summary>
     public sealed class HeightColorCollection
     {
+        /// <summary>
+        /// 高度に対応する色を管理する構造体です。
+        /// </summary>
         struct HeightColor : IComparable<HeightColor>
         {
+            /// <summary>
+            /// 高度。
+            /// </summary>
             public float Height;
             
+            /// <summary>
+            /// 色。
+            /// </summary>
             public Vector4 Color;
 
+            /// <summary>
+            /// Height プロパティで比較します。
+            /// </summary>
+            /// <param name="other"></param>
+            /// <returns></returns>
             public int CompareTo(HeightColor other)
             {
                 return Height.CompareTo(other.Height);
@@ -24,11 +41,21 @@ namespace PerlinNoiseDemo
 
         List<HeightColor> heightColors = new List<HeightColor>();
 
+        /// <summary>
+        /// 高度と色の対応を追加します。
+        /// </summary>
+        /// <param name="height"></param>
+        /// <param name="color"></param>
         public void AddColor(float height, Color color)
         {
             AddColor(height, color.ToVector4());
         }
 
+        /// <summary>
+        /// 高度と色の対応を追加します。
+        /// </summary>
+        /// <param name="height"></param>
+        /// <param name="color"></param>
         public void AddColor(float height, Vector4 color)
         {
             var heightColor = new HeightColor
@@ -40,6 +67,11 @@ namespace PerlinNoiseDemo
             heightColors.Sort();
         }
 
+        /// <summary>
+        /// 高度に対応する色を取得します。
+        /// </summary>
+        /// <param name="height"></param>
+        /// <param name="result"></param>
         public void GetColor(float height, out Vector4 result)
         {
             int index = -1;
@@ -78,6 +110,13 @@ namespace PerlinNoiseDemo
             result = new Vector4(x, y, z, w);
         }
 
+        /// <summary>
+        /// Clamp。
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="lower"></param>
+        /// <param name="upper"></param>
+        /// <returns></returns>
         int Clamp(int value, int lower, int upper)
         {
             if (value < lower) return lower;
@@ -85,6 +124,13 @@ namespace PerlinNoiseDemo
             return value;
         }
 
+        /// <summary>
+        /// Blend。
+        /// </summary>
+        /// <param name="value0"></param>
+        /// <param name="value1"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
         float Blend(float value0, float value1, float amount)
         {
             return value1 * amount + value0 * (1.0f - amount);

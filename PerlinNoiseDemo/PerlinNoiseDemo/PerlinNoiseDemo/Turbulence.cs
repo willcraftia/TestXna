@@ -6,6 +6,9 @@ using System;
 
 namespace PerlinNoiseDemo
 {
+    /// <summary>
+    /// ノイズを調波させるクラスです。
+    /// </summary>
     public sealed class Turbulence
     {
         public delegate float DelegateNoise1(float x);
@@ -28,18 +31,27 @@ namespace PerlinNoiseDemo
 
         int octaveCount = 6;
 
+        /// <summary>
+        /// 1 次元ノイズを生成するメソッドを取得または設定します。
+        /// </summary>
         public DelegateNoise1 Noise1
         {
             get { return noise1; }
             set { noise1 = value; }
         }
 
+        /// <summary>
+        /// 2 次元ノイズを生成するメソッドを取得または設定します。
+        /// </summary>
         public DelegateNoise2 Noise2
         {
             get { return noise2; }
             set { noise2 = value; }
         }
 
+        /// <summary>
+        /// 3 次元ノイズを生成するメソッドを取得または設定します。
+        /// </summary>
         public DelegateNoise3 Noise3
         {
             get { return noise3; }
@@ -84,6 +96,11 @@ namespace PerlinNoiseDemo
             set { octaveCount = value; }
         }
 
+        /// <summary>
+        /// 1 次元ノイズの調波を取得します。
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
         public float GetValue1(float x)
         {
             if (noise1 == null) throw new InvalidOperationException("Noise1 delegate is null.");
@@ -105,6 +122,12 @@ namespace PerlinNoiseDemo
             return result;
         }
 
+        /// <summary>
+        /// 2 次元ノイズの調波を取得します。
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public float GetValue2(float x, float y)
         {
             if (noise2 == null) throw new InvalidOperationException("Noise2 delegate is null.");
@@ -128,6 +151,13 @@ namespace PerlinNoiseDemo
             return result;
         }
 
+        /// <summary>
+        /// 3 次元ノイズの調波を取得します。
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <returns></returns>
         public float GetValue3(float x, float y, float z)
         {
             if (noise3 == null) throw new InvalidOperationException("Noise3 delegate is null.");
