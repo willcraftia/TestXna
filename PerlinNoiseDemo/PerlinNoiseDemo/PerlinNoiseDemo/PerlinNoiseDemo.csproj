@@ -107,14 +107,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SinFractal.cs" />
+    <Compile Include="SumFractal.cs" />
+    <Compile Include="Fractal.cs" />
     <Compile Include="HeightColorCollection.cs" />
     <Compile Include="HeightMap.cs" />
+    <Compile Include="Heterofractal.cs" />
+    <Compile Include="HybridMultifractal.cs" />
     <Compile Include="ImprovedPerlinNoise.cs" />
     <Compile Include="HeightMapImage.cs" />
+    <Compile Include="Multifractal.cs" />
     <Compile Include="PerlinNoise.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PerlinNoiseDemoGame.cs" />
+    <Compile Include="RidgedMultifractal.cs" />
+    <Compile Include="PerlinFractal.cs" />
     <Compile Include="Turbulence.cs" />
   </ItemGroup>
   <ItemGroup>

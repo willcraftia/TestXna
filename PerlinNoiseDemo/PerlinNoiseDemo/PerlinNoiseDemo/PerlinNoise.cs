@@ -58,7 +58,7 @@ namespace PerlinNoiseDemo
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
-        public float Noise1(float x)
+        public float Noise(float x)
         {
             if (!initialized) Reseed();
 
@@ -82,7 +82,7 @@ namespace PerlinNoiseDemo
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public float Noise2(float x, float y)
+        public float Noise(float x, float y)
         {
             if (!initialized) Reseed();
 
@@ -137,7 +137,7 @@ namespace PerlinNoiseDemo
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <returns></returns>
-        public float Noise3(float x, float y, float z)
+        public float Noise(float x, float y, float z)
         {
             if (!initialized) Reseed();
 

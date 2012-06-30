@@ -6,7 +6,7 @@ using System;
 
 namespace PerlinNoiseDemo
 {
-    public sealed class Turbulence : Fractal
+    public sealed class SinFractal : Fractal
     {
         protected override float GetValueOverride(float x, float y, float z)
         {
@@ -18,7 +18,9 @@ namespace PerlinNoiseDemo
 
             for (int i = 0; i < octaveCount; i++)
             {
-                value += Math.Abs(Noise(x, y, z)) * spectralWeights[i];
+                var signal = Noise(x, y, z) * spectralWeights[i];
+                if (signal < 0) signal = -signal;
+                value += signal;
 
                 x *= lacunarity;
                 y *= lacunarity;

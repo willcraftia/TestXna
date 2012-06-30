@@ -1,6 +1,7 @@
 ﻿#region Using
 
 using System;
+using Microsoft.Xna.Framework;
 
 #endregion
 
@@ -22,6 +23,14 @@ namespace PerlinNoiseDemo
         float inverseSize;
 
         int length;
+
+        float boundX;
+
+        float boundY;
+
+        float boundWidth;
+
+        float boundHeight;
 
         float[] heights;
 
@@ -67,6 +76,14 @@ namespace PerlinNoiseDemo
             Size = defaultSize;
         }
 
+        public void SetBounds(float x, float y, float width, float height)
+        {
+            boundX = x;
+            boundY = y;
+            boundWidth = width;
+            boundHeight = height;
+        }
+
         /// <summary>
         /// Height map を生成します。
         /// </summary>
@@ -75,15 +92,31 @@ namespace PerlinNoiseDemo
             if (heights == null || heights.Length != length)
                 heights = new float[length];
 
+            var deltaX = boundWidth / (float) size;
+            var deltaY = boundHeight / (float) size;
+
+            //for (int i = 0; i < size; i++)
+            //{
+            //    for (int j = 0; j < size; j++)
+            //    {
+            //        var index = i + j * size;
+            //        var x = i * inverseSize;
+            //        var y = j * inverseSize;
+            //        heights[index] = GetValue2(x, y);
+            //    }
+            //}
+
+            float y = boundY;
             for (int i = 0; i < size; i++)
             {
+                float x = boundX;
                 for (int j = 0; j < size; j++)
                 {
                     var index = i + j * size;
-                    var x = i * inverseSize;
-                    var y = j * inverseSize;
                     heights[index] = GetValue2(x, y);
+                    x += deltaX;
                 }
+                y += deltaY;
             }
         }
     }

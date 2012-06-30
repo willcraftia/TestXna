@@ -6,19 +6,28 @@ using System;
 
 namespace PerlinNoiseDemo
 {
-    public sealed class Turbulence : Fractal
+    public sealed class Multifractal : Fractal
     {
+        float offset = 1;
+
+        public float Offset
+        {
+            get { return offset; }
+            set { offset = value; }
+        }
+
         protected override float GetValueOverride(float x, float y, float z)
         {
             x *= frequency;
             y *= frequency;
             z *= frequency;
 
-            float value = 0;
+            float value = 1;
 
             for (int i = 0; i < octaveCount; i++)
             {
-                value += Math.Abs(Noise(x, y, z)) * spectralWeights[i];
+                var signal = Noise(x, y, z) * spectralWeights[i] + offset;
+                value *= signal;
 
                 x *= lacunarity;
                 y *= lacunarity;

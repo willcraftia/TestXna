@@ -19,7 +19,21 @@ namespace PerlinNoiseDemo
 
         ImprovedPerlinNoise improvedPerlinNoise = new ImprovedPerlinNoise();
 
+        PerlinFractal perlinFractal = new PerlinFractal();
+
+        SumFractal sumFractal = new SumFractal();
+
         Turbulence turbulence = new Turbulence();
+
+        Multifractal multifractal = new Multifractal();
+
+        Heterofractal heterofractal = new Heterofractal();
+
+        HybridMultifractal hybridMultifractal = new HybridMultifractal();
+
+        RidgedMultifractal ridgedMultifractal = new RidgedMultifractal();
+
+        SinFractal sinFractal = new SinFractal();
 
         HeightMap heightMap = new HeightMap();
 
@@ -40,17 +54,20 @@ namespace PerlinNoiseDemo
             perlinNoise.Seed = 300;
             improvedPerlinNoise.Seed = 300;
 
-            turbulence.Noise1 = perlinNoise.Noise1;
-            turbulence.Noise2 = perlinNoise.Noise2;
-            //turbulence.Noise3 = perlinNoise.Noise3;
-            turbulence.Noise3 = improvedPerlinNoise.Noise3;
+            perlinFractal.Noise1 = perlinNoise.Noise;
+            perlinFractal.Noise2 = perlinNoise.Noise;
+            perlinFractal.Noise3 = improvedPerlinNoise.Noise;
+
+            sumFractal.Noise3 = improvedPerlinNoise.Noise;
+            turbulence.Noise3 = improvedPerlinNoise.Noise;
+            multifractal.Noise3 = improvedPerlinNoise.Noise;
+            heterofractal.Noise3 = improvedPerlinNoise.Noise;
+            hybridMultifractal.Noise3 = improvedPerlinNoise.Noise;
+            ridgedMultifractal.Noise3 = improvedPerlinNoise.Noise;
+            sinFractal.Noise3 = improvedPerlinNoise.Noise;
 
             // ※persistence = 1 に近い値だとノイズ値を足した時に [-1, 1] を越える値が多くなる。
-            //turbulence.Persistence = 1;
-            //turbulence.Persistence = 0.9f;
-            turbulence.Persistence = (float) (1 / Math.Sqrt(2));
-            //turbulence.Persistence = 60;
-            turbulence.OctaveCount = 10;
+            perlinFractal.Persistence = (float) (1 / Math.Sqrt(2));
 
             base.Initialize();
         }
@@ -58,8 +75,16 @@ namespace PerlinNoiseDemo
         protected override void LoadContent()
         {
             // ノイズから height map を生成。
-            heightMap.GetValue2 = (x, y) => { return turbulence.GetValue3(x, y, 0); };
+            //heightMap.GetValue2 = (x, y) => { return perlinFractal.GetValue(x, y, 0); };
+            heightMap.GetValue2 = (x, y) => { return sumFractal.GetValue(x, y, 0); };
+            //heightMap.GetValue2 = (x, y) => { return turbulence.GetValue(x, y, 0); };
+            //heightMap.GetValue2 = (x, y) => { return multifractal.GetValue(x, y, 0); };
+            //heightMap.GetValue2 = (x, y) => { return heterofractal.GetValue(x, y, 0); };
+            //heightMap.GetValue2 = (x, y) => { return hybridMultifractal.GetValue(x, y, 0); };
+            //heightMap.GetValue2 = (x, y) => { return ridgedMultifractal.GetValue(x, y, 0); };
+            //heightMap.GetValue2 = (x, y) => { return sinFractal.GetValue(x, y, 0); };
             heightMap.Size = 256 + 1;
+            heightMap.SetBounds(2, 1, 4, 4);
             heightMap.Build();
 
             // normalize.

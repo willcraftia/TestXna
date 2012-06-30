@@ -51,7 +51,7 @@ namespace PerlinNoiseDemo
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <returns></returns>
-        public float Noise3(float x, float y, float z)
+        public float Noise(float x, float y, float z)
         {
             if (!initialized) Reseed();
 
