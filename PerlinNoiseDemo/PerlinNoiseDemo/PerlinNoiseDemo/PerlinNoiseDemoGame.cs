@@ -69,8 +69,6 @@ namespace PerlinNoiseDemo
             perlinFractal.Noise1 = perlinNoise.Noise;
             perlinFractal.Noise2 = perlinNoise.Noise;
             perlinFractal.Noise3 = improvedPerlinNoise.Noise;
-            // ※persistence = 1 に近い値だとノイズ値を足した時に [-1, 1] を越える値が多くなる。
-            perlinFractal.Persistence = (float) (1 / Math.Sqrt(2));
 
             sumFractal.Noise3 = improvedPerlinNoise.Noise;
             //sumFractal.OctaveCount = 4;
@@ -92,7 +90,7 @@ namespace PerlinNoiseDemo
                 for (int j = 0; j < heightMapCountY; j++)
                 {
                     var map = new HeightMap();
-                    map.GetValue2 = (x, y) => { return sumFractal.GetValue(x, 0, y); };
+                    map.GetValue2 = (x, y) => { return perlinFractal.GetValue(x, 0, y); };
                     map.Size = heightMapSize;
                     var w = 1;
                     var h = 1;

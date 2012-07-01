@@ -27,7 +27,7 @@ namespace PerlinNoiseDemo
 
         float lacunarity = 2;
 
-        float persistence = 0.5f;
+        float persistence = 2;
 
         int octaveCount = 6;
 
@@ -103,21 +103,22 @@ namespace PerlinNoiseDemo
         /// <returns></returns>
         public float GetValue(float x)
         {
-            float result = 0;
+            float value = 0;
             float amplitude = 1;
 
             x *= frequency;
 
             for (int i = 0; i < octaveCount; i++)
             {
-                result += noise1(x) * amplitude;
+                var signal = noise1(x) / amplitude;
+                value += signal;
 
                 x *= lacunarity;
 
                 amplitude *= persistence;
             }
 
-            return result;
+            return value;
         }
 
         /// <summary>
@@ -128,7 +129,7 @@ namespace PerlinNoiseDemo
         /// <returns></returns>
         public float GetValue(float x, float y)
         {
-            float result = 0;
+            float value = 0;
             float amplitude = 1;
 
             x *= frequency;
@@ -136,7 +137,8 @@ namespace PerlinNoiseDemo
 
             for (int i = 0; i < octaveCount; i++)
             {
-                result += noise2(x, y) * amplitude;
+                var signal = noise2(x, y) / amplitude;
+                value += signal;
 
                 x *= lacunarity;
                 y *= lacunarity;
@@ -144,7 +146,7 @@ namespace PerlinNoiseDemo
                 amplitude *= persistence;
             }
 
-            return result;
+            return value;
         }
 
         /// <summary>
@@ -156,7 +158,7 @@ namespace PerlinNoiseDemo
         /// <returns></returns>
         public float GetValue(float x, float y, float z)
         {
-            float result = 0;
+            float value = 0;
             float amplitude = 1;
 
             x *= frequency;
@@ -165,7 +167,8 @@ namespace PerlinNoiseDemo
 
             for (int i = 0; i < octaveCount; i++)
             {
-                result += noise3(x, y, z) * amplitude;
+                var signal = noise3(x, y, z) / amplitude;
+                value += signal;
 
                 x *= lacunarity;
                 y *= lacunarity;
@@ -174,7 +177,7 @@ namespace PerlinNoiseDemo
                 amplitude *= persistence;
             }
 
-            return result;
+            return value;
         }
     }
 }
