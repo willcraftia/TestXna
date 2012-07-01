@@ -154,7 +154,7 @@ namespace PerlinNoiseDemo
                     Matrix.CreateTranslation(ref position, out heightMapMeshTransforms[i, j]);
 
                     // 色付けされた height map を画像として実行ディレクトリに保存 (上書き保存)。
-                    var fileName = string.Format("ColoredHeightMap_{0}{1}.png", heightMapCountX, heightMapCountY);
+                    var fileName = string.Format("ColoredHeightMap_{0}{1}.png", i, j);
                     using (var stream = new FileStream(fileName, FileMode.Create))
                     {
                         image.ColoredHeightMap.SaveAsPng(stream, heightMapSize, heightMapSize);
