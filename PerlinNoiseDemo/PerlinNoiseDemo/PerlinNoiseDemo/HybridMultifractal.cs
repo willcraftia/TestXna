@@ -30,28 +30,24 @@ namespace PerlinNoiseDemo
             y *= frequency;
             z *= frequency;
 
-            float result = (Noise(x, y, z) + offset) * spectralWeights[0];
-            float weight = gain * result;
+            float value = 0;
+            float weight = 1;
 
-            x *= lacunarity;
-            y *= lacunarity;
-            z *= lacunarity;
-
-            for (int i = 1; i < octaveCount; i++)
+            for (int i = 0; i < octaveCount; i++)
             {
-                if (1 < weight) weight = 1;
-
                 float signal = (Noise(x, y, z) + offset) * spectralWeights[i];
                 signal *= weight;
-                result += signal;
+                value += signal;
+
                 weight *= gain * signal;
+                if (1 < weight) weight = 1;
 
                 x *= lacunarity;
                 y *= lacunarity;
                 z *= lacunarity;
             }
 
-            return result;
+            return value;
         }
     }
 }
