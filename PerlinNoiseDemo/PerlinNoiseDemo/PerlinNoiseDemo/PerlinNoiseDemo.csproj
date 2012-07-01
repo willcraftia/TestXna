@@ -107,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HeightMapMesh.cs" />
     <Compile Include="SinFractal.cs" />
     <Compile Include="SumFractal.cs" />
     <Compile Include="Fractal.cs" />

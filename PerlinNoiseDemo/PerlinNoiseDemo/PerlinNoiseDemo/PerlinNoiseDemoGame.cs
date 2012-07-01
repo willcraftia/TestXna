@@ -13,6 +13,16 @@ namespace PerlinNoiseDemo
 {
     public class PerlinNoiseDemoGame : Game
     {
+        const int heightMapSize = 256 + 1;
+
+        const float heightMapMeshSize = 1;
+
+        const float heightMapMeshGap = 0.02f;
+
+        const int heightMapCountX = 5;
+
+        const int heightMapCountY = 5;
+
         GraphicsDeviceManager graphics;
 
         PerlinNoise perlinNoise = new PerlinNoise();
@@ -35,13 +45,15 @@ namespace PerlinNoiseDemo
 
         SinFractal sinFractal = new SinFractal();
 
-        HeightMap heightMap = new HeightMap();
+        HeightMap[,] heightMaps = new HeightMap[heightMapCountX, heightMapCountY];
 
-        HeightMapImage heightMapImage;
+        HeightMapImage[,] heightMapImages = new HeightMapImage[heightMapCountX, heightMapCountY];
 
-        VertexBuffer heightMapMesh;
+        HeightMapMesh heightMapMesh;
 
         BasicEffect basicEffect;
+
+        Matrix[,] heightMapMeshTransforms = new Matrix[heightMapCountX, heightMapCountY];
 
         public PerlinNoiseDemoGame()
         {
@@ -57,8 +69,11 @@ namespace PerlinNoiseDemo
             perlinFractal.Noise1 = perlinNoise.Noise;
             perlinFractal.Noise2 = perlinNoise.Noise;
             perlinFractal.Noise3 = improvedPerlinNoise.Noise;
+            // ※persistence = 1 に近い値だとノイズ値を足した時に [-1, 1] を越える値が多くなる。
+            perlinFractal.Persistence = (float) (1 / Math.Sqrt(2));
 
             sumFractal.Noise3 = improvedPerlinNoise.Noise;
+            //sumFractal.OctaveCount = 4;
             turbulence.Noise3 = improvedPerlinNoise.Noise;
             multifractal.Noise3 = improvedPerlinNoise.Noise;
             heterofractal.Noise3 = improvedPerlinNoise.Noise;
@@ -66,26 +81,27 @@ namespace PerlinNoiseDemo
             ridgedMultifractal.Noise3 = improvedPerlinNoise.Noise;
             sinFractal.Noise3 = improvedPerlinNoise.Noise;
 
-            // ※persistence = 1 に近い値だとノイズ値を足した時に [-1, 1] を越える値が多くなる。
-            perlinFractal.Persistence = (float) (1 / Math.Sqrt(2));
-
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             // ノイズから height map を生成。
-            //heightMap.GetValue2 = (x, y) => { return perlinFractal.GetValue(x, y, 0); };
-            heightMap.GetValue2 = (x, y) => { return sumFractal.GetValue(x, y, 0); };
-            //heightMap.GetValue2 = (x, y) => { return turbulence.GetValue(x, y, 0); };
-            //heightMap.GetValue2 = (x, y) => { return multifractal.GetValue(x, y, 0); };
-            //heightMap.GetValue2 = (x, y) => { return heterofractal.GetValue(x, y, 0); };
-            //heightMap.GetValue2 = (x, y) => { return hybridMultifractal.GetValue(x, y, 0); };
-            //heightMap.GetValue2 = (x, y) => { return ridgedMultifractal.GetValue(x, y, 0); };
-            //heightMap.GetValue2 = (x, y) => { return sinFractal.GetValue(x, y, 0); };
-            heightMap.Size = 256 + 1;
-            heightMap.SetBounds(2, 1, 4, 4);
-            heightMap.Build();
+            for (int i = 0; i < heightMapCountX; i++)
+            {
+                for (int j = 0; j < heightMapCountY; j++)
+                {
+                    var map = new HeightMap();
+                    map.GetValue2 = (x, y) => { return sumFractal.GetValue(x, 0, y); };
+                    map.Size = heightMapSize;
+                    var w = 1;
+                    var h = 1;
+                    map.SetBounds(w * i, h * j, w, h);
+                    map.Build();
+
+                    heightMaps[i, j] = map;
+                }
+            }
 
             // normalize.
             //float minHeight = float.MaxValue;
@@ -102,38 +118,58 @@ namespace PerlinNoiseDemo
             //    heights[i] = factor * (heights[i] - minHeight);
             //}
 
-            // 色付けされた height map を生成。
-            heightMapImage = new HeightMapImage(GraphicsDevice);
-            heightMapImage.HeightColors.AddColor(-1.0000f, new Color(0, 0, 128));
-            heightMapImage.HeightColors.AddColor(-0.2500f, new Color(0, 0, 255));
-            heightMapImage.HeightColors.AddColor(0.0000f, new Color(0, 128, 255));
-            heightMapImage.HeightColors.AddColor(0.0625f, new Color(240, 240, 64));
-            heightMapImage.HeightColors.AddColor(0.1250f, new Color(32, 160, 0));
-            heightMapImage.HeightColors.AddColor(0.3750f, new Color(224, 224, 0));
-            //heightMapImage.HeightColors.AddColor(0.7500f, new Color(128, 128, 128));
-            heightMapImage.HeightColors.AddColor(0.7500f, new Color(64, 64, 64));
-            heightMapImage.HeightColors.AddColor(1.0000f, new Color(255, 255, 255));
-            heightMapImage.LightingEnabled = true;
-            heightMapImage.LightContrast = 3;
-            heightMapImage.Build(heightMap.Size, heightMap.Heights);
-
-            // 色付けされた height map を画像として実行ディレクトリに保存 (上書き保存)。
-            using (var stream = new FileStream("ColoredHeightMap.png", FileMode.Create))
+            var centerPosition = new Vector3
             {
-                heightMapImage.ColoredHeightMap.SaveAsPng(stream, heightMap.Size, heightMap.Size);
+                X = (heightMapMeshSize + heightMapMeshGap) * heightMapCountX * 0.5f,
+                Y = (heightMapMeshSize + heightMapMeshGap) * heightMapCountY * 0.5f,
+                Z = 0
+            };
+
+            for (int i = 0; i < heightMapCountX; i++)
+            {
+                for (int j = 0; j < heightMapCountY; j++)
+                {
+                    // 色付けされた height map を生成。
+                    var image = new HeightMapImage(GraphicsDevice);
+                    image.HeightColors.AddColor(-1.0000f, new Color(0, 0, 128));
+                    image.HeightColors.AddColor(-0.2500f, new Color(0, 0, 255));
+                    image.HeightColors.AddColor(0.0000f, new Color(0, 128, 255));
+                    image.HeightColors.AddColor(0.0625f, new Color(240, 240, 64));
+                    image.HeightColors.AddColor(0.1250f, new Color(32, 160, 0));
+                    image.HeightColors.AddColor(0.3750f, new Color(224, 224, 0));
+                    //image.HeightColors.AddColor(0.7500f, new Color(128, 128, 128));
+                    image.HeightColors.AddColor(0.7500f, new Color(64, 64, 64));
+                    image.HeightColors.AddColor(1.0000f, new Color(255, 255, 255));
+                    image.LightingEnabled = true;
+                    image.LightContrast = 3;
+                    image.Build(heightMapSize, heightMaps[i, j].Heights);
+
+                    heightMapImages[i, j] = image;
+
+                    // 各 height map のメッシュの座標を調整。
+                    var position = new Vector3
+                    {
+                        X = (heightMapMeshSize + heightMapMeshGap) * i,
+                        Y = (heightMapMeshSize + heightMapMeshGap) * (heightMaps.GetLength(1) - 1 - j),
+                        Z = 0
+                    };
+                    position -= centerPosition;
+                    Matrix.CreateTranslation(ref position, out heightMapMeshTransforms[i, j]);
+
+                    // 色付けされた height map を画像として実行ディレクトリに保存 (上書き保存)。
+                    var fileName = string.Format("ColoredHeightMap_{0}{1}.png", heightMapCountX, heightMapCountY);
+                    using (var stream = new FileStream(fileName, FileMode.Create))
+                    {
+                        image.ColoredHeightMap.SaveAsPng(stream, heightMapSize, heightMapSize);
+                    }
+                }
             }
 
             // height map を貼り付ける正方形を作成。
-            heightMapMesh = new VertexBuffer(GraphicsDevice, typeof(VertexPositionTexture), 4, BufferUsage.WriteOnly);
-            var vertices = new VertexPositionTexture[4];
-            vertices[0] = new VertexPositionTexture(new Vector3(-1.0f, 1.0f, 0.0f), new Vector2(0, 0));
-            vertices[1] = new VertexPositionTexture(new Vector3(1.0f, 1.0f, 0.0f), new Vector2(1, 0));
-            vertices[2] = new VertexPositionTexture(new Vector3(-1.0f, -1.0f, 0.0f), new Vector2(0, 1));
-            vertices[3] = new VertexPositionTexture(new Vector3(1.0f, -1.0f, 0.0f), new Vector2(1, 1));
-            heightMapMesh.SetData(vertices);
+            heightMapMesh = new HeightMapMesh(GraphicsDevice, heightMapMeshSize);
 
             // カメラ設定。
-            var view = Matrix.CreateLookAt(new Vector3(0.0f, 0.0f, 3.0f), Vector3.Zero, Vector3.Up);
+            var view = Matrix.CreateLookAt(new Vector3(0.0f, 0.0f, 7.0f), Vector3.Zero, Vector3.Up);
             var projection = Matrix.CreatePerspectiveFieldOfView(
                 MathHelper.ToRadians(45.0f),
                 (float) GraphicsDevice.Viewport.Width / (float) GraphicsDevice.Viewport.Height,
@@ -145,12 +181,17 @@ namespace PerlinNoiseDemo
             basicEffect.TextureEnabled = true;
             basicEffect.View = view;
             basicEffect.Projection = projection;
-            basicEffect.Texture = heightMapImage.ColoredHeightMap;
         }
 
         protected override void UnloadContent()
         {
-            heightMapImage.Dispose();
+            for (int i = 0; i < heightMapCountX; i++)
+            {
+                for (int j = 0; j < heightMapCountY; j++)
+                {
+                    heightMapImages[i, j].Dispose();
+                }
+            }
             heightMapMesh.Dispose();
             basicEffect.Dispose();
         }
@@ -165,8 +206,24 @@ namespace PerlinNoiseDemo
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            GraphicsDevice.SetVertexBuffer(heightMapMesh);
+            GraphicsDevice.SetVertexBuffer(heightMapMesh.VertexBuffer);
             GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+
+            for (int i = 0; i < heightMapCountX; i++)
+            {
+                for (int j = 0; j < heightMapCountY; j++)
+                {
+                    DrawHeightMapMesh(i, j);
+                }
+            }
+
+            base.Draw(gameTime);
+        }
+
+        protected void DrawHeightMapMesh(int x, int y)
+        {
+            basicEffect.World = heightMapMeshTransforms[x, y];
+            basicEffect.Texture = heightMapImages[x, y].ColoredHeightMap;
 
             foreach (var pass in basicEffect.CurrentTechnique.Passes)
             {
@@ -174,8 +231,6 @@ namespace PerlinNoiseDemo
 
                 GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
             }
-
-            base.Draw(gameTime);
         }
     }
 }

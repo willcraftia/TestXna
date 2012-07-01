@@ -112,7 +112,7 @@ namespace PerlinNoiseDemo
                 float x = boundX;
                 for (int j = 0; j < size; j++)
                 {
-                    var index = i + j * size;
+                    var index = j + i * size;
                     heights[index] = GetValue2(x, y);
                     x += deltaX;
                 }
