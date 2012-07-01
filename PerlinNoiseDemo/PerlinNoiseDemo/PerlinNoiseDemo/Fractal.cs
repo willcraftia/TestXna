@@ -16,7 +16,7 @@ namespace PerlinNoiseDemo
 
         protected const int maxOctaveCount = 30;
 
-        protected float hurst = 0.5f;
+        protected float hurst = 0.9f;
 
         protected float frequency = 1;
 

@@ -71,7 +71,6 @@ namespace PerlinNoiseDemo
             perlinFractal.Noise3 = improvedPerlinNoise.Noise;
 
             sumFractal.Noise3 = improvedPerlinNoise.Noise;
-            //sumFractal.OctaveCount = 4;
             turbulence.Noise3 = improvedPerlinNoise.Noise;
             multifractal.Noise3 = improvedPerlinNoise.Noise;
             heterofractal.Noise3 = improvedPerlinNoise.Noise;
@@ -90,7 +89,7 @@ namespace PerlinNoiseDemo
                 for (int j = 0; j < heightMapCountY; j++)
                 {
                     var map = new HeightMap();
-                    map.GetValue2 = (x, y) => { return perlinFractal.GetValue(x, 0, y); };
+                    map.GetValue2 = (x, y) => { return sumFractal.GetValue(x, 0, y); };
                     map.Size = heightMapSize;
                     var w = 1;
                     var h = 1;

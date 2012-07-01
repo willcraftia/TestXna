@@ -9,9 +9,9 @@ namespace PerlinNoiseDemo
 {
     public sealed class RidgedMultifractal : Fractal
     {
-        float offset;
+        float offset = 1;
 
-        float gain;
+        float gain = 2;
 
         public float Offset
         {
@@ -31,31 +31,27 @@ namespace PerlinNoiseDemo
             y *= frequency;
             z *= frequency;
 
-            float signal = Noise(x, y, z);
-            if (signal < 0) signal = -signal;
-
-            signal = offset - signal;
-            signal *= signal;
-
-            float value = signal;
+            float value = 0;
             float weight = 1;
 
-            for (int i = 1; i < octaveCount; i++)
+            for (int i = 0; i < octaveCount; i++)
             {
+                var signal = Noise(x, y, z);
+
+                signal = Math.Abs(signal);
+                signal = offset - signal;
+                signal *= signal;
+
+                signal *= weight;
+
+                weight = signal * gain;
+                weight = MathHelper.Clamp(weight, 0, 1);
+
+                value += signal * spectralWeights[i];
+
                 x *= lacunarity;
                 y *= lacunarity;
                 z *= lacunarity;
-
-                weight = MathHelper.Clamp(signal * gain , 0, 1);
-
-                signal = Noise(x, y, z);
-                if (signal < 0) signal = -signal;
-
-                signal = offset - signal;
-                signal *= signal;
-                signal *= weight;
-
-                value += signal * spectralWeights[i];
             }
 
             return value;
