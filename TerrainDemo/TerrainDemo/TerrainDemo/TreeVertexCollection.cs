@@ -68,16 +68,17 @@ namespace TerrainDemo
 
         void CalculateNormals()
         {
-            var length = topSize * topSize;
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < topSize; i++)
             {
-                var lowerLeft = i;
-                var lowerRight = i + 1;
-                var topLeft = i + heightMapSize;
-                var topRight = i + heightMapSize + 1;
+                for (int j = 0; j < topSize; j++)
+                {
+                    var bottomLeft = j + i * heightMapSize;
+                    var bottomRight = (j + 1) + i * heightMapSize;
+                    var topLeft = j + (i + 1) * heightMapSize;
+                    //var topRight = (j + 1) + (i + 1) * heightMapSize;
 
-                CalculateNormal(topLeft, lowerRight, lowerLeft);
-                CalculateNormal(topLeft, topRight, lowerRight);
+                    CalculateNormal(topLeft, bottomLeft, bottomRight);
+                }
             }
 
             for (int i = 0; i < Vertices.Length; i++)
