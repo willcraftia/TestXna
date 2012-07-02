@@ -38,10 +38,14 @@ namespace TerrainDemo
 
         FreeViewInput freeViewInput = new FreeViewInput();
 
+        QuadTree quadTree;
+
         public TerrainDemoGame()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            IsMouseVisible = true;
         }
 
         protected override void Initialize()
@@ -53,6 +57,8 @@ namespace TerrainDemo
             freeViewInput.InitialMousePositionX = viewport.Width / 2;
             freeViewInput.InitialMousePositionY = viewport.Height / 2;
             freeViewInput.FreeView = view;
+
+            IsFixedTimeStep = false;
 
             base.Initialize();
         }
@@ -103,6 +109,9 @@ namespace TerrainDemo
             //basicEffect.TextureEnabled = true;
             //basicEffect.View = view;
             //basicEffect.Projection = projection;
+
+            quadTree = new QuadTree(GraphicsDevice, Vector3.Zero, heightMaps[0, 0], view.Matrix, projection.Matrix, 1);
+            quadTree.Effect.Texture = Content.Load<Texture2D>("jigsaw");
         }
 
         protected override void UnloadContent()
@@ -117,20 +126,28 @@ namespace TerrainDemo
 
             freeViewInput.Update(gameTime);
 
+            view.Update();
+            projection.Update();
+
+            quadTree.View = view.Matrix;
+            quadTree.Projection = projection.Matrix;
+            //quadTree.CameraPosition = view.Position;
+            quadTree.Update(gameTime);
+
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            //GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
-            view.Update();
-            projection.Update();
+            quadTree.Draw(gameTime);
 
-            basicEffect.View = view.Matrix;
-            basicEffect.Projection = projection.Matrix;
+            //basicEffect.View = view.Matrix;
+            //basicEffect.Projection = projection.Matrix;
 
-            DrawTerrain();
+            //DrawTerrain();
 
             base.Draw(gameTime);
         }
@@ -156,6 +173,8 @@ namespace TerrainDemo
                 GraphicsDevice.DrawIndexedPrimitives(
                     PrimitiveType.TriangleList, 0, 0, terrain.VertexBuffer.VertexCount, 0, primitiveCount);
             }
+
+            GraphicsDevice.Indices = null;
         }
     }
 }

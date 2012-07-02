@@ -25,7 +25,7 @@ namespace TerrainDemo
         public FreeViewInput()
         {
             RotationVelocity = 0.3f;
-            MoveVelocity = 10;
+            MoveVelocity = 30;
         }
 
         public void Initialize(int initialMousePositionX, int initialMousePositionY)
@@ -67,6 +67,11 @@ namespace TerrainDemo
 
             FreeView.MoveDirection = moveDirection;
             FreeView.MoveAmount = MoveVelocity * deltaTime;
+            //if (moveDirection.X != 0 && moveDirection.Y != 0 && moveDirection.Z != 0)
+            //{
+            //    FreeView.MoveDirection = moveDirection;
+            //    FreeView.MoveAmount = MoveVelocity * deltaTime;
+            //}
         }
 
         void ResetMousePosition()

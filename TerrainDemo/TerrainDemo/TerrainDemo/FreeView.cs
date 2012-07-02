@@ -70,6 +70,12 @@ namespace TerrainDemo
             }
         }
 
+        public Vector3 Position
+        {
+            get { return position; }
+            set { position = value; }
+        }
+
         protected override void UpdateOverride()
         {
             // 新しい角度。
@@ -82,7 +88,7 @@ namespace TerrainDemo
             Matrix rotation;
             Matrix.CreateFromYawPitchRoll(orientation.Y, orientation.X, orientation.Z, out rotation);
 
-            if (moveAmount != 0)
+            if (moveDirection.X != 0 || moveDirection.Y != 0 || moveDirection.Z != 0)
             {
                 var normalDirection = moveDirection;
                 if (normalDirection.X != 0 || normalDirection.Y != 0 || normalDirection.Z != 0)
@@ -99,6 +105,8 @@ namespace TerrainDemo
             var target = position + rotation.Forward;
             var up = rotation.Up;
             Matrix.CreateLookAt(ref position, ref target, ref up, out Matrix);
+
+            MatrixDirty = false;
         }
     }
 }
