@@ -20,10 +20,6 @@ namespace PerlinNoiseDemo
 
         int size;
 
-        float inverseSize;
-
-        int length;
-
         float boundX;
 
         float boundY;
@@ -50,14 +46,7 @@ namespace PerlinNoiseDemo
         public int Size
         {
             get { return size; }
-            set
-            {
-                if (size == value) return;
-
-                size = value;
-                inverseSize = 1 / (float) size;
-                length = size * size;
-            }
+            set { size = value; }
         }
 
         /// <summary>
@@ -89,22 +78,13 @@ namespace PerlinNoiseDemo
         /// </summary>
         public void Build()
         {
+            var length = size * size;
             if (heights == null || heights.Length != length)
                 heights = new float[length];
 
-            var deltaX = boundWidth / (float) size;
-            var deltaY = boundHeight / (float) size;
-
-            //for (int i = 0; i < size; i++)
-            //{
-            //    for (int j = 0; j < size; j++)
-            //    {
-            //        var index = i + j * size;
-            //        var x = i * inverseSize;
-            //        var y = j * inverseSize;
-            //        heights[index] = GetValue2(x, y);
-            //    }
-            //}
+            var inverseSize = 1 / (float) size;
+            var deltaX = boundWidth * inverseSize;
+            var deltaY = boundHeight * inverseSize;
 
             float y = boundY;
             for (int i = 0; i < size; i++)
