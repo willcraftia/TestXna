@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerrainDemo", "TerrainDemo\TerrainDemo\TerrainDemo.csproj", "{21128F73-1A0F-4957-8188-8712FEE3F72F}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "TerrainDemoContent", "TerrainDemo\TerrainDemoContent\TerrainDemoContent.contentproj", "{26BFF74E-3A90-495E-AAF7-83B045AC69AE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{21128F73-1A0F-4957-8188-8712FEE3F72F}.Debug|x86.ActiveCfg = Debug|x86
+		{21128F73-1A0F-4957-8188-8712FEE3F72F}.Debug|x86.Build.0 = Debug|x86
+		{21128F73-1A0F-4957-8188-8712FEE3F72F}.Release|x86.ActiveCfg = Release|x86
+		{21128F73-1A0F-4957-8188-8712FEE3F72F}.Release|x86.Build.0 = Release|x86
+		{26BFF74E-3A90-495E-AAF7-83B045AC69AE}.Debug|x86.ActiveCfg = Debug|x86
+		{26BFF74E-3A90-495E-AAF7-83B045AC69AE}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
