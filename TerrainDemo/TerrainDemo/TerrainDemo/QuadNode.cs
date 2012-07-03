@@ -9,7 +9,7 @@ namespace TerrainDemo
 {
     public sealed class QuadNode
     {
-        QuadNode parent;
+        public QuadNode Parent { get; private set; }
 
         QuadTree parentTree;
 
@@ -19,9 +19,14 @@ namespace TerrainDemo
 
         int nodeSize;
 
-        bool isActive;
+        public bool IsActive { get; set; }
 
-        bool isSplit;
+        public bool IsSplit { get; private set; }
+
+        public bool CanSplit
+        {
+            get { return 2 <= nodeSize; }
+        }
 
         public QuadNodeVertex VertexTopLeft;
         public QuadNodeVertex VertexTop;
@@ -54,7 +59,7 @@ namespace TerrainDemo
             NodeType = nodeType;
             this.nodeSize = nodeSize;
             this.nodeDepth = nodeDepth;
-            this.parent = parent;
+            Parent = parent;
             this.parentTree = parentTree;
             this.positionIndex = positionIndex;
 
@@ -84,7 +89,7 @@ namespace TerrainDemo
 
         public void SetActiveVertices()
         {
-            if (isSplit && HasChildren)
+            if (IsSplit && HasChildren)
             {
                 ChildTopLeft.SetActiveVertices();
                 ChildTopRight.SetActiveVertices();
@@ -146,7 +151,7 @@ namespace TerrainDemo
             VertexBottomLeft.Activated = true;
             VertexBottomRight.Activated = true;
 
-            isActive = true;
+            IsActive = true;
         }
 
         public void EnforceMinimumDepth()
@@ -155,8 +160,8 @@ namespace TerrainDemo
             {
                 if (HasChildren)
                 {
-                    isActive = false;
-                    isSplit = true;
+                    IsActive = false;
+                    IsSplit = true;
 
                     ChildTopLeft.EnforceMinimumDepth();
                     ChildTopRight.EnforceMinimumDepth();
@@ -166,7 +171,7 @@ namespace TerrainDemo
                 else
                 {
                     Activate();
-                    isSplit = false;
+                    IsSplit = false;
                 }
 
                 return;
@@ -175,8 +180,145 @@ namespace TerrainDemo
             if (nodeDepth == parentTree.MinimumDepth || (nodeDepth < parentTree.MinimumDepth && !HasChildren))
             {
                 Activate();
-                isSplit = false;
+                IsSplit = false;
             }
+        }
+
+        public bool Contains(Vector3 point)
+        {
+            point.Y = 0;
+            return Bounds.Contains(point) == ContainmentType.Contains;
+        }
+
+        public QuadNode GetDeepestNodeWithPoint(Vector3 point)
+        {
+            if (!Contains(point)) return null;
+
+            if (!HasChildren) return this;
+
+            if (ChildTopLeft.Contains(point)) return ChildTopLeft.GetDeepestNodeWithPoint(point);
+            if (ChildTopRight.Contains(point)) return ChildTopRight.GetDeepestNodeWithPoint(point);
+            if (ChildBottomLeft.Contains(point)) return ChildBottomLeft.GetDeepestNodeWithPoint(point);
+            return ChildBottomRight.GetDeepestNodeWithPoint(point);
+        }
+
+        public void Split()
+        {
+            if (Parent != null && !Parent.IsSplit) Parent.Split();
+
+            if (CanSplit)
+            {
+                if (HasChildren)
+                {
+                    ChildTopLeft.Activate();
+                    ChildTopRight.Activate();
+                    ChildBottomLeft.Activate();
+                    ChildBottomRight.Activate();
+
+                    IsActive = false;
+                }
+                else
+                {
+                    IsActive = true;
+                }
+
+                IsSplit = true;
+
+                VertexTop.Activated = true;
+                VertexLeft.Activated = true;
+                VertexRight.Activated = true;
+                VertexBottom.Activated = true;
+            }
+
+            EnsureNeighborParentSplit(NeighborTop);
+            EnsureNeighborParentSplit(NeighborRight);
+            EnsureNeighborParentSplit(NeighborBottom);
+            EnsureNeighborParentSplit(NeighborLeft);
+
+            if (NeighborTop != null) NeighborTop.VertexBottom.Activated = true;
+            if (NeighborRight != null) NeighborRight.VertexLeft.Activated = true;
+            if (NeighborBottom != null) NeighborBottom.VertexTop.Activated = true;
+            if (NeighborLeft != null) NeighborLeft.VertexRight.Activated = true;
+        }
+
+        public void Merge()
+        {
+            VertexTop.Activated = false;
+            VertexLeft.Activated = false;
+            VertexRight.Activated = false;
+            VertexBottom.Activated = false;
+
+            if (NodeType != QuadNodeType.FullNode)
+            {
+                VertexTopLeft.Activated = false;
+                VertexTopRight.Activated = false;
+                VertexBottomLeft.Activated = false;
+                VertexBottomRight.Activated = false;
+            }
+
+            IsActive = true;
+            IsSplit = false;
+
+            if (HasChildren)
+            {
+                if (ChildTopLeft.IsSplit)
+                {
+                    ChildTopLeft.Merge();
+                    ChildTopLeft.IsActive = false;
+                }
+                else
+                {
+                    ChildTopLeft.VertexTop.Activated = false;
+                    ChildTopLeft.VertexLeft.Activated = false;
+                    ChildTopLeft.VertexRight.Activated = false;
+                    ChildTopLeft.VertexBottom.Activated = false;
+                }
+
+                if (ChildTopRight.IsSplit)
+                {
+                    ChildTopRight.Merge();
+                    ChildTopRight.IsActive = false;
+                }
+                else
+                {
+                    ChildTopRight.VertexTop.Activated = false;
+                    ChildTopRight.VertexLeft.Activated = false;
+                    ChildTopRight.VertexRight.Activated = false;
+                    ChildTopRight.VertexBottom.Activated = false;
+                }
+
+                if (ChildBottomLeft.IsSplit)
+                {
+                    ChildBottomLeft.Merge();
+                    ChildBottomLeft.IsActive = false;
+                }
+                else
+                {
+                    ChildBottomLeft.VertexTop.Activated = false;
+                    ChildBottomLeft.VertexLeft.Activated = false;
+                    ChildBottomLeft.VertexRight.Activated = false;
+                    ChildBottomLeft.VertexBottom.Activated = false;
+                }
+
+                if (ChildBottomRight.IsSplit)
+                {
+                    ChildBottomRight.Merge();
+                    ChildBottomRight.IsActive = false;
+                }
+                else
+                {
+                    ChildBottomRight.VertexTop.Activated = false;
+                    ChildBottomRight.VertexLeft.Activated = false;
+                    ChildBottomRight.VertexRight.Activated = false;
+                    ChildBottomRight.VertexBottom.Activated = false;
+                }
+            }
+        }
+
+        void EnsureNeighborParentSplit(QuadNode neighbor)
+        {
+            if (neighbor != null && neighbor.Parent != null && !neighbor.Parent.IsSplit)
+                neighbor.Parent.Split();
         }
 
         void AddVertices()
@@ -184,28 +326,28 @@ namespace TerrainDemo
             switch (NodeType)
             {
                 case QuadNodeType.TopLeft:
-                    VertexTopLeft = parent.VertexTopLeft;
-                    VertexTopRight = parent.VertexTop;
-                    VertexBottomLeft = parent.VertexLeft;
-                    VertexBottomRight = parent.VertexCenter;
+                    VertexTopLeft = Parent.VertexTopLeft;
+                    VertexTopRight = Parent.VertexTop;
+                    VertexBottomLeft = Parent.VertexLeft;
+                    VertexBottomRight = Parent.VertexCenter;
                     break;
                 case QuadNodeType.TopRight:
-                    VertexTopLeft = parent.VertexTop;
-                    VertexTopRight = parent.VertexTopRight;
-                    VertexBottomLeft = parent.VertexCenter;
-                    VertexBottomRight = parent.VertexRight;
+                    VertexTopLeft = Parent.VertexTop;
+                    VertexTopRight = Parent.VertexTopRight;
+                    VertexBottomLeft = Parent.VertexCenter;
+                    VertexBottomRight = Parent.VertexRight;
                     break;
                 case QuadNodeType.BottomLeft:
-                    VertexTopLeft = parent.VertexLeft;
-                    VertexTopRight = parent.VertexCenter;
-                    VertexBottomLeft = parent.VertexBottomLeft;
-                    VertexBottomRight = parent.VertexBottom;
+                    VertexTopLeft = Parent.VertexLeft;
+                    VertexTopRight = Parent.VertexCenter;
+                    VertexBottomLeft = Parent.VertexBottomLeft;
+                    VertexBottomRight = Parent.VertexBottom;
                     break;
                 case QuadNodeType.BottomRight:
-                    VertexTopLeft = parent.VertexCenter;
-                    VertexTopRight = parent.VertexRight;
-                    VertexBottomLeft = parent.VertexBottom;
-                    VertexBottomRight = parent.VertexBottomRight;
+                    VertexTopLeft = Parent.VertexCenter;
+                    VertexTopRight = Parent.VertexRight;
+                    VertexBottomLeft = Parent.VertexBottom;
+                    VertexBottomRight = Parent.VertexBottomRight;
                     break;
                 default:
                     VertexTopLeft = new QuadNodeVertex
@@ -273,28 +415,28 @@ namespace TerrainDemo
             switch (NodeType)
             {
                 case QuadNodeType.TopLeft:
-                    if (parent.NeighborTop != null) NeighborTop = parent.NeighborTop.ChildBottomLeft;
-                    NeighborRight = parent.ChildTopRight;
-                    NeighborBottom = parent.ChildBottomLeft;
-                    if (parent.NeighborLeft != null) NeighborLeft = parent.NeighborLeft.ChildTopRight;
+                    if (Parent.NeighborTop != null) NeighborTop = Parent.NeighborTop.ChildBottomLeft;
+                    NeighborRight = Parent.ChildTopRight;
+                    NeighborBottom = Parent.ChildBottomLeft;
+                    if (Parent.NeighborLeft != null) NeighborLeft = Parent.NeighborLeft.ChildTopRight;
                     break;
                 case QuadNodeType.TopRight:
-                    if (parent.NeighborTop != null) NeighborTop = parent.NeighborTop.ChildBottomRight;
-                    if (parent.NeighborRight != null) NeighborRight = parent.NeighborRight.ChildTopLeft;
-                    NeighborBottom = parent.ChildBottomRight;
-                    NeighborLeft = parent.ChildTopLeft;
+                    if (Parent.NeighborTop != null) NeighborTop = Parent.NeighborTop.ChildBottomRight;
+                    if (Parent.NeighborRight != null) NeighborRight = Parent.NeighborRight.ChildTopLeft;
+                    NeighborBottom = Parent.ChildBottomRight;
+                    NeighborLeft = Parent.ChildTopLeft;
                     break;
                 case QuadNodeType.BottomLeft:
-                    NeighborTop = parent.ChildTopLeft;
-                    NeighborRight = parent.ChildBottomRight;
-                    if (parent.NeighborBottom != null) NeighborBottom = parent.NeighborBottom.ChildTopLeft;
-                    if (parent.NeighborLeft != null) NeighborLeft = parent.NeighborLeft.ChildBottomRight;
+                    NeighborTop = Parent.ChildTopLeft;
+                    NeighborRight = Parent.ChildBottomRight;
+                    if (Parent.NeighborBottom != null) NeighborBottom = Parent.NeighborBottom.ChildTopLeft;
+                    if (Parent.NeighborLeft != null) NeighborLeft = Parent.NeighborLeft.ChildBottomRight;
                     break;
                 case QuadNodeType.BottomRight:
-                    NeighborTop = parent.ChildTopRight;
-                    if (parent.NeighborRight != null) NeighborRight = parent.NeighborRight.ChildBottomLeft;
-                    if (parent.NeighborBottom != null) NeighborBottom = parent.NeighborBottom.ChildTopRight;
-                    NeighborLeft = parent.ChildBottomLeft;
+                    NeighborTop = Parent.ChildTopRight;
+                    if (Parent.NeighborRight != null) NeighborRight = Parent.NeighborRight.ChildBottomLeft;
+                    if (Parent.NeighborBottom != null) NeighborBottom = Parent.NeighborBottom.ChildTopRight;
+                    NeighborLeft = Parent.ChildBottomLeft;
                     break;
             }
 

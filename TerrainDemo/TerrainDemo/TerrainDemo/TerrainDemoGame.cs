@@ -22,6 +22,8 @@ namespace TerrainDemo
 
         GraphicsDeviceManager graphics;
 
+        KeyboardState lastKeyboardState;
+
         ImprovedPerlinNoise improvedPerlinNoise = new ImprovedPerlinNoise();
 
         SumFractal sumFractal = new SumFractal();
@@ -40,6 +42,12 @@ namespace TerrainDemo
 
         QuadTree quadTree;
 
+        bool isWireframe;
+
+        RasterizerState defaultRasterizerState = new RasterizerState();
+
+        RasterizerState wireframeRasterizerState = new RasterizerState();
+
         public TerrainDemoGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -57,6 +65,11 @@ namespace TerrainDemo
             freeViewInput.InitialMousePositionX = viewport.Width / 2;
             freeViewInput.InitialMousePositionY = viewport.Height / 2;
             freeViewInput.FreeView = view;
+
+            defaultRasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
+            defaultRasterizerState.FillMode = FillMode.Solid;
+            wireframeRasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
+            wireframeRasterizerState.FillMode = FillMode.WireFrame;
 
             IsFixedTimeStep = false;
 
@@ -122,9 +135,18 @@ namespace TerrainDemo
 
         protected override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
+            var keyboardState = Keyboard.GetState();
+            if (keyboardState.IsKeyDown(Keys.Escape)) Exit();
 
             freeViewInput.Update(gameTime);
+
+            if (keyboardState.IsKeyUp(Keys.F1) && lastKeyboardState.IsKeyDown(Keys.F1))
+            {
+                GraphicsDevice.RasterizerState = isWireframe ? defaultRasterizerState : wireframeRasterizerState;
+                isWireframe = !isWireframe;
+            }
+
+            lastKeyboardState = keyboardState;
 
             view.Update();
             projection.Update();
@@ -156,11 +178,11 @@ namespace TerrainDemo
         {
             if (terrain.VertexBuffer == null || terrain.IndexBuffer == null) return;
 
-            GraphicsDevice.RasterizerState = new RasterizerState
-            {
-                CullMode = CullMode.None,
-                FillMode = FillMode.WireFrame
-            };
+            //GraphicsDevice.RasterizerState = new RasterizerState
+            //{
+            //    CullMode = CullMode.None,
+            //    FillMode = FillMode.WireFrame
+            //};
             GraphicsDevice.SetVertexBuffer(terrain.VertexBuffer);
             GraphicsDevice.Indices = terrain.IndexBuffer;
 

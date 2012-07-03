@@ -22,10 +22,6 @@ namespace TerrainDemo
 
         int topNodeSize;
 
-        //Vector3 cameraPosition;
-
-        //Vector3 lastCameraPosition = new Vector3(float.NaN, float.NaN, float.NaN);
-
         int[] indices;
 
         public Matrix View;
@@ -48,19 +44,15 @@ namespace TerrainDemo
             get { return treeVertices; }
         }
 
-        //public Vector3 CameraPosition
-        //{
-        //    get { return cameraPosition; }
-        //    set { cameraPosition = value; }
-        //}
-
         public BoundingFrustum ViewFrustum { get; set; }
 
         public int IndexCount { get; set; }
 
         public BasicEffect Effect;
 
-        public int MinimumDepth = 6;
+        public int MinimumDepth;
+
+        QuadNode activeNode;
 
         public QuadTree(GraphicsDevice graphicsDevice, Vector3 position, HeightMap heightMap, Matrix view, Matrix projection, int scale)
         {
@@ -85,7 +77,6 @@ namespace TerrainDemo
             Effect.FogEnd = 1000;
             Effect.FogColor = Color.Black.ToVector3();
             Effect.TextureEnabled = true;
-            //Effect.Texture = new Texture2D(graphicsDevice, 100, 100);
             Effect.World = Matrix.Identity;
             Effect.View = view;
             Effect.Projection = projection;
@@ -99,17 +90,22 @@ namespace TerrainDemo
 
         public void Update(GameTime gameTime)
         {
-            //if (cameraPosition == lastCameraPosition) return;
             if (View == lastView) return;
 
             Effect.View = View;
             Effect.Projection = Projection;
 
-            //lastCameraPosition = cameraPosition;
             lastView = View;
             IndexCount = 0;
 
+            rootNode.Merge();
             rootNode.EnforceMinimumDepth();
+            Matrix inverseView;
+            Matrix.Invert(ref View, out inverseView);
+            var cameraPosition = inverseView.Translation;
+            activeNode = rootNode.GetDeepestNodeWithPoint(cameraPosition);
+            if (activeNode != null) activeNode.Split();
+
             rootNode.SetActiveVertices();
 
             buffers.UpdateIndexBuffer(indices, IndexCount);
