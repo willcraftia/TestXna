@@ -30,10 +30,6 @@ namespace TerrainDemo
 
         HeightMap[,] heightMaps = new HeightMap[heightMapCountX, heightMapCountY];
 
-        Terrain terrain;
-
-        BasicEffect basicEffect;
-
         FreeView view = new FreeView();
 
         PerspectiveFov projection = new PerspectiveFov();
@@ -95,42 +91,12 @@ namespace TerrainDemo
                 }
             }
 
-            terrain = new Terrain(GraphicsDevice);
-            terrain.HeightColors.AddColor(-1.0000f, new Color(0, 0, 128));
-            terrain.HeightColors.AddColor(-0.2500f, new Color(0, 0, 255));
-            terrain.HeightColors.AddColor(0.0000f, new Color(0, 128, 255));
-            terrain.HeightColors.AddColor(0.0625f, new Color(240, 240, 64));
-            terrain.HeightColors.AddColor(0.1250f, new Color(32, 160, 0));
-            terrain.HeightColors.AddColor(0.3750f, new Color(224, 224, 0));
-            //terrain.HeightColors.AddColor(0.7500f, new Color(128, 128, 128));
-            terrain.HeightColors.AddColor(0.7500f, new Color(64, 64, 64));
-            terrain.HeightColors.AddColor(1.0000f, new Color(255, 255, 255));
-            terrain.HeightMap = heightMaps[0, 0];
-            terrain.Build();
-
-            // カメラ設定。
-            //var view = Matrix.CreateLookAt(new Vector3(0.0f, 0.0f, 100.0f), Vector3.Zero, Vector3.Up);
-            //var projection = Matrix.CreatePerspectiveFieldOfView(
-            //    MathHelper.ToRadians(45.0f),
-            //    (float) GraphicsDevice.Viewport.Width / (float) GraphicsDevice.Viewport.Height,
-            //    1.0f,
-            //    1000.0f);
-
-            // エフェクト設定。
-            basicEffect = new BasicEffect(GraphicsDevice);
-            basicEffect.VertexColorEnabled = true;
-            //basicEffect.TextureEnabled = true;
-            //basicEffect.View = view;
-            //basicEffect.Projection = projection;
-
             quadTree = new QuadTree(GraphicsDevice, Vector3.Zero, heightMaps[0, 0], view.Matrix, projection.Matrix, 1);
             quadTree.Effect.Texture = Content.Load<Texture2D>("jigsaw");
         }
 
         protected override void UnloadContent()
         {
-            terrain.Dispose();
-            basicEffect.Dispose();
         }
 
         protected override void Update(GameTime gameTime)
@@ -156,7 +122,6 @@ namespace TerrainDemo
 
             quadTree.View = view.Matrix;
             quadTree.Projection = projection.Matrix;
-            //quadTree.CameraPosition = view.Position;
             quadTree.Update(gameTime);
 
             Window.Title = string.Format("Triangles Rendered: {0} - Culling Enabled: {1}", quadTree.IndexCount / 3, quadTree.Cull);
@@ -171,37 +136,7 @@ namespace TerrainDemo
 
             quadTree.Draw(gameTime);
 
-            //basicEffect.View = view.Matrix;
-            //basicEffect.Projection = projection.Matrix;
-
-            //DrawTerrain();
-
             base.Draw(gameTime);
-        }
-
-        void DrawTerrain()
-        {
-            if (terrain.VertexBuffer == null || terrain.IndexBuffer == null) return;
-
-            //GraphicsDevice.RasterizerState = new RasterizerState
-            //{
-            //    CullMode = CullMode.None,
-            //    FillMode = FillMode.WireFrame
-            //};
-            GraphicsDevice.SetVertexBuffer(terrain.VertexBuffer);
-            GraphicsDevice.Indices = terrain.IndexBuffer;
-
-            int primitiveCount = terrain.IndexBuffer.IndexCount / 3;
-
-            foreach (var pass in basicEffect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
-
-                GraphicsDevice.DrawIndexedPrimitives(
-                    PrimitiveType.TriangleList, 0, 0, terrain.VertexBuffer.VertexCount, 0, primitiveCount);
-            }
-
-            GraphicsDevice.Indices = null;
         }
     }
 }

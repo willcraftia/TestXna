@@ -17,13 +17,9 @@ namespace TerrainDemo
         /// </summary>
         Vector3 orientation = Vector3.Zero;
 
-        Vector3 rotationAmount;
-
-        Vector3 moveDirection;
-
-        float moveAmount;
-
         Vector3 position = Vector3.Zero;
+
+        Matrix inverseMatrix;
 
         /// <summary>
         /// カメラの姿勢を取得します。
@@ -34,77 +30,83 @@ namespace TerrainDemo
             get { return orientation; }
         }
 
-        public Vector3 RotationAmount
-        {
-            get { return rotationAmount; }
-            set
-            {
-                if (rotationAmount == value) return;
-
-                rotationAmount = value;
-                MatrixDirty = true;
-            }
-        }
-
-        public Vector3 MoveDirection
-        {
-            get { return moveDirection; }
-            set
-            {
-                if (moveDirection == value) return;
-
-                moveDirection = value;
-                MatrixDirty = true;
-            }
-        }
-
-        public float MoveAmount
-        {
-            get { return moveAmount; }
-            set
-            {
-                if (moveAmount == value) return;
-
-                moveAmount = value;
-                MatrixDirty = true;
-            }
-        }
-
         public Vector3 Position
         {
             get { return position; }
-            set { position = value; }
+            set
+            {
+                if (position == value) return;
+
+                position = value;
+                MatrixDirty = true;
+            }
+        }
+
+        public void Move(float distance)
+        {
+            if (distance == 0) return;
+
+            var direction = inverseMatrix.Forward;
+            position += direction * distance;
+            MatrixDirty = true;
+        }
+
+        public void Strafe(float distance)
+        {
+            if (distance == 0) return;
+
+            var direction = inverseMatrix.Left;
+            position += direction * distance;
+            MatrixDirty = true;
+        }
+
+        public void Up(float distance)
+        {
+            if (distance == 0) return;
+
+            var direction = inverseMatrix.Up;
+            position += direction * distance;
+            MatrixDirty = true;
+        }
+
+        public void Yaw(float amount)
+        {
+            if (amount == 0) return;
+
+            orientation.Y += amount;
+            orientation.Y %= twoPi;
+            MatrixDirty = true;
+        }
+
+        public void Pitch(float amount)
+        {
+            if (amount == 0) return;
+
+            orientation.X += amount;
+            orientation.X %= twoPi;
+            MatrixDirty = true;
+        }
+
+        public void Roll(float amount)
+        {
+            if (amount == 0) return;
+
+            orientation.Z += amount;
+            orientation.Z %= twoPi;
+            MatrixDirty = true;
         }
 
         protected override void UpdateOverride()
         {
-            // 新しい角度。
-            orientation += rotationAmount;
-            // 2 * pi 内に収める。
-            orientation.X %= twoPi;
-            orientation.Y %= twoPi;
-            orientation.Z %= twoPi;
-
             Matrix rotation;
             Matrix.CreateFromYawPitchRoll(orientation.Y, orientation.X, orientation.Z, out rotation);
-
-            if (moveDirection.X != 0 || moveDirection.Y != 0 || moveDirection.Z != 0)
-            {
-                var normalDirection = moveDirection;
-                if (normalDirection.X != 0 || normalDirection.Y != 0 || normalDirection.Z != 0)
-                {
-                    normalDirection.Normalize();
-
-                    Vector3 rotatedDirection;
-                    Vector3.Transform(ref normalDirection, ref rotation, out rotatedDirection);
-
-                    position += rotatedDirection * moveAmount;
-                }
-            }
 
             var target = position + rotation.Forward;
             var up = rotation.Up;
             Matrix.CreateLookAt(ref position, ref target, ref up, out Matrix);
+
+            // 逆行列も更新。
+            Matrix.Invert(ref Matrix, out inverseMatrix);
 
             MatrixDirty = false;
         }
