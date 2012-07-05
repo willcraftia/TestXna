@@ -44,15 +44,20 @@ namespace TerrainDemo
             get { return treeVertices; }
         }
 
-        public BoundingFrustum ViewFrustum { get; set; }
+        public BoundingFrustum ViewFrustum { get; private set; }
 
-        public int IndexCount { get; set; }
+        public int IndexCount { get; private set; }
 
         public BasicEffect Effect;
 
         public int MinimumDepth;
 
         QuadNode activeNode;
+
+        public bool Cull { get; set; }
+
+        public ViewClipShape ClipShape;
+        internal Vector3[] VFCorners = new Vector3[8];
 
         public QuadTree(GraphicsDevice graphicsDevice, Vector3 position, HeightMap heightMap, Matrix view, Matrix projection, int scale)
         {
@@ -92,18 +97,26 @@ namespace TerrainDemo
         {
             if (View == lastView) return;
 
+            ViewFrustum.Matrix = View * Projection;
+
             Effect.View = View;
             Effect.Projection = Projection;
+
+            Matrix inverseView;
+            Matrix.Invert(ref View, out inverseView);
+            var cameraPosition = inverseView.Translation;
+
+            ViewFrustum.GetCorners(VFCorners);
+            var clip = ClippingFrustrum.FromFrustrumCorners(VFCorners, cameraPosition);
+            ClipShape = clip.ProjectToTargetY(position.Y);
 
             lastView = View;
             IndexCount = 0;
 
             rootNode.Merge();
             rootNode.EnforceMinimumDepth();
-            Matrix inverseView;
-            Matrix.Invert(ref View, out inverseView);
-            var cameraPosition = inverseView.Translation;
-            activeNode = rootNode.GetDeepestNodeWithPoint(cameraPosition);
+
+            activeNode = rootNode.GetDeepestNodeWithPoint(ClipShape.ViewPoint);
             if (activeNode != null) activeNode.Split();
 
             rootNode.SetActiveVertices();

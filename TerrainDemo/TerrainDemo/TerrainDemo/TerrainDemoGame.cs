@@ -146,6 +146,9 @@ namespace TerrainDemo
                 isWireframe = !isWireframe;
             }
 
+            if (keyboardState.IsKeyUp(Keys.F2) && lastKeyboardState.IsKeyDown(Keys.F2))
+                quadTree.Cull = !quadTree.Cull;
+
             lastKeyboardState = keyboardState;
 
             view.Update();
@@ -155,6 +158,8 @@ namespace TerrainDemo
             quadTree.Projection = projection.Matrix;
             //quadTree.CameraPosition = view.Position;
             quadTree.Update(gameTime);
+
+            Window.Title = string.Format("Triangles Rendered: {0} - Culling Enabled: {1}", quadTree.IndexCount / 3, quadTree.Cull);
 
             base.Update(gameTime);
         }

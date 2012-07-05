@@ -48,11 +48,16 @@ namespace TerrainDemo
         public QuadNode NeighborLeft;
         public QuadNode NeighborRight;
 
-        public BoundingBox Bounds;
+        public BoundingRect Bounds { get; private set; }
 
         public QuadNodeType NodeType { get; private set; }
 
         public bool HasChildren { get; private set; }
+
+        public bool IsInView
+        {
+            get { return Bounds.Intersects(parentTree.ClipShape); }
+        }
 
         public QuadNode(QuadNodeType nodeType, int nodeSize, int nodeDepth, QuadNode parent, QuadTree parentTree, int positionIndex)
         {
@@ -65,13 +70,17 @@ namespace TerrainDemo
 
             AddVertices();
 
-            Bounds = new BoundingBox
+            var topLeft = new Vector2
             {
-                Min = parentTree.TreeVertices.Vertices[VertexTopLeft.Index].Position,
-                Max = parentTree.TreeVertices.Vertices[VertexBottomRight.Index].Position
+                X = parentTree.TreeVertices.Vertices[VertexTopLeft.Index].Position.X,
+                Y = parentTree.TreeVertices.Vertices[VertexTopLeft.Index].Position.Z
             };
-            Bounds.Min.Y = -950;
-            Bounds.Max.Y = 950;
+            var bottomRight = new Vector2
+            {
+                X = parentTree.TreeVertices.Vertices[VertexBottomRight.Index].Position.X,
+                Y = parentTree.TreeVertices.Vertices[VertexBottomRight.Index].Position.Z
+            };
+            Bounds = BoundingRect.FromPoints(topLeft, bottomRight);
 
             if (4 <= nodeSize) AddChildren();
 
@@ -89,6 +98,8 @@ namespace TerrainDemo
 
         public void SetActiveVertices()
         {
+            if (parentTree.Cull && !IsInView) return;
+
             if (IsSplit && HasChildren)
             {
                 ChildTopLeft.SetActiveVertices();
@@ -184,13 +195,13 @@ namespace TerrainDemo
             }
         }
 
-        public bool Contains(Vector3 point)
+        public bool Contains(Vector2 point)
         {
-            point.Y = 0;
-            return Bounds.Contains(point) == ContainmentType.Contains;
+            return point.X >= Bounds.Point1.X && point.X <= Bounds.Point3.X &&
+                point.Y >= Bounds.Point1.Y && point.Y <= Bounds.Point3.Y;
         }
 
-        public QuadNode GetDeepestNodeWithPoint(Vector3 point)
+        public QuadNode GetDeepestNodeWithPoint(Vector2 point)
         {
             if (!Contains(point)) return null;
 
@@ -204,6 +215,8 @@ namespace TerrainDemo
 
         public void Split()
         {
+            if (parentTree.Cull && !IsInView) return;
+
             if (Parent != null && !Parent.IsSplit) Parent.Split();
 
             if (CanSplit)

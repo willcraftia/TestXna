@@ -107,13 +107,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoundingRect.cs" />
+    <Compile Include="ClippingFrustrum.cs" />
+    <Compile Include="ClipPlane.cs" />
+    <Compile Include="CullingUtils.cs" />
     <Compile Include="FreeView.cs" />
     <Compile Include="Fractal.cs" />
     <Compile Include="FreeViewInput.cs" />
     <Compile Include="HeightColorCollection.cs" />
     <Compile Include="HeightMap.cs" />
     <Compile Include="ImprovedPerlinNoise.cs" />
+    <Compile Include="Intersection.cs" />
     <Compile Include="PerspectiveFov.cs" />
+    <Compile Include="PlaneIntersectType.cs" />
     <Compile Include="Projection.cs" />
     <Compile Include="ProjectionBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -129,6 +135,7 @@
     <Compile Include="TreeVertexCollection.cs" />
     <Compile Include="View.cs" />
     <Compile Include="ViewBase.cs" />
+    <Compile Include="ViewClipShape.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
