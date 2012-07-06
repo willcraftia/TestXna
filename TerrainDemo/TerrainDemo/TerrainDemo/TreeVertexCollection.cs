@@ -18,11 +18,11 @@ namespace TerrainDemo
 
         int halfSize;
 
-        int scale;
+        Vector3 scale;
 
         int heightMapSize;
 
-        public TreeVertexCollection(Vector3 position, HeightMap heightMap, int scale)
+        public TreeVertexCollection(Vector3 position, HeightMap heightMap, Vector3 scale)
         {
             this.position = position;
             this.scale = scale;
@@ -53,8 +53,8 @@ namespace TerrainDemo
                     z++;
                 }
 
-                y = position.Y + heightMap.Heights[i] * 100;
-                var vertexPosition = new Vector3(x * scale, y * scale, z * scale);
+                y = position.Y + heightMap.Heights[i] * scale.Y;
+                var vertexPosition = new Vector3(x * scale.X, y, z * scale.Z);
                 var vertexNormal = Vector3.Zero;
                 var vertexTexcood = new Vector2
                 {

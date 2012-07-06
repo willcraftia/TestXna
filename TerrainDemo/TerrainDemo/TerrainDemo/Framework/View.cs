@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 #endregion
 
-namespace TerrainDemo
+namespace TerrainDemo.Framework
 {
     /// <summary>
     /// View 行列を管理するクラスです。

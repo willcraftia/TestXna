@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 #endregion
 
-namespace TerrainDemo
+namespace TerrainDemo.Noise
 {
     /// <summary>
     /// Improved Perlin Noise を生成するクラスです。

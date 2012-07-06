@@ -59,7 +59,7 @@ namespace TerrainDemo
         public ViewClipShape ClipShape;
         internal Vector3[] VFCorners = new Vector3[8];
 
-        public QuadTree(GraphicsDevice graphicsDevice, Vector3 position, HeightMap heightMap, Matrix view, Matrix projection, int scale)
+        public QuadTree(GraphicsDevice graphicsDevice, Vector3 position, HeightMap heightMap, Matrix view, Matrix projection, Vector3 scale)
         {
             this.graphicsDevice = graphicsDevice;
             this.position = position;

@@ -1,12 +1,13 @@
 #region Using
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TerrainDemo.Framework.Cameras;
+using TerrainDemo.Cameras;
+using TerrainDemo.Noise;
 
 #endregion
 
@@ -14,11 +15,15 @@ namespace TerrainDemo
 {
     public class TerrainDemoGame : Game
     {
-        const int heightMapSize = 256 + 1;
+        const int heightMapSize = 1024 + 1;
 
         const int heightMapCountX = 1;
 
         const int heightMapCountY = 1;
+
+        const float noiseSampleWidth = 10;
+        
+        const float noiseSampleHeight = 10;
 
         GraphicsDeviceManager graphics;
 
@@ -35,6 +40,8 @@ namespace TerrainDemo
         PerspectiveFov projection = new PerspectiveFov();
 
         FreeViewInput freeViewInput = new FreeViewInput();
+
+        Vector3 terrainScale = new Vector3(1, 50, 1);
 
         QuadTree quadTree;
 
@@ -82,16 +89,14 @@ namespace TerrainDemo
                     var map = new HeightMap();
                     map.GetValue2 = (x, y) => { return sumFractal.GetValue(x, 0, y); };
                     map.Size = heightMapSize;
-                    var w = 1;
-                    var h = 1;
-                    map.SetBounds(w * i, h * j, w, h);
+                    map.SetBounds(noiseSampleWidth * i, noiseSampleHeight * j, noiseSampleWidth, noiseSampleHeight);
                     map.Build();
 
                     heightMaps[i, j] = map;
                 }
             }
 
-            quadTree = new QuadTree(GraphicsDevice, Vector3.Zero, heightMaps[0, 0], view.Matrix, projection.Matrix, 1);
+            quadTree = new QuadTree(GraphicsDevice, Vector3.Zero, heightMaps[0, 0], view.Matrix, projection.Matrix, terrainScale);
             quadTree.Effect.Texture = Content.Load<Texture2D>("jigsaw");
         }
 
