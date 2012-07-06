@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 #endregion
 
-namespace TerrainDemo
+namespace TerrainDemo.LOD
 {
     public sealed class QuadNode
     {

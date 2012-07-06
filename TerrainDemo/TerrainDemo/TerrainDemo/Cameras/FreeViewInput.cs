@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Input;
 
 #endregion
 
-namespace TerrainDemo
+namespace TerrainDemo.Cameras
 {
     public sealed class FreeViewInput
     {
@@ -25,7 +25,7 @@ namespace TerrainDemo
         public FreeViewInput()
         {
             RotationVelocity = 0.3f;
-            MoveVelocity = 30;
+            MoveVelocity = 100;
         }
 
         public void Initialize(int initialMousePositionX, int initialMousePositionY)

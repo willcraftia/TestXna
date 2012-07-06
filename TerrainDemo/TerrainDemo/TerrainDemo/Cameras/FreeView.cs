@@ -3,10 +3,11 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using TerrainDemo.Framework.Cameras;
 
 #endregion
 
-namespace TerrainDemo
+namespace TerrainDemo.Cameras
 {
     public sealed class FreeView : ViewBase
     {

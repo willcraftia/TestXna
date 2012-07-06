@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace TerrainDemo
+namespace TerrainDemo.Framework.Cameras
 {
     /// <summary>
     /// Projection 実装の基底クラスです。

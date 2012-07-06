@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 #endregion
 
-namespace TerrainDemo
+namespace TerrainDemo.Framework.Cameras
 {
     /// <summary>
     /// 視野に基づいた Perspective 行列を管理するクラスです。

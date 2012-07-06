@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace TerrainDemo
+namespace TerrainDemo.Noise
 {
     public sealed class SumFractal : Fractal
     {

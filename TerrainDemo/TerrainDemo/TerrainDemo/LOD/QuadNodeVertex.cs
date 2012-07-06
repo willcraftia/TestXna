@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace TerrainDemo
+namespace TerrainDemo.LOD
 {
     public struct QuadNodeVertex
     {

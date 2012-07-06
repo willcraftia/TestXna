@@ -6,9 +6,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 #endregion
 
-namespace TerrainDemo
+namespace TerrainDemo.NoLOD
 {
-    public sealed class Terrain : IDisposable
+    public sealed class NoLODTerrain : IDisposable
     {
         GraphicsDevice graphicsDevice;
 
@@ -40,7 +40,7 @@ namespace TerrainDemo
 
         public IndexBuffer IndexBuffer { get; set; }
 
-        public Terrain(GraphicsDevice graphicsDevice)
+        public NoLODTerrain(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
         }
@@ -141,7 +141,7 @@ namespace TerrainDemo
 
         bool disposed;
 
-        ~Terrain()
+        ~NoLODTerrain()
         {
             Dispose(false);
         }

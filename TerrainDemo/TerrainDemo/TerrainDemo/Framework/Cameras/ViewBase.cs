@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace TerrainDemo
+namespace TerrainDemo.Framework.Cameras
 {
     /// <summary>
     /// View 実装の基底クラスです。

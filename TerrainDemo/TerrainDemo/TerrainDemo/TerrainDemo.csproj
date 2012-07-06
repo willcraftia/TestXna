@@ -107,35 +107,35 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoundingRect.cs" />
-    <Compile Include="ClippingFrustrum.cs" />
-    <Compile Include="ClipPlane.cs" />
-    <Compile Include="CullingUtils.cs" />
-    <Compile Include="FreeView.cs" />
-    <Compile Include="Fractal.cs" />
-    <Compile Include="FreeViewInput.cs" />
+    <Compile Include="LOD\BoundingRect.cs" />
+    <Compile Include="LOD\ClippingFrustrum.cs" />
+    <Compile Include="LOD\ClipPlane.cs" />
+    <Compile Include="LOD\CullingUtils.cs" />
+    <Compile Include="Cameras\FreeView.cs" />
+    <Compile Include="Noise\Fractal.cs" />
+    <Compile Include="Cameras\FreeViewInput.cs" />
     <Compile Include="HeightColorCollection.cs" />
     <Compile Include="HeightMap.cs" />
-    <Compile Include="ImprovedPerlinNoise.cs" />
-    <Compile Include="Intersection.cs" />
-    <Compile Include="PerspectiveFov.cs" />
-    <Compile Include="PlaneIntersectType.cs" />
-    <Compile Include="Projection.cs" />
-    <Compile Include="ProjectionBase.cs" />
+    <Compile Include="Noise\ImprovedPerlinNoise.cs" />
+    <Compile Include="LOD\Intersection.cs" />
+    <Compile Include="Framework\Cameras\PerspectiveFov.cs" />
+    <Compile Include="LOD\PlaneIntersectType.cs" />
+    <Compile Include="Framework\Projection.cs" />
+    <Compile Include="Framework\Cameras\ProjectionBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="QuadNode.cs" />
-    <Compile Include="QuadNodeType.cs" />
-    <Compile Include="QuadNodeVertex.cs" />
-    <Compile Include="QuadTree.cs" />
-    <Compile Include="SumFractal.cs" />
-    <Compile Include="Terrain.cs" />
-    <Compile Include="BufferManager.cs" />
+    <Compile Include="LOD\QuadNode.cs" />
+    <Compile Include="LOD\QuadNodeType.cs" />
+    <Compile Include="LOD\QuadNodeVertex.cs" />
+    <Compile Include="LOD\QuadTree.cs" />
+    <Compile Include="Noise\SumFractal.cs" />
+    <Compile Include="NoLOD\NoLODTerrain.cs" />
+    <Compile Include="LOD\BufferManager.cs" />
     <Compile Include="TerrainDemoGame.cs" />
-    <Compile Include="TreeVertexCollection.cs" />
-    <Compile Include="View.cs" />
-    <Compile Include="ViewBase.cs" />
-    <Compile Include="ViewClipShape.cs" />
+    <Compile Include="LOD\TreeVertexCollection.cs" />
+    <Compile Include="Framework\View.cs" />
+    <Compile Include="Framework\Cameras\ViewBase.cs" />
+    <Compile Include="LOD\ViewClipShape.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
