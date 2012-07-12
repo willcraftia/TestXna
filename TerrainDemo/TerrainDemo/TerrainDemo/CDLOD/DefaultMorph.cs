@@ -8,12 +8,11 @@ namespace TerrainDemo.CDLOD
 {
     public sealed class DefaultMorph : Morph
     {
-        float visibilityDistance = 100000;
-//        float visibilityDistance = 30000;
+        float visibilityDistance/* = 50000*/;
 
         float detailBalance = 2;
 
-        float morphStartRatio = 0.66f;
+        float morphStartRatio/* = 0.66f*/;
 
         public float VisibilityDistance
         {

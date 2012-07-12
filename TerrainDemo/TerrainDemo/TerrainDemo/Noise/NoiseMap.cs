@@ -13,11 +13,11 @@ namespace TerrainDemo.Noise
     {
         public delegate float DelegateGetValue2(float x, float y);
 
-        const int defaultSize = 256 + 1;
-
         DelegateGetValue2 getValue2;
 
-        int size;
+        int width = 256 + 1;
+
+        int height = 256 + 1;
 
         float boundX;
 
@@ -38,14 +38,16 @@ namespace TerrainDemo.Noise
             set { getValue2 = value; }
         }
 
-        /// <summary>
-        /// サイズを取得または設定します。
-        /// Heights プロパティの長さは Size * Size となります。
-        /// </summary>
-        public int Size
+        public int Width
         {
-            get { return size; }
-            set { size = value; }
+            get { return width; }
+            set { width = value; }
+        }
+
+        public int Height
+        {
+            get { return height; }
+            set { height = value; }
         }
 
         /// <summary>
@@ -56,20 +58,12 @@ namespace TerrainDemo.Noise
             get { return heights; }
         }
 
-        /// <summary>
-        /// インスタンスを生成します。
-        /// </summary>
-        public NoiseMap()
-        {
-            Size = defaultSize;
-        }
-
-        public void SetBounds(float x, float y, float width, float height)
+        public void SetBounds(float x, float y, float w, float h)
         {
             boundX = x;
             boundY = y;
-            boundWidth = width;
-            boundHeight = height;
+            boundWidth = w;
+            boundHeight = h;
         }
 
         /// <summary>
@@ -77,21 +71,20 @@ namespace TerrainDemo.Noise
         /// </summary>
         public void Build()
         {
-            var length = size * size;
+            var length = width * height;
             if (heights == null || heights.Length != length)
                 heights = new float[length];
 
-            var inverseSize = 1 / (float) size;
-            var deltaX = boundWidth * inverseSize;
-            var deltaY = boundHeight * inverseSize;
+            var deltaX = boundWidth * (1 / (float) width);
+            var deltaY = boundHeight * (1 / (float) height);
 
             float y = boundY;
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < height; i++)
             {
                 float x = boundX;
-                for (int j = 0; j < size; j++)
+                for (int j = 0; j < width; j++)
                 {
-                    var index = j + i * size;
+                    var index = j + i * width;
                     heights[index] = GetValue2(x, y);
                     x += deltaX;
                 }

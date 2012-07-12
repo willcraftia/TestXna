@@ -15,8 +15,11 @@ float3 TerrainScale;
 // x = (textureWidth - 1.0f) / textureWidth
 // y = (textureHeight - 1.0f) / textureHeight
 float2 SamplerWorldToTextureScale;
-// HeightMapTexelSize = 1 / heightMapSize
-float HeightMapTexelSize;
+
+float2 HeightMapSize;
+// x = 1 / textureWidth
+// y = 1 / textureHeight
+float2 HeightMapTexelSize;
 
 texture HeightMap;
 sampler HeightMapSampler = sampler_state
@@ -26,17 +29,6 @@ sampler HeightMapSampler = sampler_state
     AddressV = Clamp;
     MinFilter = Point;
     MagFilter = Point;
-    MipFilter = None;
-};
-
-texture NormalMap;
-sampler NormalMapSampler = sampler_state
-{
-    Texture = <NormalMap>;
-    AddressU = Clamp;
-    AddressV = Clamp;
-    MinFilter = Linear;
-    MagFilter = Linear;
     MipFilter = None;
 };
 
@@ -65,7 +57,7 @@ float2 CalculateGlobalUV(float4 vertex)
 {
     float2 globalUV = (vertex.xz - TerrainOffset.xz) / TerrainScale.xz;
     globalUV *= SamplerWorldToTextureScale;
-    globalUV += float2(HeightMapTexelSize, HeightMapTexelSize) * 0.5;
+    globalUV += HeightMapTexelSize * 0.5;
     return globalUV;
 }
 
@@ -77,44 +69,52 @@ float2 MorphVertex(float4 position, float2 vertex, float4 quadScale, float morph
 
 float SampleHeightMap(float2 uv)
 {
-    return tex2Dlod(HeightMapSampler, float4(uv, 0, 0)).x;
-/*
-    const float2 texelSize   = float2(HeightMapTexelSize, HeightMapTexelSize);
-    const float2 textureSize = float2(1, 1) / texelSize;
+//    return tex2Dlod(HeightMapSampler, float4(uv, 0, 0)).x;
 
-    uv = uv.xy * textureSize - float2(0.5, 0.5);
+// 単純に tex2Dlod で値を取りたいが、
+// 例えば leafNodeSize = 8 かつパッチ サイズ 32 などを行った場合、
+// TextureFilter = POINT の影響により段階的な値の取得となってしまう。
+// XNA 4.0 では SurfaceFormat.Single で TextureFilter = Linear は不可能？
+// HiDef ですらできないのだが。
+// ゆえに、コード上での bilinear filtering。
+    uv = uv.xy * HeightMapSize - float2(0.5, 0.5);
     float2 uvf = floor( uv.xy );
     float2 f = uv - uvf;
-    uv = (uvf + float2(0.5, 0.5)) * texelSize;
+    uv = (uvf + float2(0.5, 0.5)) * HeightMapTexelSize;
 
     float t00 = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y, 0, 0 ) ).x;
-    float t10 = tex2Dlod( HeightMapSampler, float4( uv.x + texelSize.x, uv.y, 0, 0 ) ).x;
+    float t10 = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y, 0, 0 ) ).x;
 
     float tA = lerp( t00, t10, f.x );
 
-    float t01 = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y + texelSize.y, 0, 0 ) ).x;
-    float t11 = tex2Dlod( HeightMapSampler, float4( uv.x + texelSize.x, uv.y + texelSize.y, 0, 0 ) ).x;
+    float t01 = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
+    float t11 = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
 
     float tB = lerp( t01, t11, f.x );
 
-    return lerp( tA, tB, f.y );*/
+    return lerp( tA, tB, f.y );
 }
 
 float4 VSCalculateNormal(float2 texCoord)
 {
 // From http://graphics.ethz.ch/teaching/gamelab11/course_material/lecture06/XNA_Shaders_Terrain.pdf
-    float n = tex2Dlod(HeightMapSampler, float4( texCoord + float2(0, -HeightMapTexelSize), 0, 1) ).x;
-    float s = tex2Dlod(HeightMapSampler, float4( texCoord + float2(0,  HeightMapTexelSize), 0, 1) ).x;
-    float e = tex2Dlod(HeightMapSampler, float4( texCoord + float2(-HeightMapTexelSize, 0), 0, 1) ).x;
-    float w = tex2Dlod(HeightMapSampler, float4( texCoord + float2( HeightMapTexelSize, 0), 0, 1) ).x;
+/*    float n = tex2Dlod(HeightMapSampler, float4( texCoord + float2(0, -HeightMapTexelSize.x), 0, 1) ).x;
+    float s = tex2Dlod(HeightMapSampler, float4( texCoord + float2(0,  HeightMapTexelSize.x), 0, 1) ).x;
+    float e = tex2Dlod(HeightMapSampler, float4( texCoord + float2(-HeightMapTexelSize.y, 0), 0, 1) ).x;
+    float w = tex2Dlod(HeightMapSampler, float4( texCoord + float2( HeightMapTexelSize.y, 0), 0, 1) ).x;*/
 
-    float twoTexel = HeightMapTexelSize * 2;
-    float divisor = 1 / twoTexel;
+    float n = SampleHeightMap(texCoord + float2(0, -HeightMapTexelSize.x));
+    float s = SampleHeightMap(texCoord + float2(0,  HeightMapTexelSize.x));
+    float e = SampleHeightMap(texCoord + float2(-HeightMapTexelSize.y, 0));
+    float w = SampleHeightMap(texCoord + float2( HeightMapTexelSize.y, 0));
 
-    float3 sn = float3(0, (s - n) * TerrainScale.y, -twoTexel);
-    float3 ew = float3(-twoTexel, (e - w) * TerrainScale.y, 0);
-    sn *= divisor;
-    ew *= divisor;
+    float2 twoTexel = HeightMapTexelSize * 2;
+    float2 divisor = float2(1, 1) / twoTexel;
+
+    float3 sn = float3(0, (s - n) * TerrainScale.y, -twoTexel.y);
+    float3 ew = float3(-twoTexel.x, (e - w) * TerrainScale.y, 0);
+    sn *= divisor.y;
+    ew *= divisor.x;
     sn = normalize(sn);
     ew = normalize(ew);
 
@@ -207,36 +207,6 @@ float CalculateDirectionalLight(float3 normal, float3 lightDir, float3 eyeDir, f
    return CalculateDiffuseStrength(normal, light0) + specularMul * pow(CalculateSpecularStrength(normal, light0, eyeDir), specularPow);
 }
 
-float3 CalculateNormal(float2 texCoord)
-{
-// From XNA CDLOD Example
-/*    float n = tex2D(NormalMapSampler, texCoord + float2(0, -HeightMapTexelSize)).x;
-    float s = tex2D(NormalMapSampler, texCoord + float2(0,  HeightMapTexelSize)).x;
-    float e = tex2D(NormalMapSampler, texCoord + float2(-HeightMapTexelSize, 0)).x;
-    float w = tex2D(NormalMapSampler, texCoord + float2( HeightMapTexelSize, 0)).x;
-
-    float twoTexel = HeightMapTexelSize * 2;
-
-    float3 ew = normalize(float3(twoTexel, e - w, 0));
-    float3 ns = normalize(float3(s - n, twoTexel, 0));
-
-    return normalize(cross(ew, ns));*/
-
-// From http://skytiger.wordpress.com/2010/11/28/xna-large-terrain/
-    float x0 = tex2D(NormalMapSampler, texCoord + float2(-HeightMapTexelSize, 0)).x;
-    float x1 = tex2D(NormalMapSampler, texCoord + float2( HeightMapTexelSize, 0)).x;
-    float y0 = tex2D(NormalMapSampler, texCoord + float2(0, -HeightMapTexelSize)).x;
-    float y1 = tex2D(NormalMapSampler, texCoord + float2(0,  HeightMapTexelSize)).x;
-
-    float dx = x1 - x0;
-    float dy = y1 - y0;
-
-    float3 nx = normalize(float3(-1, dx, 0));
-    float3 ny = normalize(float3(0, dy, -1));
-
-    return normalize(cross(ny, nx));
-}
-
 //=============================================================================
 // Pixel shader
 //-----------------------------------------------------------------------------
@@ -251,26 +221,14 @@ float4 PS(VS_OUTPUT input) : COLOR0
     return color;*/
 
 // デバッグ。
-/*    float3 normal = CalculateNormal(input.TexCoord);
-    float directionalLight = CalculateDirectionalLight(normal, normalize(LightDirection), normalize(input.EyeDirection), 16, 0);
-    float4 color = float4(AmbientLightColor + DiffuseLightColor * directionalLight, 1);
-    return color;*/
-
-// デバッグ。
-/*    float3 normal = CalculateNormal(input.TexCoord);
-    float intensity = cross(normalize(LightDirection), normal);
-    float4 color = input.Color;
-    color.rgb *= 0.5;
-    color.rgb += intensity * 0.5;
-    return color;*/
-
-// デバッグ。
 /*    float3 normal = input.Normal.xyz;
     float directionalLight = CalculateDirectionalLight(normal, normalize(LightDirection), normalize(input.EyeDirection), 16, 0);
     float4 color = float4(AmbientLightColor + input.Color * DiffuseLightColor * directionalLight, 1);
     return color;*/
+
 // デバッグ。
-    return input.Color;
+//    return input.Color;
+    return float4(0, 0, 0, 1);
 }
 
 //=============================================================================

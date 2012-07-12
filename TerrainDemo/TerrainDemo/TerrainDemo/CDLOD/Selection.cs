@@ -12,6 +12,8 @@ namespace TerrainDemo.CDLOD
     {
         public Vector3 EyePosition;
 
+        public BoundingFrustum Frustum = new BoundingFrustum(Matrix.Identity);
+
         public Vector3 TerrainOffset;
 
         public float PatchScale;
@@ -29,6 +31,8 @@ namespace TerrainDemo.CDLOD
 
         public void AddSelectedNode(Node node)
         {
+            if (MaxSelectedNodeCount <= SelectedNodeCount) return;
+
             SelectedNodes[SelectedNodeCount++] = new SelectedNode
             {
                 X = node.X,

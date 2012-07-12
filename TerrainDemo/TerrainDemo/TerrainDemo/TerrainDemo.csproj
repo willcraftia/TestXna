@@ -107,8 +107,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CDLOD\BoundingBoxDrawer.cs" />
     <Compile Include="CDLOD\CDLODTerrain.cs" />
     <Compile Include="CDLOD\CDLODTerrainEffect.cs" />
+    <Compile Include="CDLOD\CreateDescription.cs" />
     <Compile Include="CDLOD\DefaultHeightMapSource.cs" />
     <Compile Include="CDLOD\DefaultMorph.cs" />
     <Compile Include="CDLOD\PatchInstanceVertex.cs" />
@@ -126,35 +128,21 @@
     <Compile Include="Framework\Debug\FpsCounter.cs" />
     <Compile Include="Framework\Graphics\Texture2DHelper.cs" />
     <Compile Include="Framework\Graphics\WritableVertexBuffer.cs" />
-    <Compile Include="LOD\BoundingRect.cs" />
-    <Compile Include="LOD\ClippingFrustrum.cs" />
-    <Compile Include="LOD\ClipPlane.cs" />
-    <Compile Include="LOD\CullingUtils.cs" />
     <Compile Include="Cameras\FreeView.cs" />
     <Compile Include="Noise\Fractal.cs" />
     <Compile Include="Cameras\FreeViewInput.cs" />
     <Compile Include="HeightColorCollection.cs" />
     <Compile Include="Noise\NoiseMap.cs" />
     <Compile Include="Noise\ImprovedPerlinNoise.cs" />
-    <Compile Include="LOD\Intersection.cs" />
     <Compile Include="Framework\Cameras\PerspectiveFov.cs" />
-    <Compile Include="LOD\PlaneIntersectType.cs" />
     <Compile Include="Framework\Projection.cs" />
     <Compile Include="Framework\Cameras\ProjectionBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="LOD\QuadNode.cs" />
-    <Compile Include="LOD\QuadNodeType.cs" />
-    <Compile Include="LOD\QuadNodeVertex.cs" />
-    <Compile Include="LOD\QuadTree.cs" />
     <Compile Include="Noise\SumFractal.cs" />
-    <Compile Include="NoLOD\NoLODTerrain.cs" />
-    <Compile Include="LOD\BufferManager.cs" />
     <Compile Include="TerrainDemoGame.cs" />
-    <Compile Include="LOD\TreeVertexCollection.cs" />
     <Compile Include="Framework\View.cs" />
     <Compile Include="Framework\Cameras\ViewBase.cs" />
-    <Compile Include="LOD\ViewClipShape.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

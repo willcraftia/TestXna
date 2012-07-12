@@ -17,7 +17,9 @@ namespace TerrainDemo
 {
     public class TerrainDemoGame : Game
     {
-        const int heightMapSize = 512 * 2 + 1;
+        const int noiseMapWidth = 512 * 1 + 1;
+
+        const int noiseMapHeight = 512 * 1 + 1;
 
         const float noiseSampleWidth = 10;
         
@@ -87,14 +89,14 @@ namespace TerrainDemo
             // ƒmƒCƒY‚©‚ç height map ‚ð¶¬B
             var noiseMap = new NoiseMap();
             noiseMap.GetValue2 = (x, y) => { return sumFractal.GetValue(x, 0, y); };
-            noiseMap.Size = heightMapSize;
+            noiseMap.Width = noiseMapWidth;
+            noiseMap.Height = noiseMapHeight;
             noiseMap.SetBounds(0, 0, noiseSampleWidth, noiseSampleHeight);
             noiseMap.Build();
 
             var heightMap = new DefaultHeightMapSource(noiseMap);
 
-            terrain = new CDLODTerrain(GraphicsDevice, Content, heightMapSize);
-            terrain.PatchScale = 2;
+            terrain = new CDLODTerrain(GraphicsDevice, Content);
             terrain.Initialize(heightMap);
         }
 

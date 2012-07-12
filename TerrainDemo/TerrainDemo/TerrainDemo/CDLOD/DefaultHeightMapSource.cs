@@ -12,21 +12,24 @@ namespace TerrainDemo.CDLOD
     {
         float[,] heights;
 
-        public int Size { get; private set; }
+        public int Width { get; private set; }
+
+        public int Height { get; private set; }
 
         public DefaultHeightMapSource(NoiseMap noiseMap)
         {
-            Size = noiseMap.Size;
+            Width = noiseMap.Width;
+            Height = noiseMap.Height;
 
-            heights = new float[Size, Size];
+            heights = new float[Width, Height];
 
             // 単純に [-1, 1] で clamp して設定。
             // ほとんどの height は [-1, 1] に収まるため。
-            for (int y = 0; y < Size; y++)
+            for (int y = 0; y < Height; y++)
             {
-                for (int x = 0; x < Size; x++)
+                for (int x = 0; x < Width; x++)
                 {
-                    var h = noiseMap.Heights[x + y * Size];
+                    var h = noiseMap.Heights[x + y * Width];
                     heights[x, y] = MathHelper.Clamp(h, -1, 1);
                 }
             }
@@ -37,13 +40,13 @@ namespace TerrainDemo.CDLOD
             return heights[x, y];
         }
 
-        public void GetAreaMinMaxHeight(int x, int y, int size, out float minHeight, out float maxHeight)
+        public void GetAreaMinMaxHeight(int x, int y, int sizeX, int sizeY, out float minHeight, out float maxHeight)
         {
             minHeight = float.MaxValue;
             maxHeight = float.MinValue;
-            for (int ry = 0; ry < size; ry++)
+            for (int ry = 0; ry < sizeY; ry++)
             {
-                for (int rx = 0; rx < size; rx++)
+                for (int rx = 0; rx < sizeX; rx++)
                 {
                     var h = heights[x + rx, y + ry];
                     minHeight = MathHelper.Min(minHeight, h);

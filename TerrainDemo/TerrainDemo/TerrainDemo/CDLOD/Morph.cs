@@ -17,12 +17,8 @@ namespace TerrainDemo.CDLOD
 
         public bool Initialized { get; protected set; }
 
-        public Morph(int heightMapSize)
+        public Morph(int levelCount)
         {
-            int levelCount = 0;
-            for (int size = heightMapSize - 1; 2 <= size; size /= 2)
-                levelCount++;
-
             visibilityRanges = new float[levelCount];
             morphStartRanges = new float[levelCount];
             morphEndRanges = new float[levelCount];

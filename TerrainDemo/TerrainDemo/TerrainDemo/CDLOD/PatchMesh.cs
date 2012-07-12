@@ -28,7 +28,9 @@ namespace TerrainDemo.CDLOD
 
         public PatchMesh(GraphicsDevice graphicsDevice)
         {
-            int size = 2;
+            // パッチのサイズは、leafNodeSize * n になっていないといけない。
+            // n は 2 の自乗でなければならない。
+            int size = 32;
             int vertexSize = size + 1;
 
             // 4 つの正方形 (8 つの三角形) の頂点数。

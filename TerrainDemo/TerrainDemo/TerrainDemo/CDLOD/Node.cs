@@ -18,8 +18,6 @@ namespace TerrainDemo.CDLOD
 
         float maxHeight;
 
-        Node parent;
-
         int size;
 
         int level;
@@ -62,46 +60,54 @@ namespace TerrainDemo.CDLOD
             get { return level; }
         }
 
-        public Node(Node parent, int x, int y, int size, IHeightMapSource heightMap)
+        public Node(int x, int y, int size, ref CreateDescription createDescription)
         {
-            this.parent = parent;
             this.x = x;
             this.y = y;
             this.size = size;
 
-            if (4 <= size)
+            if (size == createDescription.LeafNodeSize)
+            {
+                int limitX = Math.Min(createDescription.HeightMap.Width, x + size + 1);
+                int limitY = Math.Min(createDescription.HeightMap.Height, y + size + 1);
+
+                // リーフ ノード (Level = 0)
+                createDescription.HeightMap.GetAreaMinMaxHeight(x, y, limitX - x, limitY - y, out minHeight, out maxHeight);
+            }
+            else
             {
                 int childSize = size / 2;
 
-                childTopLeft = new Node(this, x, y, childSize, heightMap);
+                childTopLeft = new Node(x, y, childSize, ref createDescription);
                 minHeight = childTopLeft.minHeight;
                 maxHeight = childTopLeft.maxHeight;
 
-                childTopRight = new Node(this, x + childSize, y, childSize, heightMap);
+                childTopRight = new Node(x + childSize, y, childSize, ref createDescription);
                 minHeight = MathHelper.Min(minHeight, childTopRight.minHeight);
                 maxHeight = MathHelper.Max(maxHeight, childTopRight.maxHeight);
 
-                childBottomLeft = new Node(this, x, y + childSize, childSize, heightMap);
+                childBottomLeft = new Node(x, y + childSize, childSize, ref createDescription);
                 minHeight = MathHelper.Min(minHeight, childBottomLeft.minHeight);
                 maxHeight = MathHelper.Max(maxHeight, childBottomLeft.maxHeight);
 
-                childBottomRight = new Node(this, x + childSize, y + childSize, childSize, heightMap);
+                childBottomRight = new Node(x + childSize, y + childSize, childSize, ref createDescription);
                 minHeight = MathHelper.Min(minHeight, childBottomRight.minHeight);
                 maxHeight = MathHelper.Max(maxHeight, childBottomRight.maxHeight);
 
                 level = childTopLeft.level + 1;
             }
-            else
-            {
-                // リーフ ノード (Level = 0)
-                heightMap.GetAreaMinMaxHeight(x, y, size, out minHeight, out maxHeight);
-            }
         }
 
-        public bool Select(Selection selection)
+        public bool Select(Selection selection, bool parentCompletelyInFrustum)
         {
             BoundingBox boundingBox;
             GetBoundingBox(ref selection.TerrainOffset, selection.PatchScale, selection.HeightScale, out boundingBox);
+
+            ContainmentType containmentType = ContainmentType.Contains;
+            if (!parentCompletelyInFrustum)
+            {
+                selection.Frustum.Contains(ref boundingBox, out containmentType);
+            }
 
             var visibilityRange = selection.Morph.GetVisibilityRange(level);
             var sphere = new BoundingSphere(selection.EyePosition, visibilityRange);
@@ -111,7 +117,8 @@ namespace TerrainDemo.CDLOD
             if (level == 0)
             {
                 // リーフ ノードに到達。
-                selection.AddSelectedNode(this);
+                if (containmentType != ContainmentType.Disjoint)
+                    selection.AddSelectedNode(this);
                 return true;
             }
 
@@ -119,24 +126,27 @@ namespace TerrainDemo.CDLOD
             var childVisibilityRange = selection.Morph.GetVisibilityRange(level - 1);
             if (!boundingBox.Intersects(new BoundingSphere(selection.EyePosition, childVisibilityRange)))
             {
-                selection.AddSelectedNode(this);
+                if (containmentType != ContainmentType.Disjoint)
+                    selection.AddSelectedNode(this);
                 return true;
             }
 
+            bool weAreCompletelyInFrustum = (containmentType == ContainmentType.Contains);
+
             // 子ノードの選択を試行 (ここでは SelectedNode の追加を行わずに選択可能性のみを検査)。
             var allChildrenSelected = true;
-            allChildrenSelected &= childTopLeft.PreSelect(selection);
-            allChildrenSelected &= childTopRight.PreSelect(selection);
-            allChildrenSelected &= childBottomLeft.PreSelect(selection);
-            allChildrenSelected &= childBottomRight.PreSelect(selection);
+            allChildrenSelected &= childTopLeft.PreSelect(selection, weAreCompletelyInFrustum);
+            allChildrenSelected &= childTopRight.PreSelect(selection, weAreCompletelyInFrustum);
+            allChildrenSelected &= childBottomLeft.PreSelect(selection, weAreCompletelyInFrustum);
+            allChildrenSelected &= childBottomRight.PreSelect(selection, weAreCompletelyInFrustum);
 
             if (allChildrenSelected)
             {
                 // 全ての子ノードが選択される場合にのみ、子ノードの LOD を採用する。
-                childTopLeft.Select(selection);
-                childTopRight.Select(selection);
-                childBottomLeft.Select(selection);
-                childBottomRight.Select(selection);
+                childTopLeft.Select(selection, weAreCompletelyInFrustum);
+                childTopRight.Select(selection, weAreCompletelyInFrustum);
+                childBottomLeft.Select(selection, weAreCompletelyInFrustum);
+                childBottomRight.Select(selection, weAreCompletelyInFrustum);
             }
             else
             {
@@ -152,16 +162,24 @@ namespace TerrainDemo.CDLOD
                 // 各ノード毎に描画範囲を検査しながら描画する必要がある。
                 // 一方、ここでの方法では、全ノードが同型のメッシュとなるため、
                 // HW インスタンシングによる恩恵を受けることができる。
-                selection.AddSelectedNode(this);
+                if (containmentType != ContainmentType.Disjoint)
+                    selection.AddSelectedNode(this);
             }
 
             return true;
         }
 
-        bool PreSelect(Selection selection)
+        bool PreSelect(Selection selection, bool parentCompletelyInFrustum)
         {
             BoundingBox boundingBox;
             GetBoundingBox(ref selection.TerrainOffset, selection.PatchScale, selection.HeightScale, out boundingBox);
+
+            //ContainmentType containmentType = ContainmentType.Contains;
+            //if (!parentCompletelyInFrustum)
+            //{
+            //    selection.Frustum.Contains(ref boundingBox, out containmentType);
+            //    if (containmentType == ContainmentType.Disjoint) return false;
+            //}
 
             var visibilityRange = selection.Morph.GetVisibilityRange(level);
             var sphere = new BoundingSphere(selection.EyePosition, visibilityRange);
@@ -182,6 +200,26 @@ namespace TerrainDemo.CDLOD
             boundingBox.Max.X = (x + size) * patchScale + terrainOffset.X;
             boundingBox.Max.Y = maxHeight * heightScale + terrainOffset.Y;
             boundingBox.Max.Z = (y + size) * patchScale + terrainOffset.Z;
+        }
+
+        // TODO: できれば BoundingBox と BoundingFrustum の交差判定の前に球同士で判定したい。
+        void GetBoundingSphere(ref Vector3 terrainOffset, float patchScale, float heightScale, out BoundingSphere sphere)
+        {
+            var min = new Vector3
+            {
+                X = x * patchScale + terrainOffset.X,
+                Y = minHeight * heightScale + terrainOffset.Y,
+                Z = y * patchScale + terrainOffset.Z
+            };
+            var max = new Vector3
+            {
+                X = (x + size) * patchScale + terrainOffset.X,
+                Y = maxHeight * heightScale + terrainOffset.Y,
+                Z = (y + size) * patchScale + terrainOffset.Z
+            };
+            var center = max - min;
+            var radius = center.Length() * 0.5f;
+            sphere = new BoundingSphere(center, radius);
         }
     }
 }

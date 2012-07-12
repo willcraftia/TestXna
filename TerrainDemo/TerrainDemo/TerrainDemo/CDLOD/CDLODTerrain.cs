@@ -12,18 +12,31 @@ namespace TerrainDemo.CDLOD
 {
     public sealed class CDLODTerrain : IDisposable
     {
-        const int maxPatchCount = 20000;
+        const int maxSelectedNodeCount = 20000;
+
+        const float visibilityDistance = 30000;
+
+        const float morphStartRatio = 0.5f;
 
         public GraphicsDevice GraphicsDevice { get; private set; }
 
         public ContentManager Content { get; private set; }
 
-        public int HeightMapSize { get; private set; }
+        // leafNodeSize は 2 の自乗でなければならない。
+        int leafNodeSize = 8;
+
+        int levelCount = 7;
+
+        float patchScale = 2;
+
+        float heightScale = 50;
+
+        Vector3 terrainOffset;
 
         // 後で複数マップへの対応をする。
         QuadTree quadTree = new QuadTree();
 
-        PatchInstanceVertex[] instances = new PatchInstanceVertex[maxPatchCount];
+        PatchInstanceVertex[] instances = new PatchInstanceVertex[maxSelectedNodeCount];
 
         /// <summary>
         /// HW インスタンスで使うインスタンス情報のための頂点バッファ。
@@ -55,22 +68,34 @@ namespace TerrainDemo.CDLOD
 
         Texture2D heightMapTexture;
 
+        Color[] debugLevelColors = new Color[]
+        {
+            Color.White,
+            new Color(1, 0.2f, 0.2f, 1),
+            new Color(0.2f, 1, 0.2f, 1),
+            new Color(0.2f, 0.2f, 1, 1)
+        };
+
+        BoundingBoxDrawer boundingBoxDrawer;
+
+        BasicEffect debugEffect;
+
         public Vector3 TerrainOffset
         {
-            get { return selection.TerrainOffset; }
-            set { selection.TerrainOffset = value; }
+            get { return terrainOffset; }
+            set { terrainOffset = value; }
         }
 
         public float PatchScale
         {
-            get { return selection.PatchScale; }
-            set { selection.PatchScale = value; }
+            get { return patchScale; }
+            set { patchScale = value; }
         }
 
         public float HeightScale
         {
-            get { return selection.HeightScale; }
-            set { selection.HeightScale = value; }
+            get { return heightScale; }
+            set { heightScale = value; }
         }
 
         public Morph Morph
@@ -82,14 +107,7 @@ namespace TerrainDemo.CDLOD
         public Matrix View
         {
             get { return view; }
-            set
-            {
-                view = value;
-
-                Matrix inverse;
-                Matrix.Invert(ref view, out inverse);
-                selection.EyePosition = inverse.Translation;
-            }
+            set { view = value; }
         }
 
         public Matrix Projection
@@ -103,14 +121,10 @@ namespace TerrainDemo.CDLOD
             get { return selection.SelectedNodeCount; }
         }
 
-        public CDLODTerrain(GraphicsDevice graphicsDevice, ContentManager content, int heightMapSize)
+        public CDLODTerrain(GraphicsDevice graphicsDevice, ContentManager content)
         {
             GraphicsDevice = graphicsDevice;
             Content = content;
-            HeightMapSize = heightMapSize;
-
-            PatchScale = 1;
-            HeightScale = 50;
 
             lightDirection = new Vector3(0, -1, -1);
             lightDirection.Normalize();
@@ -120,55 +134,77 @@ namespace TerrainDemo.CDLOD
 
         public void Initialize(IHeightMapSource heightMap)
         {
-            if (heightMap.Size != HeightMapSize)
-                throw new ArgumentException("The size of heightMap is invalid.", "heightMap");
+            var createDescription = new CreateDescription
+            {
+                LeafNodeSize = leafNodeSize,
+                LevelCount = levelCount,
+                HeightMap = heightMap
+            };
 
-            quadTree = new QuadTree();
-            quadTree.Build(heightMap);
+            quadTree.Build(ref createDescription);
 
-            instanceVertexBuffer = new WritableVertexBuffer<PatchInstanceVertex>(GraphicsDevice, maxPatchCount * 2);
+            instanceVertexBuffer = new WritableVertexBuffer<PatchInstanceVertex>(GraphicsDevice, maxSelectedNodeCount * 2);
 
-            selection.MaxSelectedNodeCount = maxPatchCount;
-            selection.SelectedNodes = new SelectedNode[maxPatchCount];
+            selection.PatchScale = patchScale;
+            selection.HeightScale = heightScale;
+            selection.MaxSelectedNodeCount = maxSelectedNodeCount;
+            selection.TerrainOffset = terrainOffset;
+            selection.SelectedNodes = new SelectedNode[maxSelectedNodeCount];
 
             if (selection.Morph == null)
-                selection.Morph = new DefaultMorph(HeightMapSize);
+            {
+                var defaultMorph = new DefaultMorph(levelCount);
+                defaultMorph.VisibilityDistance = visibilityDistance;
+                defaultMorph.MorphStartRatio = morphStartRatio;
+                selection.Morph = defaultMorph;
+            }
 
             if (!selection.Morph.Initialized)
                 selection.Morph.Initialize();
-
-            float samplerWorldToTextureScale = (HeightMapSize - 1) / (float) HeightMapSize;
-            Vector3 terrainScale = new Vector3
-            {
-                X = (HeightMapSize - 1) * selection.PatchScale,
-                Y = HeightScale,
-                Z = (HeightMapSize - 1) * selection.PatchScale
-            };
 
             InitializeTextures(heightMap);
 
             sourceEffect = Content.Load<Effect>("CDLODTerrainEffect");
             effect = new CDLODTerrainEffect(sourceEffect);
-            effect.SamplerWorldToTextureScale = new Vector2(samplerWorldToTextureScale, samplerWorldToTextureScale);
-            effect.HeightMapTexelSize = 1 / (float) HeightMapSize;
-            effect.TerrainOffset = selection.TerrainOffset;
-            effect.TerrainScale = terrainScale;
+            effect.SamplerWorldToTextureScale = new Vector2
+            {
+                X = (heightMap.Width - 1) / (float) heightMap.Width,
+                Y = (heightMap.Height - 1) / (float) heightMap.Height
+            };
+            effect.HeightMapSize = new Vector2(heightMap.Width, heightMap.Height);
+            effect.HeightMapTexelSize = new Vector2
+            {
+                X = 1 / (float) heightMap.Width,
+                Y = 1 / (float) heightMap.Height
+            };
+            effect.TerrainOffset = terrainOffset;
+            effect.TerrainScale = new Vector3
+            {
+                X = (heightMap.Width - 1) * patchScale,
+                Y = heightScale,
+                Z = (heightMap.Height - 1) * patchScale
+            };
             effect.HeightMap = heightMapTexture;
+
+            boundingBoxDrawer = new BoundingBoxDrawer(GraphicsDevice);
+            debugEffect = new BasicEffect(GraphicsDevice);
+            debugEffect.AmbientLightColor = Vector3.One;
+            debugEffect.VertexColorEnabled = true;
         }
 
         void InitializeTextures(IHeightMapSource heightMap)
         {
-            heightMapTexture = new Texture2D(GraphicsDevice, HeightMapSize, HeightMapSize, false, SurfaceFormat.Single);
+            heightMapTexture = new Texture2D(GraphicsDevice, heightMap.Width, heightMap.Height, false, SurfaceFormat.Single);
 
-            var heights = new float[HeightMapSize * HeightMapSize];
-            for (int y = 0; y < HeightMapSize; y++)
+            var heights = new float[heightMap.Width * heightMap.Height];
+            for (int y = 0; y < heightMap.Height; y++)
             {
-                for (int x = 0; x < HeightMapSize; x++)
+                for (int x = 0; x < heightMap.Width; x++)
                 {
                     var height = heightMap.GetHeight(x, y);
                     // [-1, 1] -> [0, 1]
                     //height = (height + 1) * 0.5f;
-                    heights[x + y * HeightMapSize] = height;
+                    heights[x + y * heightMap.Width] = height;
                 }
             }
             heightMapTexture.SetData(heights);
@@ -178,9 +214,14 @@ namespace TerrainDemo.CDLOD
         {
             // 選択状態を初期化。
             selection.SelectedNodeCount = 0;
+            Matrix inverse;
+            Matrix.Invert(ref view, out inverse);
+            selection.EyePosition = inverse.Translation;
+            selection.Frustum.Matrix = view * projection;
 
-            if (!quadTree.Select(selection))
-                return;
+            quadTree.Select(selection);
+
+            if (selection.SelectedNodeCount == 0) return;
 
             for (int i = 0; i < selection.SelectedNodeCount; i++)
             {
@@ -194,6 +235,8 @@ namespace TerrainDemo.CDLOD
 
         public void Draw(GameTime gameTime)
         {
+            if (selection.SelectedNodeCount == 0) return;
+
             var offset = instanceVertexBuffer.SetData(instances, 0, selection.SelectedNodeCount);
 
             vertexBufferBindings[0] = new VertexBufferBinding(patchMesh.VertexBuffer, 0);
@@ -214,6 +257,23 @@ namespace TerrainDemo.CDLOD
             GraphicsDevice.DrawInstancedPrimitives(
                 PrimitiveType.TriangleList, 0, 0,
                 patchMesh.NumVertices, 0, patchMesh.PrimitiveCount, selection.SelectedNodeCount);
+
+            bool debug = true;
+            if (debug)
+            {
+                debugEffect.View = view;
+                debugEffect.Projection = projection;
+
+                BoundingBox box;
+                for (int i = 0; i < selection.SelectedNodeCount; i++)
+                {
+                    selection.SelectedNodes[i].GetBoundingBox(
+                        ref selection.TerrainOffset, selection.PatchScale, selection.HeightScale, out box);
+                    var level = selection.SelectedNodes[i].Level;
+                    level %= 4;
+                    boundingBoxDrawer.Draw(ref box, debugEffect, ref debugLevelColors[level]);
+                }
+            }
         }
 
         #region IDisposable

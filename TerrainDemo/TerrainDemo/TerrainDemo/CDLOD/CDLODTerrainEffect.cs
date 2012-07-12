@@ -61,6 +61,11 @@ namespace TerrainDemo.CDLOD
         EffectParameter samplerWorldToTextureScale;
 
         /// <summary>
+        /// HeightMapSize パラメータ。
+        /// </summary>
+        EffectParameter heightMapSize;
+
+        /// <summary>
         /// HeightMapTexelSize パラメータ。
         /// </summary>
         EffectParameter heightMapTexelSize;
@@ -136,9 +141,15 @@ namespace TerrainDemo.CDLOD
             set { samplerWorldToTextureScale.SetValue(value); }
         }
 
-        public float HeightMapTexelSize
+        public Vector2 HeightMapSize
         {
-            get { return heightMapTexelSize.GetValueSingle(); }
+            get { return heightMapSize.GetValueVector2(); }
+            set { heightMapSize.SetValue(value); }
+        }
+
+        public Vector2 HeightMapTexelSize
+        {
+            get { return heightMapTexelSize.GetValueVector2(); }
             set { heightMapTexelSize.SetValue(value); }
         }
 
@@ -186,6 +197,7 @@ namespace TerrainDemo.CDLOD
             terrainScale = backingEffect.Parameters["TerrainScale"];
 
             samplerWorldToTextureScale = backingEffect.Parameters["SamplerWorldToTextureScale"];
+            heightMapSize = backingEffect.Parameters["HeightMapSize"];
             heightMapTexelSize = backingEffect.Parameters["HeightMapTexelSize"];
 
             heightMap = backingEffect.Parameters["HeightMap"];
