@@ -17,9 +17,16 @@ float3 TerrainScale;
 float2 SamplerWorldToTextureScale;
 
 float2 HeightMapSize;
+float2 TwoHeightMapSize;
 // x = 1 / textureWidth
 // y = 1 / textureHeight
 float2 HeightMapTexelSize;
+float2 TwoHeightMapTexelSize;
+
+// オリジナルの g_gridDim.y
+float OneOverPatchGridSize;
+// オリジナルの g_gridDim.z
+float TwoOverPatchGridSize;
 
 texture HeightMap;
 sampler HeightMapSampler = sampler_state
@@ -63,7 +70,9 @@ float2 CalculateGlobalUV(float4 vertex)
 
 float2 MorphVertex(float4 position, float2 vertex, float4 quadScale, float morphLerpK)
 {
-    float2 fracPart = frac(position.xz) * quadScale.xz;
+    float2 fracPart = frac(position.xz * float2(OneOverPatchGridSize, OneOverPatchGridSize));
+    fracPart *= float2(TwoOverPatchGridSize, TwoOverPatchGridSize);
+    fracPart *= quadScale.xz;
     return vertex - fracPart * morphLerpK;
 }
 
@@ -108,13 +117,10 @@ float4 VSCalculateNormal(float2 texCoord)
     float e = SampleHeightMap(texCoord + float2(-HeightMapTexelSize.y, 0));
     float w = SampleHeightMap(texCoord + float2( HeightMapTexelSize.y, 0));
 
-    float2 twoTexel = HeightMapTexelSize * 2;
-    float2 divisor = float2(1, 1) / twoTexel;
-
-    float3 sn = float3(0, (s - n) * TerrainScale.y, -twoTexel.y);
-    float3 ew = float3(-twoTexel.x, (e - w) * TerrainScale.y, 0);
-    sn *= divisor.y;
-    ew *= divisor.x;
+    float3 sn = float3(0, (s - n) * TerrainScale.y, -TwoHeightMapTexelSize.y);
+    float3 ew = float3(-TwoHeightMapTexelSize.x, (e - w) * TerrainScale.y, 0);
+    sn *= TwoHeightMapSize.y;
+    ew *= TwoHeightMapSize.x;
     sn = normalize(sn);
     ew = normalize(ew);
 

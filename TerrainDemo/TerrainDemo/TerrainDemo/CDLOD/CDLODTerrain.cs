@@ -25,6 +25,9 @@ namespace TerrainDemo.CDLOD
         // leafNodeSize は 2 の自乗でなければならない。
         int leafNodeSize = 8;
 
+        // patchSize = leafNodeSize * patchResolution;
+        int patchResolution = 4;
+
         int levelCount = 7;
 
         float patchScale = 2;
@@ -128,8 +131,6 @@ namespace TerrainDemo.CDLOD
 
             lightDirection = new Vector3(0, -1, -1);
             lightDirection.Normalize();
-
-            patchMesh = new PatchMesh(graphicsDevice);
         }
 
         public void Initialize(IHeightMapSource heightMap)
@@ -164,19 +165,10 @@ namespace TerrainDemo.CDLOD
 
             InitializeTextures(heightMap);
 
+            patchMesh = new PatchMesh(GraphicsDevice, leafNodeSize * patchResolution);
+
             sourceEffect = Content.Load<Effect>("CDLODTerrainEffect");
             effect = new CDLODTerrainEffect(sourceEffect);
-            effect.SamplerWorldToTextureScale = new Vector2
-            {
-                X = (heightMap.Width - 1) / (float) heightMap.Width,
-                Y = (heightMap.Height - 1) / (float) heightMap.Height
-            };
-            effect.HeightMapSize = new Vector2(heightMap.Width, heightMap.Height);
-            effect.HeightMapTexelSize = new Vector2
-            {
-                X = 1 / (float) heightMap.Width,
-                Y = 1 / (float) heightMap.Height
-            };
             effect.TerrainOffset = terrainOffset;
             effect.TerrainScale = new Vector3
             {
@@ -185,6 +177,7 @@ namespace TerrainDemo.CDLOD
                 Z = (heightMap.Height - 1) * patchScale
             };
             effect.HeightMap = heightMapTexture;
+            effect.PatchGridSize = patchMesh.GridSize;
 
             boundingBoxDrawer = new BoundingBoxDrawer(GraphicsDevice);
             debugEffect = new BasicEffect(GraphicsDevice);

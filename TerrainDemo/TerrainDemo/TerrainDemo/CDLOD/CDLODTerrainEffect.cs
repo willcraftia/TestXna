@@ -66,14 +66,36 @@ namespace TerrainDemo.CDLOD
         EffectParameter heightMapSize;
 
         /// <summary>
+        /// TwoHeightMapSize パラメータ。
+        /// </summary>
+        EffectParameter twoHeightMapSize;
+
+        /// <summary>
         /// HeightMapTexelSize パラメータ。
         /// </summary>
         EffectParameter heightMapTexelSize;
 
         /// <summary>
+        /// TwoHeightMapTexelSize パラメータ。
+        /// </summary>
+        EffectParameter twoHeightMapTexelSize;
+
+        /// <summary>
+        /// OneOverPatchGridSize パラメータ。
+        /// </summary>
+        EffectParameter oneOverPatchGridSize;
+
+        /// <summary>
+        /// TwoOverPatchGridSize パラメータ。
+        /// </summary>
+        EffectParameter twoOverPatchGridSize;
+
+        /// <summary>
         /// HeightMap パラメータ。
         /// </summary>
         EffectParameter heightMap;
+
+        float patchGridSize;
 
         // I/F
         public Matrix World
@@ -135,28 +157,50 @@ namespace TerrainDemo.CDLOD
             set { terrainScale.SetValue(value); }
         }
 
-        public Vector2 SamplerWorldToTextureScale
-        {
-            get { return samplerWorldToTextureScale.GetValueVector2(); }
-            set { samplerWorldToTextureScale.SetValue(value); }
-        }
-
-        public Vector2 HeightMapSize
-        {
-            get { return heightMapSize.GetValueVector2(); }
-            set { heightMapSize.SetValue(value); }
-        }
-
-        public Vector2 HeightMapTexelSize
-        {
-            get { return heightMapTexelSize.GetValueVector2(); }
-            set { heightMapTexelSize.SetValue(value); }
-        }
-
         public Texture2D HeightMap
         {
             get { return heightMap.GetValueTexture2D(); }
-            set { heightMap.SetValue(value); }
+            set
+            {
+                heightMap.SetValue(value);
+
+                // heightMapSize
+                // twoHeightMapSize
+                var size = new Vector2(value.Width, value.Height);
+                heightMapSize.SetValue(size);
+                twoHeightMapSize.SetValue(2 * size);
+
+                // heightMapTexelSize
+                // twoHeightMapTexelSize
+                var texelSize = new Vector2
+                {
+                    X = 1 / size.X,
+                    Y = 1 / size.Y
+                };
+                heightMapTexelSize.SetValue(texelSize);
+                twoHeightMapTexelSize.SetValue(2 * texelSize);
+
+                // samplerWorldToTextureScale
+                var worldToTextureScale = new Vector2
+                {
+                    X = (size.X - 1) * texelSize.X,
+                    Y = (size.Y - 1) * texelSize.Y
+                };
+                samplerWorldToTextureScale.SetValue(worldToTextureScale);
+            }
+        }
+
+        public float PatchGridSize
+        {
+            get { return patchGridSize; }
+            set
+            {
+                patchGridSize = value;
+
+                var inverse = 1 / (float) value;
+                oneOverPatchGridSize.SetValue(inverse);
+                twoOverPatchGridSize.SetValue(2 * inverse);
+            }
         }
 
         /// <summary>
@@ -198,7 +242,12 @@ namespace TerrainDemo.CDLOD
 
             samplerWorldToTextureScale = backingEffect.Parameters["SamplerWorldToTextureScale"];
             heightMapSize = backingEffect.Parameters["HeightMapSize"];
+            twoHeightMapSize = backingEffect.Parameters["TwoHeightMapSize"];
             heightMapTexelSize = backingEffect.Parameters["HeightMapTexelSize"];
+            twoHeightMapTexelSize = backingEffect.Parameters["TwoHeightMapTexelSize"];
+
+            oneOverPatchGridSize = backingEffect.Parameters["OneOverPatchGridSize"];
+            twoOverPatchGridSize = backingEffect.Parameters["TwoOverPatchGridSize"];
 
             heightMap = backingEffect.Parameters["HeightMap"];
         }
