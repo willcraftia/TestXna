@@ -81,9 +81,9 @@ namespace TerrainDemo.CDLOD
         EffectParameter twoHeightMapTexelSize;
 
         /// <summary>
-        /// OneOverPatchGridSize パラメータ。
+        /// HalfPatchGridSize パラメータ。
         /// </summary>
-        EffectParameter oneOverPatchGridSize;
+        EffectParameter halfPatchGridSize;
 
         /// <summary>
         /// TwoOverPatchGridSize パラメータ。
@@ -197,9 +197,8 @@ namespace TerrainDemo.CDLOD
             {
                 patchGridSize = value;
 
-                var inverse = 1 / (float) value;
-                oneOverPatchGridSize.SetValue(inverse);
-                twoOverPatchGridSize.SetValue(2 * inverse);
+                halfPatchGridSize.SetValue(patchGridSize * 0.5f);
+                twoOverPatchGridSize.SetValue(2 / patchGridSize);
             }
         }
 
@@ -246,7 +245,7 @@ namespace TerrainDemo.CDLOD
             heightMapTexelSize = backingEffect.Parameters["HeightMapTexelSize"];
             twoHeightMapTexelSize = backingEffect.Parameters["TwoHeightMapTexelSize"];
 
-            oneOverPatchGridSize = backingEffect.Parameters["OneOverPatchGridSize"];
+            halfPatchGridSize = backingEffect.Parameters["HalfPatchGridSize"];
             twoOverPatchGridSize = backingEffect.Parameters["TwoOverPatchGridSize"];
 
             heightMap = backingEffect.Parameters["HeightMap"];

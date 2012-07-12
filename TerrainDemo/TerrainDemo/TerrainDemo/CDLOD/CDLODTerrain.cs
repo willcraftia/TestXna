@@ -12,11 +12,11 @@ namespace TerrainDemo.CDLOD
 {
     public sealed class CDLODTerrain : IDisposable
     {
-        const int maxSelectedNodeCount = 20000;
+        const int maxSelectedNodeCount = 4000;
 
-        const float visibilityDistance = 30000;
+        const float visibilityDistance = 20000;
 
-        const float morphStartRatio = 0.5f;
+        const float morphStartRatio = 0.66f;
 
         public GraphicsDevice GraphicsDevice { get; private set; }
 
@@ -26,7 +26,7 @@ namespace TerrainDemo.CDLOD
         int leafNodeSize = 8;
 
         // patchSize = leafNodeSize * patchResolution;
-        int patchResolution = 4;
+        int patchResolution = 2;
 
         int levelCount = 7;
 

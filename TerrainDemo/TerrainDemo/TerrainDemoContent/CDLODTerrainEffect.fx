@@ -24,7 +24,7 @@ float2 HeightMapTexelSize;
 float2 TwoHeightMapTexelSize;
 
 // オリジナルの g_gridDim.y
-float OneOverPatchGridSize;
+float HalfPatchGridSize;
 // オリジナルの g_gridDim.z
 float TwoOverPatchGridSize;
 
@@ -70,7 +70,7 @@ float2 CalculateGlobalUV(float4 vertex)
 
 float2 MorphVertex(float4 position, float2 vertex, float4 quadScale, float morphLerpK)
 {
-    float2 fracPart = frac(position.xz * float2(OneOverPatchGridSize, OneOverPatchGridSize));
+    float2 fracPart = frac(position.xz * float2(HalfPatchGridSize, HalfPatchGridSize));
     fracPart *= float2(TwoOverPatchGridSize, TwoOverPatchGridSize);
     fracPart *= quadScale.xz;
     return vertex - fracPart * morphLerpK;
