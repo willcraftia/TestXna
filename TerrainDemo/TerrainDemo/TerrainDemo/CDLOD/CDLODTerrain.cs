@@ -54,7 +54,6 @@ namespace TerrainDemo.CDLOD
         Vector3 diffuseLightColor = Vector3.One;
 
         Texture2D heightMapTexture;
-        Texture2D normalMapTexture;
 
         public Vector3 TerrainOffset
         {
@@ -155,16 +154,13 @@ namespace TerrainDemo.CDLOD
             effect.TerrainOffset = selection.TerrainOffset;
             effect.TerrainScale = terrainScale;
             effect.HeightMap = heightMapTexture;
-            effect.NormalMap = normalMapTexture;
         }
 
         void InitializeTextures(IHeightMapSource heightMap)
         {
             heightMapTexture = new Texture2D(GraphicsDevice, HeightMapSize, HeightMapSize, false, SurfaceFormat.Single);
-            normalMapTexture = new Texture2D(GraphicsDevice, HeightMapSize, HeightMapSize, false, SurfaceFormat.Color);
 
             var heights = new float[HeightMapSize * HeightMapSize];
-            var colors = new Color[HeightMapSize * HeightMapSize];
             for (int y = 0; y < HeightMapSize; y++)
             {
                 for (int x = 0; x < HeightMapSize; x++)
@@ -173,12 +169,9 @@ namespace TerrainDemo.CDLOD
                     // [-1, 1] -> [0, 1]
                     //height = (height + 1) * 0.5f;
                     heights[x + y * HeightMapSize] = height;
-
-                    colors[x + y * HeightMapSize].R = (byte) (height * 255);
                 }
             }
             heightMapTexture.SetData(heights);
-            normalMapTexture.SetData(colors);
         }
 
         public void Update(GameTime gameTime)
@@ -245,6 +238,7 @@ namespace TerrainDemo.CDLOD
             if (disposing)
             {
                 if (sourceEffect != null) sourceEffect.Dispose();
+                if (heightMapTexture != null) heightMapTexture.Dispose();
             }
 
             disposed = true;

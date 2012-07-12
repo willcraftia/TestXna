@@ -70,11 +70,6 @@ namespace TerrainDemo.CDLOD
         /// </summary>
         EffectParameter heightMap;
 
-        /// <summary>
-        /// NormalMap パラメータ。
-        /// </summary>
-        EffectParameter normalMap;
-
         // I/F
         public Matrix World
         {
@@ -153,12 +148,6 @@ namespace TerrainDemo.CDLOD
             set { heightMap.SetValue(value); }
         }
 
-        public Texture2D NormalMap
-        {
-            get { return normalMap.GetValueTexture2D(); }
-            set { normalMap.SetValue(value); }
-        }
-
         /// <summary>
         /// インスタンスを生成します。
         /// backingEffect の共有を発生させたくない場合は、呼び出し元で Effect の複製を設定してください。
@@ -200,7 +189,6 @@ namespace TerrainDemo.CDLOD
             heightMapTexelSize = backingEffect.Parameters["HeightMapTexelSize"];
 
             heightMap = backingEffect.Parameters["HeightMap"];
-            normalMap = backingEffect.Parameters["NormalMap"];
         }
     }
 }
