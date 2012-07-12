@@ -208,6 +208,7 @@ namespace TerrainDemo.CDLOD
 
             GraphicsDevice.SetVertexBuffers(vertexBufferBindings);
             GraphicsDevice.Indices = patchMesh.IndexBuffer;
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
             // Effect
             effect.View = view;

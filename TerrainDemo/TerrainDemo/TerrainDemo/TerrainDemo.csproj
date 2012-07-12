@@ -120,6 +120,11 @@
     <Compile Include="CDLOD\Selection.cs" />
     <Compile Include="CDLOD\Morph.cs" />
     <Compile Include="CDLOD\VertexPosition.cs" />
+    <Compile Include="Framework\Debug\DebugHorizontalAlignment.cs" />
+    <Compile Include="Framework\Debug\DebugLayout.cs" />
+    <Compile Include="Framework\Debug\DebugVerticalAlignment.cs" />
+    <Compile Include="Framework\Debug\FpsCounter.cs" />
+    <Compile Include="Framework\Graphics\Texture2DHelper.cs" />
     <Compile Include="Framework\Graphics\WritableVertexBuffer.cs" />
     <Compile Include="LOD\BoundingRect.cs" />
     <Compile Include="LOD\ClippingFrustrum.cs" />

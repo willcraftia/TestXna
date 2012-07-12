@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TerrainDemo.Framework.Cameras;
+using TerrainDemo.Framework.Debug;
 using TerrainDemo.Cameras;
 using TerrainDemo.CDLOD;
 using TerrainDemo.Noise;
@@ -16,11 +17,11 @@ namespace TerrainDemo
 {
     public class TerrainDemoGame : Game
     {
-        const int heightMapSize = 512 + 1;
+        const int heightMapSize = 512 * 2 + 1;
 
-        const float noiseSampleWidth = 10;
+        const float noiseSampleWidth = 20;
         
-        const float noiseSampleHeight = 10;
+        const float noiseSampleHeight = 20;
 
         GraphicsDeviceManager graphics;
 
@@ -69,7 +70,13 @@ namespace TerrainDemo
             wireframeRasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
             wireframeRasterizerState.FillMode = FillMode.WireFrame;
 
-            IsFixedTimeStep = false;
+            //IsFixedTimeStep = false;
+
+            var fpsCounter = new FpsCounter(this);
+            fpsCounter.Content.RootDirectory = "Content";
+            fpsCounter.HorizontalAlignment = DebugHorizontalAlignment.Right;
+            fpsCounter.SampleSpan = TimeSpan.FromSeconds(2);
+            Components.Add(fpsCounter);
 
             base.Initialize();
         }
@@ -103,7 +110,7 @@ namespace TerrainDemo
 
             if (keyboardState.IsKeyUp(Keys.F1) && lastKeyboardState.IsKeyDown(Keys.F1))
             {
-                GraphicsDevice.RasterizerState = isWireframe ? defaultRasterizerState : wireframeRasterizerState;
+                //GraphicsDevice.RasterizerState = isWireframe ? defaultRasterizerState : wireframeRasterizerState;
                 isWireframe = !isWireframe;
             }
 
@@ -133,6 +140,8 @@ namespace TerrainDemo
         {
             //GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.Clear(Color.Black);
+
+            GraphicsDevice.RasterizerState = isWireframe ? wireframeRasterizerState : defaultRasterizerState;
 
             //quadTree.Draw(gameTime);
             terrain.Draw(gameTime);

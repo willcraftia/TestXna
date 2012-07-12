@@ -216,15 +216,15 @@ float4 PS(VS_OUTPUT input) : COLOR0
     return color;*/
 
 // デバッグ。
-    float3 normal = CalculateNormal(input.TexCoord);
+/*    float3 normal = CalculateNormal(input.TexCoord);
     float intensity = cross(normalize(LightDirection), normal);
     float4 color = input.Color;
     color.rgb *= 0.5;
     color.rgb += intensity * 0.5;
-    return color;
+    return color;*/
 
 // デバッグ。
-//    return input.Color;
+    return input.Color;
 }
 
 //=============================================================================
