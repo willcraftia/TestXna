@@ -3,6 +3,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TerrainDemo.Noise;
 
 #endregion
 
@@ -59,7 +60,7 @@ namespace TerrainDemo.LOD
         public ViewClipShape ClipShape;
         internal Vector3[] VFCorners = new Vector3[8];
 
-        public QuadTree(GraphicsDevice graphicsDevice, Vector3 position, HeightMap heightMap, Matrix view, Matrix projection, Vector3 scale)
+        public QuadTree(GraphicsDevice graphicsDevice, Vector3 position, NoiseMap heightMap, Matrix view, Matrix projection, Vector3 scale)
         {
             this.graphicsDevice = graphicsDevice;
             this.position = position;

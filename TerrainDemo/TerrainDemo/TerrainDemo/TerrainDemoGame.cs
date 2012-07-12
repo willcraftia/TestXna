@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TerrainDemo.Framework.Cameras;
 using TerrainDemo.Cameras;
-using TerrainDemo.LOD;
+using TerrainDemo.CDLOD;
 using TerrainDemo.Noise;
 
 #endregion
@@ -16,11 +16,7 @@ namespace TerrainDemo
 {
     public class TerrainDemoGame : Game
     {
-        const int heightMapSize = 1024 + 1;
-
-        const int heightMapCountX = 1;
-
-        const int heightMapCountY = 1;
+        const int heightMapSize = 512 + 1;
 
         const float noiseSampleWidth = 10;
         
@@ -34,23 +30,19 @@ namespace TerrainDemo
 
         SumFractal sumFractal = new SumFractal();
 
-        HeightMap[,] heightMaps = new HeightMap[heightMapCountX, heightMapCountY];
-
         FreeView view = new FreeView();
 
         PerspectiveFov projection = new PerspectiveFov();
 
         FreeViewInput freeViewInput = new FreeViewInput();
 
-        Vector3 terrainScale = new Vector3(1, 50, 1);
-
-        QuadTree quadTree;
-
         bool isWireframe;
 
         RasterizerState defaultRasterizerState = new RasterizerState();
 
         RasterizerState wireframeRasterizerState = new RasterizerState();
+
+        CDLODTerrain terrain;
 
         public TerrainDemoGame()
         {
@@ -70,6 +62,8 @@ namespace TerrainDemo
             freeViewInput.InitialMousePositionY = viewport.Height / 2;
             freeViewInput.FreeView = view;
 
+            view.Position = new Vector3(50, 30, 50);
+
             defaultRasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
             defaultRasterizerState.FillMode = FillMode.Solid;
             wireframeRasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
@@ -83,22 +77,17 @@ namespace TerrainDemo
         protected override void LoadContent()
         {
             // ÉmÉCÉYÇ©ÇÁ height map Çê∂ê¨ÅB
-            for (int i = 0; i < heightMapCountX; i++)
-            {
-                for (int j = 0; j < heightMapCountY; j++)
-                {
-                    var map = new HeightMap();
-                    map.GetValue2 = (x, y) => { return sumFractal.GetValue(x, 0, y); };
-                    map.Size = heightMapSize;
-                    map.SetBounds(noiseSampleWidth * i, noiseSampleHeight * j, noiseSampleWidth, noiseSampleHeight);
-                    map.Build();
+            var noiseMap = new NoiseMap();
+            noiseMap.GetValue2 = (x, y) => { return sumFractal.GetValue(x, 0, y); };
+            noiseMap.Size = heightMapSize;
+            noiseMap.SetBounds(0, 0, noiseSampleWidth, noiseSampleHeight);
+            noiseMap.Build();
 
-                    heightMaps[i, j] = map;
-                }
-            }
+            var heightMap = new DefaultHeightMapSource(noiseMap);
 
-            quadTree = new QuadTree(GraphicsDevice, Vector3.Zero, heightMaps[0, 0], view.Matrix, projection.Matrix, terrainScale);
-            quadTree.Effect.Texture = Content.Load<Texture2D>("jigsaw");
+            terrain = new CDLODTerrain(GraphicsDevice, Content, heightMapSize);
+            terrain.PatchScale = 2;
+            terrain.Initialize(heightMap);
         }
 
         protected override void UnloadContent()
@@ -118,19 +107,24 @@ namespace TerrainDemo
                 isWireframe = !isWireframe;
             }
 
-            if (keyboardState.IsKeyUp(Keys.F2) && lastKeyboardState.IsKeyDown(Keys.F2))
-                quadTree.Cull = !quadTree.Cull;
+            //if (keyboardState.IsKeyUp(Keys.F2) && lastKeyboardState.IsKeyDown(Keys.F2))
+            //    quadTree.Cull = !quadTree.Cull;
 
             lastKeyboardState = keyboardState;
 
             view.Update();
             projection.Update();
 
-            quadTree.View = view.Matrix;
-            quadTree.Projection = projection.Matrix;
-            quadTree.Update(gameTime);
+            terrain.View = view.Matrix;
+            terrain.Projection = projection.Matrix;
+            terrain.Update(gameTime);
 
-            Window.Title = string.Format("Triangles Rendered: {0} - Culling Enabled: {1}", quadTree.IndexCount / 3, quadTree.Cull);
+            //quadTree.View = view.Matrix;
+            //quadTree.Projection = projection.Matrix;
+            //quadTree.Update(gameTime);
+
+            Window.Title = string.Format("Selected nodes: {0}", terrain.SelectedNodeCount);
+            //Window.Title = string.Format("Triangles Rendered: {0} - Culling Enabled: {1}", quadTree.IndexCount / 3, quadTree.Cull);
 
             base.Update(gameTime);
         }
@@ -140,7 +134,8 @@ namespace TerrainDemo
             //GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.Clear(Color.Black);
 
-            quadTree.Draw(gameTime);
+            //quadTree.Draw(gameTime);
+            terrain.Draw(gameTime);
 
             base.Draw(gameTime);
         }

@@ -4,12 +4,12 @@ using System;
 
 #endregion
 
-namespace TerrainDemo
+namespace TerrainDemo.Noise
 {
     /// <summary>
     /// Height map を管理するクラスです。
     /// </summary>
-    public sealed class HeightMap
+    public sealed class NoiseMap
     {
         public delegate float DelegateGetValue2(float x, float y);
 
@@ -59,7 +59,7 @@ namespace TerrainDemo
         /// <summary>
         /// インスタンスを生成します。
         /// </summary>
-        public HeightMap()
+        public NoiseMap()
         {
             Size = defaultSize;
         }

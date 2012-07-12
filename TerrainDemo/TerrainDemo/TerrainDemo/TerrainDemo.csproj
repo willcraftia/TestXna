@@ -107,6 +107,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CDLOD\CDLODTerrain.cs" />
+    <Compile Include="CDLOD\CDLODTerrainEffect.cs" />
+    <Compile Include="CDLOD\DefaultHeightMapSource.cs" />
+    <Compile Include="CDLOD\DefaultMorph.cs" />
+    <Compile Include="CDLOD\PatchInstanceVertex.cs" />
+    <Compile Include="CDLOD\PatchMesh.cs" />
+    <Compile Include="CDLOD\IHeightMapSource.cs" />
+    <Compile Include="CDLOD\Node.cs" />
+    <Compile Include="CDLOD\QuadTree.cs" />
+    <Compile Include="CDLOD\SelectedNode.cs" />
+    <Compile Include="CDLOD\Selection.cs" />
+    <Compile Include="CDLOD\Morph.cs" />
+    <Compile Include="CDLOD\VertexPosition.cs" />
+    <Compile Include="Framework\Graphics\WritableVertexBuffer.cs" />
     <Compile Include="LOD\BoundingRect.cs" />
     <Compile Include="LOD\ClippingFrustrum.cs" />
     <Compile Include="LOD\ClipPlane.cs" />
@@ -115,7 +129,7 @@
     <Compile Include="Noise\Fractal.cs" />
     <Compile Include="Cameras\FreeViewInput.cs" />
     <Compile Include="HeightColorCollection.cs" />
-    <Compile Include="HeightMap.cs" />
+    <Compile Include="Noise\NoiseMap.cs" />
     <Compile Include="Noise\ImprovedPerlinNoise.cs" />
     <Compile Include="LOD\Intersection.cs" />
     <Compile Include="Framework\Cameras\PerspectiveFov.cs" />

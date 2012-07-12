@@ -3,6 +3,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TerrainDemo.Noise;
 
 #endregion
 
@@ -16,7 +17,7 @@ namespace TerrainDemo.NoLOD
 
         float bumpiness = 64;
 
-        HeightMap heightMap;
+        NoiseMap heightMap;
 
         HeightColorCollection heightColors = new HeightColorCollection();
 
@@ -24,7 +25,7 @@ namespace TerrainDemo.NoLOD
 
         int[] indices;
 
-        public HeightMap HeightMap
+        public NoiseMap HeightMap
         {
             get { return heightMap; }
             set { heightMap = value; }

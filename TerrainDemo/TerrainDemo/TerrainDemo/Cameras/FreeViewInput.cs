@@ -25,7 +25,7 @@ namespace TerrainDemo.Cameras
         public FreeViewInput()
         {
             RotationVelocity = 0.3f;
-            MoveVelocity = 100;
+            MoveVelocity = 30;
         }
 
         public void Initialize(int initialMousePositionX, int initialMousePositionY)

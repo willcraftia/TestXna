@@ -3,6 +3,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TerrainDemo.Noise;
 
 #endregion
 
@@ -22,7 +23,7 @@ namespace TerrainDemo.LOD
 
         int heightMapSize;
 
-        public TreeVertexCollection(Vector3 position, HeightMap heightMap, Vector3 scale)
+        public TreeVertexCollection(Vector3 position, NoiseMap heightMap, Vector3 scale)
         {
             this.position = position;
             this.scale = scale;
@@ -38,7 +39,7 @@ namespace TerrainDemo.LOD
             CalculateNormals();
         }
 
-        void BuildVertices(HeightMap heightMap)
+        void BuildVertices(NoiseMap heightMap)
         {
             var x = position.X;
             var y = position.Y;
