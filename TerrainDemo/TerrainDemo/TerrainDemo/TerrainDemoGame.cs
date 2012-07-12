@@ -117,8 +117,8 @@ namespace TerrainDemo
                 isWireframe = !isWireframe;
             }
 
-            //if (keyboardState.IsKeyUp(Keys.F2) && lastKeyboardState.IsKeyDown(Keys.F2))
-            //    quadTree.Cull = !quadTree.Cull;
+            if (keyboardState.IsKeyUp(Keys.F2) && lastKeyboardState.IsKeyDown(Keys.F2))
+                terrain.DebugNodeBoundingBoxVisible = !terrain.DebugNodeBoundingBoxVisible;
 
             lastKeyboardState = keyboardState;
 

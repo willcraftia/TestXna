@@ -14,7 +14,7 @@ namespace TerrainDemo.CDLOD
     {
         const int maxSelectedNodeCount = 4000;
 
-        const float visibilityDistance = 20000;
+        const float visibilityDistance = 10000;
 
         const float morphStartRatio = 0.66f;
 
@@ -123,6 +123,8 @@ namespace TerrainDemo.CDLOD
         {
             get { return selection.SelectedNodeCount; }
         }
+
+        public bool DebugNodeBoundingBoxVisible { get; set; }
 
         public CDLODTerrain(GraphicsDevice graphicsDevice, ContentManager content)
         {
@@ -251,8 +253,7 @@ namespace TerrainDemo.CDLOD
                 PrimitiveType.TriangleList, 0, 0,
                 patchMesh.NumVertices, 0, patchMesh.PrimitiveCount, selection.SelectedNodeCount);
 
-            bool debug = true;
-            if (debug)
+            if (DebugNodeBoundingBoxVisible)
             {
                 debugEffect.View = view;
                 debugEffect.Projection = projection;

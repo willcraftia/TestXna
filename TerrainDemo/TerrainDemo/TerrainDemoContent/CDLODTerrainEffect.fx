@@ -28,6 +28,18 @@ float HalfPatchGridSize;
 // オリジナルの g_gridDim.z
 float TwoOverPatchGridSize;
 
+float4 heightColorIndices[] =
+{
+    { 0,       0,       0.5f,    1 },
+    { 0,       0,       1,       1 },
+    { 0,       0.5f,    1,       1 },
+    { 0.9411f, 0.9411f, 0.2509f, 1 },
+    { 0.1254f, 0.6274f, 0,       1 },
+    { 0.8784f, 0.8784f, 0,       1 },
+    { 0.2509f, 0.2509f, 0.2509f, 1 },
+    { 1,       1,       1,       1 }
+};
+
 texture HeightMap;
 sampler HeightMapSampler = sampler_state
 {
@@ -55,6 +67,7 @@ struct VS_OUTPUT
     float3 EyeDirection : TEXCOORD1;
 // デバッグ用。
     float4 Color : COLOR;
+    float Height : TEXCOORD2;
 };
 
 //=============================================================================
@@ -165,7 +178,8 @@ VS_OUTPUT VS(
 
     // モーフィング結果で高さを再取得。
     float2 globalUV = CalculateGlobalUV(vertex);
-    vertex.y = SampleHeightMap(globalUV);
+    float h = SampleHeightMap(globalUV);
+    vertex.y = h;
     vertex.y *= TerrainScale.y;
     vertex.y += TerrainOffset.y;
     vertex.w = 1;
@@ -178,15 +192,30 @@ VS_OUTPUT VS(
     output.Normal = VSCalculateNormal(globalUV);
 
 // デバッグ。
-    output.Color = float4(0, 0, 0, 1);
-    level %= 3;
+/*    output.Color = float4(0, 0, 0, 1);
+    level %= 4;
     if (0 == level)
-        output.Color.r = 1;
+        output.Color.rgb = 1;
     else if (1 == level)
-        output.Color.g = 1;
+        output.Color.r = 1;
     else if (2 == level)
-        output.Color.b = 1;
+        output.Color.g = 1;
+    else if (3 == level)
+        output.Color.b = 1;*/
 
+// デバッグ。
+    output.Height = h;
+    output.Color = 1;
+/*    int colorIndex = 6;
+    if (h < -0.2500f) colorIndex = 0;
+    else if (h < 0.0000f) colorIndex = 1;
+    else if (h < 0.0625f) colorIndex = 2;
+    else if (h < 0.1250f) colorIndex = 3;
+    else if (h < 0.3750f) colorIndex = 4;
+    else if (h < 0.7500f) colorIndex = 5;
+    else if (h < 1.0000f) colorIndex = 6;
+
+    output.Color = heightColorIndices[colorIndex];*/
     return output;
 }
 
@@ -232,9 +261,26 @@ float4 PS(VS_OUTPUT input) : COLOR0
     float4 color = float4(AmbientLightColor + input.Color * DiffuseLightColor * directionalLight, 1);
     return color;*/
 
+    int colorIndex = 6;
+    float h = input.Height;
+    if (h < -0.2500f) colorIndex = 0;
+    else if (h < 0.0000f) colorIndex = 1;
+    else if (h < 0.0625f) colorIndex = 2;
+    else if (h < 0.1250f) colorIndex = 3;
+    else if (h < 0.3750f) colorIndex = 4;
+    else if (h < 0.7500f) colorIndex = 5;
+    else if (h < 1.0000f) colorIndex = 6;
+
+    float4 c = heightColorIndices[colorIndex];
+    float3 normal = input.Normal.xyz;
+    float directionalLight = CalculateDirectionalLight(normal, normalize(LightDirection), normalize(input.EyeDirection), 16, 0);
+    float4 color = float4(AmbientLightColor + c * DiffuseLightColor * directionalLight, 1);
+    return color;
+
+
 // デバッグ。
 //    return input.Color;
-    return float4(0, 0, 0, 1);
+//    return float4(0, 0, 0, 1);
 }
 
 //=============================================================================
