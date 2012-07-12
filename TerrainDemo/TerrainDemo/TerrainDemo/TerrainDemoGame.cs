@@ -19,9 +19,9 @@ namespace TerrainDemo
     {
         const int heightMapSize = 512 * 2 + 1;
 
-        const float noiseSampleWidth = 20;
+        const float noiseSampleWidth = 10;
         
-        const float noiseSampleHeight = 20;
+        const float noiseSampleHeight = 10;
 
         GraphicsDeviceManager graphics;
 
@@ -64,6 +64,7 @@ namespace TerrainDemo
             freeViewInput.FreeView = view;
 
             view.Position = new Vector3(50, 30, 50);
+            projection.FarPlaneDistance = 10000;
 
             defaultRasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
             defaultRasterizerState.FillMode = FillMode.Solid;
@@ -138,8 +139,8 @@ namespace TerrainDemo
 
         protected override void Draw(GameTime gameTime)
         {
-            //GraphicsDevice.Clear(Color.CornflowerBlue);
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+            //GraphicsDevice.Clear(Color.Black);
 
             GraphicsDevice.RasterizerState = isWireframe ? wireframeRasterizerState : defaultRasterizerState;
 

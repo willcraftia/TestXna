@@ -113,7 +113,7 @@ namespace TerrainDemo.CDLOD
             PatchScale = 1;
             HeightScale = 50;
 
-            lightDirection = new Vector3(1, -1, 1);
+            lightDirection = new Vector3(0, -1, -1);
             lightDirection.Normalize();
 
             patchMesh = new PatchMesh(graphicsDevice);

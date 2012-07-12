@@ -51,6 +51,7 @@ struct VS_INPUT
 struct VS_OUTPUT
 {
     float4 Position : POSITION0;
+    float4 Normal : NORMAL0;
     float2 TexCoord : TEXCOORD0;
     float3 EyeDirection : TEXCOORD1;
 // デバッグ用。
@@ -99,6 +100,30 @@ float SampleHeightMap(float2 uv)
     return lerp( tA, tB, f.y );*/
 }
 
+float4 VSCalculateNormal(float2 texCoord)
+{
+// From http://graphics.ethz.ch/teaching/gamelab11/course_material/lecture06/XNA_Shaders_Terrain.pdf
+    float n = tex2Dlod(HeightMapSampler, float4( texCoord + float2(0, -HeightMapTexelSize), 0, 1) ).x;
+    float s = tex2Dlod(HeightMapSampler, float4( texCoord + float2(0,  HeightMapTexelSize), 0, 1) ).x;
+    float e = tex2Dlod(HeightMapSampler, float4( texCoord + float2(-HeightMapTexelSize, 0), 0, 1) ).x;
+    float w = tex2Dlod(HeightMapSampler, float4( texCoord + float2( HeightMapTexelSize, 0), 0, 1) ).x;
+
+    float twoTexel = HeightMapTexelSize * 2;
+    float divisor = 1 / twoTexel;
+
+    float3 sn = float3(0, (s - n) * TerrainScale.y, -twoTexel);
+    float3 ew = float3(-twoTexel, (e - w) * TerrainScale.y, 0);
+    sn *= divisor;
+    ew *= divisor;
+    sn = normalize(sn);
+    ew = normalize(ew);
+
+    float4 normal = float4(normalize(cross(sn, ew)), 1);
+    normal.x = -normal.x;
+
+    return normal;
+}
+
 //=============================================================================
 // Vertex shader
 //-----------------------------------------------------------------------------
@@ -144,6 +169,8 @@ VS_OUTPUT VS(
     output.TexCoord = globalUV;
     output.EyeDirection = normalize(EyePosition - vertex.xyz);
 
+    output.Normal = VSCalculateNormal(globalUV);
+
 // デバッグ。
     output.Color = float4(0, 0, 0, 1);
     level %= 3;
@@ -182,7 +209,8 @@ float CalculateDirectionalLight(float3 normal, float3 lightDir, float3 eyeDir, f
 
 float3 CalculateNormal(float2 texCoord)
 {
-    float n = tex2D(NormalMapSampler, texCoord + float2(0, -HeightMapTexelSize)).x;
+// From XNA CDLOD Example
+/*    float n = tex2D(NormalMapSampler, texCoord + float2(0, -HeightMapTexelSize)).x;
     float s = tex2D(NormalMapSampler, texCoord + float2(0,  HeightMapTexelSize)).x;
     float e = tex2D(NormalMapSampler, texCoord + float2(-HeightMapTexelSize, 0)).x;
     float w = tex2D(NormalMapSampler, texCoord + float2( HeightMapTexelSize, 0)).x;
@@ -192,7 +220,21 @@ float3 CalculateNormal(float2 texCoord)
     float3 ew = normalize(float3(twoTexel, e - w, 0));
     float3 ns = normalize(float3(s - n, twoTexel, 0));
 
-    return normalize(cross(ew, ns));
+    return normalize(cross(ew, ns));*/
+
+// From http://skytiger.wordpress.com/2010/11/28/xna-large-terrain/
+    float x0 = tex2D(NormalMapSampler, texCoord + float2(-HeightMapTexelSize, 0)).x;
+    float x1 = tex2D(NormalMapSampler, texCoord + float2( HeightMapTexelSize, 0)).x;
+    float y0 = tex2D(NormalMapSampler, texCoord + float2(0, -HeightMapTexelSize)).x;
+    float y1 = tex2D(NormalMapSampler, texCoord + float2(0,  HeightMapTexelSize)).x;
+
+    float dx = x1 - x0;
+    float dy = y1 - y0;
+
+    float3 nx = normalize(float3(-1, dx, 0));
+    float3 ny = normalize(float3(0, dy, -1));
+
+    return normalize(cross(ny, nx));
 }
 
 //=============================================================================
@@ -206,8 +248,7 @@ float4 PS(VS_OUTPUT input) : COLOR0
 
     float directionalLight = CalculateDirectionalLight(normal, normalize(LightDirection), normalize(input.EyeDirection), 16, 0);
     float4 color = float4(AmbientLightColor + DiffuseLightColor * directionalLight, 1);
-    return color;
-*/
+    return color;*/
 
 // デバッグ。
 /*    float3 normal = CalculateNormal(input.TexCoord);
@@ -223,6 +264,11 @@ float4 PS(VS_OUTPUT input) : COLOR0
     color.rgb += intensity * 0.5;
     return color;*/
 
+// デバッグ。
+/*    float3 normal = input.Normal.xyz;
+    float directionalLight = CalculateDirectionalLight(normal, normalize(LightDirection), normalize(input.EyeDirection), 16, 0);
+    float4 color = float4(AmbientLightColor + input.Color * DiffuseLightColor * directionalLight, 1);
+    return color;*/
 // デバッグ。
     return input.Color;
 }
