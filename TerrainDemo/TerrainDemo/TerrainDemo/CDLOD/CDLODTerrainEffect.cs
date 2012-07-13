@@ -10,94 +10,51 @@ namespace TerrainDemo.CDLOD
 {
     public sealed class CDLODTerrainEffect : IEffectMatrices
     {
-        /// <summary>
-        /// インスタンシングに対応した Effect。
-        /// </summary>
-        Effect backingEffect;
-
-        /// <summary>
-        /// View パラメータ。
-        /// </summary>
         EffectParameter view;
 
-        /// <summary>
-        /// Projection パラメータ。
-        /// </summary>
         EffectParameter projection;
 
-        /// <summary>
-        /// EyePosition パラメータ。
-        /// </summary>
         EffectParameter eyePosition;
 
-        /// <summary>
-        /// AmbientLightColor パラメータ。
-        /// </summary>
         EffectParameter ambientLightColor;
 
-        /// <summary>
-        /// LightDirection パラメータ。
-        /// </summary>
         EffectParameter lightDirection;
 
-        /// <summary>
-        /// DiffuseLightColor パラメータ。
-        /// </summary>
         EffectParameter diffuseLightColor;
 
-        /// <summary>
-        /// TerrainOffset パラメータ。
-        /// </summary>
         EffectParameter terrainOffset;
 
-        /// <summary>
-        /// TerrainScale パラメータ。
-        /// </summary>
         EffectParameter terrainScale;
 
-        /// <summary>
-        /// SamplerWorldToTextureScale パラメータ。
-        /// </summary>
         EffectParameter samplerWorldToTextureScale;
 
-        /// <summary>
-        /// HeightMapSize パラメータ。
-        /// </summary>
         EffectParameter heightMapSize;
 
-        /// <summary>
-        /// TwoHeightMapSize パラメータ。
-        /// </summary>
         EffectParameter twoHeightMapSize;
 
-        /// <summary>
-        /// HeightMapTexelSize パラメータ。
-        /// </summary>
         EffectParameter heightMapTexelSize;
 
-        /// <summary>
-        /// TwoHeightMapTexelSize パラメータ。
-        /// </summary>
         EffectParameter twoHeightMapTexelSize;
 
-        /// <summary>
-        /// HalfPatchGridSize パラメータ。
-        /// </summary>
         EffectParameter halfPatchGridSize;
 
-        /// <summary>
-        /// TwoOverPatchGridSize パラメータ。
-        /// </summary>
         EffectParameter twoOverPatchGridSize;
 
-        /// <summary>
-        /// HeightMap パラメータ。
-        /// </summary>
         EffectParameter heightMap;
+
+        EffectParameter lightEnabled;
 
         float patchGridSize;
 
+        /// <summary>
+        /// Effect の実体を取得します。
+        /// </summary>
+        public Effect BackingEffect { get; private set; }
+
         // I/F
+        /// <summary>
+        /// このエフェクトでは World を使用しません。
+        /// </summary>
         public Matrix World
         {
             // NOTE
@@ -107,6 +64,10 @@ namespace TerrainDemo.CDLOD
         }
 
         // I/F
+        /// <summary>
+        /// View を取得または設定します。
+        /// View の設定では、EyePosition を内部で算出して設定します。
+        /// </summary>
         public Matrix View
         {
             get { return view.GetValueMatrix(); }
@@ -121,42 +82,68 @@ namespace TerrainDemo.CDLOD
         }
 
         // I/F
+        /// <summary>
+        /// Projection を取得または設定します。
+        /// </summary>
         public Matrix Projection
         {
             get { return projection.GetValueMatrix(); }
             set { projection.SetValue(value); }
         }
 
+        /// <summary>
+        /// AmbientLightColor を取得または設定します。
+        /// </summary>
         public Vector3 AmbientLightColor
         {
             get { return ambientLightColor.GetValueVector3(); }
             set { ambientLightColor.SetValue(value); }
         }
 
+        /// <summary>
+        /// LightDirection を取得または設定します。
+        /// </summary>
         public Vector3 LightDirection
         {
             get { return lightDirection.GetValueVector3(); }
             set { lightDirection.SetValue(value); }
         }
 
+        /// <summary>
+        /// DiffuseLightColor を取得または設定します。
+        /// </summary>
         public Vector3 DiffuseLightColor
         {
             get { return diffuseLightColor.GetValueVector3(); }
             set { diffuseLightColor.SetValue(value); }
         }
 
+        /// <summary>
+        /// TerrainOffset を取得または設定します。
+        /// </summary>
         public Vector3 TerrainOffset
         {
             get { return terrainOffset.GetValueVector3(); }
             set { terrainOffset.SetValue(value); }
         }
 
+        /// <summary>
+        /// TerrainScale を取得または設定します。
+        /// </summary>
         public Vector3 TerrainScale
         {
             get { return terrainScale.GetValueVector3(); }
             set { terrainScale.SetValue(value); }
         }
 
+        /// <summary>
+        /// HeightMap を取得または設定します。
+        /// HeightMap の設定では、
+        /// HeightMapSize、TwoHeightMapSize、
+        /// HeightMapTexelSize、TwoHeightMapTexelSize、
+        /// samplerWorldToTextureScale
+        /// を内部で算出して設定します。
+        /// </summary>
         public Texture2D HeightMap
         {
             get { return heightMap.GetValueTexture2D(); }
@@ -190,6 +177,9 @@ namespace TerrainDemo.CDLOD
             }
         }
 
+        /// <summary>
+        /// PatchGridSize を取得または設定します。
+        /// </summary>
         public float PatchGridSize
         {
             get { return patchGridSize; }
@@ -202,6 +192,36 @@ namespace TerrainDemo.CDLOD
             }
         }
 
+        public bool LightEnabled
+        {
+            get { return lightEnabled.GetValueBoolean(); }
+            set { lightEnabled.SetValue(value); }
+        }
+
+        /// <summary>
+        /// WhiteSolid technique を取得します。
+        /// </summary>
+        public EffectTechnique WhiteSolidTequnique { get; private set; }
+
+        /// <summary>
+        /// HeightColor technique を取得します。
+        /// </summary>
+        public EffectTechnique HeightColorTequnique { get; private set; }
+
+        /// <summary>
+        /// Wireframe technique を取得します。
+        /// </summary>
+        public EffectTechnique WireframeTequnique { get; private set; }
+
+        /// <summary>
+        /// backingEffect の CurrentTechnique を取得または設定します。
+        /// </summary>
+        public EffectTechnique CurrentTechnique
+        {
+            get { return BackingEffect.CurrentTechnique; }
+            set { BackingEffect.CurrentTechnique = value; }
+        }
+
         /// <summary>
         /// インスタンスを生成します。
         /// backingEffect の共有を発生させたくない場合は、呼び出し元で Effect の複製を設定してください。
@@ -211,44 +231,53 @@ namespace TerrainDemo.CDLOD
         public CDLODTerrainEffect(Effect backingEffect)
         {
             if (backingEffect == null) throw new ArgumentNullException("backingEffect");
-            this.backingEffect = backingEffect;
+
+            this.BackingEffect = backingEffect;
 
             InitializeParameters();
-        }
-
-        public void Apply()
-        {
-            backingEffect.CurrentTechnique.Passes[0].Apply();
+            InitializeTequniques();
         }
 
         /// <summary>
-        /// プロパティからのアクセスに使用する EffectParameter の取得と初期化を行います。
+        /// プロパティからのアクセスに使用する EffectParameter の初期化を行います。
         /// </summary>
         void InitializeParameters()
         {
-            view = backingEffect.Parameters["View"];
-            projection = backingEffect.Parameters["Projection"];
+            view = BackingEffect.Parameters["View"];
+            projection = BackingEffect.Parameters["Projection"];
             // View の設定時に [M41, M42, M43] を EyePosition へ設定します。
             // このため、専用のプロパティによるアクセスを提供しません。
-            eyePosition = backingEffect.Parameters["EyePosition"];
+            eyePosition = BackingEffect.Parameters["EyePosition"];
 
-            ambientLightColor = backingEffect.Parameters["AmbientLightColor"];
-            lightDirection = backingEffect.Parameters["LightDirection"];
-            diffuseLightColor = backingEffect.Parameters["DiffuseLightColor"];
+            ambientLightColor = BackingEffect.Parameters["AmbientLightColor"];
+            lightDirection = BackingEffect.Parameters["LightDirection"];
+            diffuseLightColor = BackingEffect.Parameters["DiffuseLightColor"];
 
-            terrainOffset = backingEffect.Parameters["TerrainOffset"];
-            terrainScale = backingEffect.Parameters["TerrainScale"];
+            terrainOffset = BackingEffect.Parameters["TerrainOffset"];
+            terrainScale = BackingEffect.Parameters["TerrainScale"];
 
-            samplerWorldToTextureScale = backingEffect.Parameters["SamplerWorldToTextureScale"];
-            heightMapSize = backingEffect.Parameters["HeightMapSize"];
-            twoHeightMapSize = backingEffect.Parameters["TwoHeightMapSize"];
-            heightMapTexelSize = backingEffect.Parameters["HeightMapTexelSize"];
-            twoHeightMapTexelSize = backingEffect.Parameters["TwoHeightMapTexelSize"];
+            samplerWorldToTextureScale = BackingEffect.Parameters["SamplerWorldToTextureScale"];
+            heightMapSize = BackingEffect.Parameters["HeightMapSize"];
+            twoHeightMapSize = BackingEffect.Parameters["TwoHeightMapSize"];
+            heightMapTexelSize = BackingEffect.Parameters["HeightMapTexelSize"];
+            twoHeightMapTexelSize = BackingEffect.Parameters["TwoHeightMapTexelSize"];
 
-            halfPatchGridSize = backingEffect.Parameters["HalfPatchGridSize"];
-            twoOverPatchGridSize = backingEffect.Parameters["TwoOverPatchGridSize"];
+            halfPatchGridSize = BackingEffect.Parameters["HalfPatchGridSize"];
+            twoOverPatchGridSize = BackingEffect.Parameters["TwoOverPatchGridSize"];
 
-            heightMap = backingEffect.Parameters["HeightMap"];
+            heightMap = BackingEffect.Parameters["HeightMap"];
+
+            lightEnabled = BackingEffect.Parameters["LightEnabled"];
+        }
+
+        /// <summary>
+        /// 使用する EffectTechnique の初期化を行います。
+        /// </summary>
+        void InitializeTequniques()
+        {
+            WhiteSolidTequnique = BackingEffect.Techniques["WhiteSolid"];
+            HeightColorTequnique = BackingEffect.Techniques["HeightColor"];
+            WireframeTequnique = BackingEffect.Techniques["Wireframe"];
         }
     }
 }

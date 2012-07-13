@@ -14,25 +14,34 @@ namespace TerrainDemo.CDLOD
     {
         const int maxSelectedNodeCount = 4000;
 
-        const float visibilityDistance = 10000;
+        const float visibilityDistance = 20000;
 
         const float morphStartRatio = 0.66f;
+
+        public const int DefaultLeafNodeSize = 8;
+
+        public const int DefaultPatchResolution = 2;
+
+        public const int DefaultLevelCount = 7;
+
+        public const float DefaultPatchScale = 2;
+
+        public const float DefaultHeightScale = 50;
 
         public GraphicsDevice GraphicsDevice { get; private set; }
 
         public ContentManager Content { get; private set; }
 
-        // leafNodeSize は 2 の自乗でなければならない。
-        int leafNodeSize = 8;
+        int leafNodeSize;
 
-        // patchSize = leafNodeSize * patchResolution;
-        int patchResolution = 2;
+        // patchGridSize = leafNodeSize * patchResolution;
+        int patchResolution;
 
-        int levelCount = 7;
+        int levelCount;
 
-        float patchScale = 2;
+        float patchScale;
 
-        float heightScale = 50;
+        float heightScale;
 
         Vector3 terrainOffset;
 
@@ -124,15 +133,32 @@ namespace TerrainDemo.CDLOD
             get { return selection.SelectedNodeCount; }
         }
 
-        public bool DebugNodeBoundingBoxVisible { get; set; }
+        public bool WhiteSolidVisible { get; set; }
+
+        public bool HeightColorVisible { get; set; }
+
+        public bool WireframeVisible { get; set; }
+
+        public bool NodeBoundingBoxVisible { get; set; }
+
+        public bool LightEnabled { get; set; }
 
         public CDLODTerrain(GraphicsDevice graphicsDevice, ContentManager content)
         {
             GraphicsDevice = graphicsDevice;
             Content = content;
 
+            leafNodeSize = DefaultLeafNodeSize;
+            patchResolution = DefaultPatchResolution;
+            levelCount = DefaultLevelCount;
+            patchScale = DefaultPatchScale;
+            heightScale = DefaultHeightScale;
+
             lightDirection = new Vector3(0, -1, -1);
             lightDirection.Normalize();
+
+            HeightColorVisible = true;
+            LightEnabled = true;
         }
 
         public void Initialize(IHeightMapSource heightMap)
@@ -247,13 +273,27 @@ namespace TerrainDemo.CDLOD
             effect.AmbientLightColor = ambientLightColor;
             effect.LightDirection = lightDirection;
             effect.DiffuseLightColor = diffuseLightColor;
+            effect.LightEnabled = LightEnabled;
 
-            effect.Apply();
-            GraphicsDevice.DrawInstancedPrimitives(
-                PrimitiveType.TriangleList, 0, 0,
-                patchMesh.NumVertices, 0, patchMesh.PrimitiveCount, selection.SelectedNodeCount);
+            // WhiteSolid tequnique
+            if (WhiteSolidVisible)
+                DrawPatchInstances(effect.WhiteSolidTequnique);
 
-            if (DebugNodeBoundingBoxVisible)
+            // HeightColor tequnique
+            if (HeightColorVisible)
+                DrawPatchInstances(effect.HeightColorTequnique);
+
+            // Wireframe tequnique
+            if (WireframeVisible)
+            {
+                var wireframeTerrainOffset = terrainOffset;
+                wireframeTerrainOffset.Y += 0.05f;
+                effect.TerrainOffset = wireframeTerrainOffset;
+                DrawPatchInstances(effect.WireframeTequnique);
+                effect.TerrainOffset = terrainOffset;
+            }
+
+            if (NodeBoundingBoxVisible)
             {
                 debugEffect.View = view;
                 debugEffect.Projection = projection;
@@ -267,6 +307,18 @@ namespace TerrainDemo.CDLOD
                     level %= 4;
                     boundingBoxDrawer.Draw(ref box, debugEffect, ref debugLevelColors[level]);
                 }
+            }
+        }
+
+        void DrawPatchInstances(EffectTechnique technique)
+        {
+            effect.CurrentTechnique = technique;
+            foreach (var pass in effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                GraphicsDevice.DrawInstancedPrimitives(
+                    PrimitiveType.TriangleList, 0, 0,
+                    patchMesh.NumVertices, 0, patchMesh.PrimitiveCount, selection.SelectedNodeCount);
             }
         }
 

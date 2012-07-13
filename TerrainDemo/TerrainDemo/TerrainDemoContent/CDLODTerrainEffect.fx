@@ -28,6 +28,8 @@ float HalfPatchGridSize;
 // オリジナルの g_gridDim.z
 float TwoOverPatchGridSize;
 
+// デバッグ用。
+// 高度範囲に応じた色分けのための色テーブル。
 float4 heightColorIndices[] =
 {
     { 0,       0,       0.5f,    1 },
@@ -39,6 +41,9 @@ float4 heightColorIndices[] =
     { 0.2509f, 0.2509f, 0.2509f, 1 },
     { 1,       1,       1,       1 }
 };
+
+// デバッグ用。
+bool LightEnabled;
 
 texture HeightMap;
 sampler HeightMapSampler = sampler_state
@@ -66,7 +71,6 @@ struct VS_OUTPUT
     float2 TexCoord : TEXCOORD0;
     float3 EyeDirection : TEXCOORD1;
 // デバッグ用。
-    float4 Color : COLOR;
     float Height : TEXCOORD2;
 };
 
@@ -97,7 +101,6 @@ float SampleHeightMap(float2 uv)
 // 例えば leafNodeSize = 8 かつパッチ サイズ 32 などを行った場合、
 // TextureFilter = POINT の影響により段階的な値の取得となってしまう。
 // XNA 4.0 では SurfaceFormat.Single で TextureFilter = Linear は不可能？
-// HiDef ですらできないのだが。
 // ゆえに、コード上での bilinear filtering。
     uv = uv.xy * HeightMapSize - float2(0.5, 0.5);
     float2 uvf = floor( uv.xy );
@@ -117,14 +120,9 @@ float SampleHeightMap(float2 uv)
     return lerp( tA, tB, f.y );
 }
 
-float4 VSCalculateNormal(float2 texCoord)
+float4 CalculateNormal(float2 texCoord)
 {
-// From http://graphics.ethz.ch/teaching/gamelab11/course_material/lecture06/XNA_Shaders_Terrain.pdf
-/*    float n = tex2Dlod(HeightMapSampler, float4( texCoord + float2(0, -HeightMapTexelSize.x), 0, 1) ).x;
-    float s = tex2Dlod(HeightMapSampler, float4( texCoord + float2(0,  HeightMapTexelSize.x), 0, 1) ).x;
-    float e = tex2Dlod(HeightMapSampler, float4( texCoord + float2(-HeightMapTexelSize.y, 0), 0, 1) ).x;
-    float w = tex2Dlod(HeightMapSampler, float4( texCoord + float2( HeightMapTexelSize.y, 0), 0, 1) ).x;*/
-
+    // From http://graphics.ethz.ch/teaching/gamelab11/course_material/lecture06/XNA_Shaders_Terrain.pdf
     float n = SampleHeightMap(texCoord + float2(0, -HeightMapTexelSize.x));
     float s = SampleHeightMap(texCoord + float2(0,  HeightMapTexelSize.x));
     float e = SampleHeightMap(texCoord + float2(-HeightMapTexelSize.y, 0));
@@ -189,33 +187,11 @@ VS_OUTPUT VS(
     output.TexCoord = globalUV;
     output.EyeDirection = normalize(EyePosition - vertex.xyz);
 
-    output.Normal = VSCalculateNormal(globalUV);
+    output.Normal = CalculateNormal(globalUV);
 
-// デバッグ。
-/*    output.Color = float4(0, 0, 0, 1);
-    level %= 4;
-    if (0 == level)
-        output.Color.rgb = 1;
-    else if (1 == level)
-        output.Color.r = 1;
-    else if (2 == level)
-        output.Color.g = 1;
-    else if (3 == level)
-        output.Color.b = 1;*/
-
-// デバッグ。
+    // デバッグ用。
     output.Height = h;
-    output.Color = 1;
-/*    int colorIndex = 6;
-    if (h < -0.2500f) colorIndex = 0;
-    else if (h < 0.0000f) colorIndex = 1;
-    else if (h < 0.0625f) colorIndex = 2;
-    else if (h < 0.1250f) colorIndex = 3;
-    else if (h < 0.3750f) colorIndex = 4;
-    else if (h < 0.7500f) colorIndex = 5;
-    else if (h < 1.0000f) colorIndex = 6;
 
-    output.Color = heightColorIndices[colorIndex];*/
     return output;
 }
 
@@ -245,22 +221,20 @@ float CalculateDirectionalLight(float3 normal, float3 lightDir, float3 eyeDir, f
 //=============================================================================
 // Pixel shader
 //-----------------------------------------------------------------------------
-float4 PS(VS_OUTPUT input) : COLOR0
+float4 WhiteSolidPS(VS_OUTPUT input) : COLOR0
 {
-/*    float3 normal = tex2D(NormalMapSampler, input.TexCoord);
-    normal.xz = normal.xz * float2(2, 2) - float2(1, 1);
-    normal.y = sqrt(1 - normal.x * normal.x - normal.z * normal.z);
+    float4 color = float4(1, 1, 1, 1);
+    if (LightEnabled)
+    {
+        float3 normal = input.Normal.xyz;
+        float directionalLight = CalculateDirectionalLight(normal, normalize(LightDirection), normalize(input.EyeDirection), 16, 0);
+        color = float4(AmbientLightColor + color.rgb * DiffuseLightColor * directionalLight, 1);
+    }
+    return color;
+}
 
-    float directionalLight = CalculateDirectionalLight(normal, normalize(LightDirection), normalize(input.EyeDirection), 16, 0);
-    float4 color = float4(AmbientLightColor + DiffuseLightColor * directionalLight, 1);
-    return color;*/
-
-// デバッグ。
-/*    float3 normal = input.Normal.xyz;
-    float directionalLight = CalculateDirectionalLight(normal, normalize(LightDirection), normalize(input.EyeDirection), 16, 0);
-    float4 color = float4(AmbientLightColor + input.Color * DiffuseLightColor * directionalLight, 1);
-    return color;*/
-
+float4 HeightColorPS(VS_OUTPUT input) : COLOR0
+{
     int colorIndex = 6;
     float h = input.Height;
     if (h < -0.2500f) colorIndex = 0;
@@ -271,26 +245,53 @@ float4 PS(VS_OUTPUT input) : COLOR0
     else if (h < 0.7500f) colorIndex = 5;
     else if (h < 1.0000f) colorIndex = 6;
 
-    float4 c = heightColorIndices[colorIndex];
-    float3 normal = input.Normal.xyz;
-    float directionalLight = CalculateDirectionalLight(normal, normalize(LightDirection), normalize(input.EyeDirection), 16, 0);
-    float4 color = float4(AmbientLightColor + c * DiffuseLightColor * directionalLight, 1);
+    float4 color = heightColorIndices[colorIndex];
+    if (LightEnabled)
+    {
+        float3 normal = input.Normal.xyz;
+        float directionalLight = CalculateDirectionalLight(normal, normalize(LightDirection), normalize(input.EyeDirection), 16, 0);
+        color = float4(AmbientLightColor + color.rgb * DiffuseLightColor * directionalLight, 1);
+    }
     return color;
+}
 
-
-// デバッグ。
-//    return input.Color;
-//    return float4(0, 0, 0, 1);
+float4 WireframePS(VS_OUTPUT input) : COLOR0
+{
+    return float4(0, 0, 0, 1);
 }
 
 //=============================================================================
 // Technique
 //-----------------------------------------------------------------------------
-technique Default
+technique WhiteSolid
 {
     pass P0
     {
+        FillMode = SOLID;
+        CullMode = CCW;
         VertexShader = compile vs_3_0 VS();
-        PixelShader = compile ps_3_0 PS();
+        PixelShader = compile ps_3_0 WhiteSolidPS();
+    }
+}
+
+technique HeightColor
+{
+    pass P0
+    {
+        FillMode = SOLID;
+        CullMode = CCW;
+        VertexShader = compile vs_3_0 VS();
+        PixelShader = compile ps_3_0 HeightColorPS();
+    }
+}
+
+technique Wireframe
+{
+    pass P0
+    {
+        FillMode = WIREFRAME;
+        CullMode = CCW;
+        VertexShader = compile vs_3_0 VS();
+        PixelShader = compile ps_3_0 WireframePS();
     }
 }

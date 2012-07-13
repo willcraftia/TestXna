@@ -58,6 +58,11 @@ namespace TerrainDemo.Cameras
             var moveDirection = Vector3.Zero;
             var keyboardState = Keyboard.GetState();
             var distance = MoveVelocity * deltaTime;
+            
+            // Shift で加速。
+            if (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
+                distance *= 4;
+
             if (keyboardState.IsKeyDown(Keys.W)) FreeView.Move(distance);
             if (keyboardState.IsKeyDown(Keys.S)) FreeView.Move(-distance);
             if (keyboardState.IsKeyDown(Keys.A)) FreeView.Strafe(distance);

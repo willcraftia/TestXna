@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CDLOD\BoundingBoxDrawer.cs" />
+    <Compile Include="CDLOD\CDLODHelper.cs" />
     <Compile Include="CDLOD\CDLODTerrain.cs" />
     <Compile Include="CDLOD\CDLODTerrainEffect.cs" />
     <Compile Include="CDLOD\CreateDescription.cs" />
