@@ -111,6 +111,7 @@
     <Compile Include="CDLOD\CDLODHelper.cs" />
     <Compile Include="CDLOD\CDLODTerrain.cs" />
     <Compile Include="CDLOD\CDLODTerrainEffect.cs" />
+    <Compile Include="CDLOD\CDLODTerrainRenderer.cs" />
     <Compile Include="CDLOD\CreateDescription.cs" />
     <Compile Include="CDLOD\DefaultHeightMapSource.cs" />
     <Compile Include="CDLOD\DefaultMorph.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="CDLOD\SelectedNode.cs" />
     <Compile Include="CDLOD\Selection.cs" />
     <Compile Include="CDLOD\Morph.cs" />
+    <Compile Include="CDLOD\Settings.cs" />
     <Compile Include="CDLOD\VertexPosition.cs" />
     <Compile Include="Framework\Debug\DebugHorizontalAlignment.cs" />
     <Compile Include="Framework\Debug\DebugLayout.cs" />

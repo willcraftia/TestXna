@@ -9,11 +9,11 @@ namespace TerrainDemo.CDLOD
 {
     public sealed class DefaultMorph : Morph
     {
-        float visibilityDistance/* = 50000*/;
+        public const float DefaultVisibilityDistance = 20000;
 
-        float detailBalance = 2;
+        public const float DefaultDetailBalance = 2;
 
-        float morphStartRatio/* = 0.66f*/;
+        public const float DefaultMorphStartRatio = 0.66f;
 
         float[] visibilityRanges;
 
@@ -23,81 +23,64 @@ namespace TerrainDemo.CDLOD
 
         Vector2[] morphConsts;
 
-        public float VisibilityDistance
-        {
-            get { return visibilityDistance; }
-            set
-            {
-                if (visibilityDistance == value) return;
+        public int LevelCount { get; private set; }
 
-                visibilityDistance = value;
-                Initialized = false;
-            }
-        }
+        public float VisibilityDistance { get; private set; }
 
-        public float DetailBalance
-        {
-            get { return detailBalance; }
-            set
-            {
-                if (detailBalance == value) return;
+        public float DetailBalance { get; private set; }
 
-                detailBalance = value;
-                Initialized = false;
-            }
-        }
-
-        public float MorphStartRatio
-        {
-            get { return morphStartRatio; }
-            set
-            {
-                if (morphStartRatio == value) return;
-
-                morphStartRatio = value;
-                Initialized = false;
-            }
-        }
+        public float MorphStartRatio { get; private set; }
 
         public DefaultMorph(int levelCount)
+            : this(levelCount, DefaultVisibilityDistance, DefaultDetailBalance, DefaultMorphStartRatio)
         {
-            visibilityRanges = new float[levelCount];
-            morphStartRanges = new float[levelCount];
-            morphEndRanges = new float[levelCount];
-            morphConsts = new Vector2[levelCount];
         }
 
-        public override void GetMorphConsts(out Vector2[] results)
+        public DefaultMorph(int levelCount, float visibilityDistance, float detailBalance, float morphStartRatio)
+        {
+            LevelCount = levelCount;
+            VisibilityDistance = visibilityDistance;
+            DetailBalance = detailBalance;
+            MorphStartRatio = morphStartRatio;
+
+            Initialize();
+        }
+
+        // I/F
+        public void GetMorphConsts(out Vector2[] results)
         {
             results = new Vector2[morphConsts.Length];
             Array.Copy(morphConsts, results, morphConsts.Length);
         }
 
-        public override float GetVisibilityRange(int level)
+        // I/F
+        public float GetVisibilityRange(int level)
         {
             return visibilityRanges[level];
         }
 
-        protected override void InitializeOverride()
+        void Initialize()
         {
-            float lodNear = 0;
-            float lodFar = visibilityDistance;
+            visibilityRanges = new float[LevelCount];
+            morphStartRanges = new float[LevelCount];
+            morphEndRanges = new float[LevelCount];
+            morphConsts = new Vector2[LevelCount];
 
-            // pow(detailBalance, i) を順に足して total とする。
+            float lodNear = 0;
+            float lodFar = VisibilityDistance;
+
+            // add pow(detailBalance, i) in sequence.
             float total = 0;
             float currentDetailBalance = 1;
             for (int i = 0; i < visibilityRanges.Length; i++)
             {
                 total += currentDetailBalance;
-                currentDetailBalance *= detailBalance;
+                currentDetailBalance *= DetailBalance;
             }
 
-            // total での単位長さを求める。
+            // unit length.
             float section = (lodFar - lodNear) / total;
 
-            // 詳細な LOD から順に視覚範囲を計算して配列に設定。
-            // および、詳細な LOD から順にモーフィング開始距離と終了距離を配列に設定。
-            // 添字 0 はリーフ ノードに対応する LOD。
             float lastVisibilityRange = lodNear;
             float lastMorphStart = lodNear;
             currentDetailBalance = 1;
@@ -106,11 +89,11 @@ namespace TerrainDemo.CDLOD
                 // Calculate a visibility range.
                 visibilityRanges[i] = lastVisibilityRange + section * currentDetailBalance;
                 lastVisibilityRange = visibilityRanges[i];
-                currentDetailBalance *= detailBalance;
+                currentDetailBalance *= DetailBalance;
 
                 // Calculate a morph start/end range.
                 morphEndRanges[i] = visibilityRanges[i];
-                morphStartRanges[i] = lastMorphStart + (morphEndRanges[i] - lastMorphStart) * morphStartRatio;
+                morphStartRanges[i] = lastMorphStart + (morphEndRanges[i] - lastMorphStart) * MorphStartRatio;
                 lastMorphStart = morphStartRanges[i];
 
                 // Calculate a morph constant.

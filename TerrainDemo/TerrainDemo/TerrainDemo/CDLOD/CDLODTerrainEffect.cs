@@ -52,28 +52,16 @@ namespace TerrainDemo.CDLOD
 
         float patchGridSize;
 
-        /// <summary>
-        /// Effect の実体を取得します。
-        /// </summary>
         public Effect BackingEffect { get; private set; }
 
         // I/F
-        /// <summary>
-        /// このエフェクトでは World を使用しません。
-        /// </summary>
         public Matrix World
         {
-            // NOTE
-            // インスタンシングでは頂点ストリームから変換行列を得るため未使用となります。
-            get { return Matrix.Identity; }
-            set { }
+            get { throw new NotSupportedException("This effect never use a world matrix."); }
+            set { throw new NotSupportedException("This effect never use a world matrix."); }
         }
 
         // I/F
-        /// <summary>
-        /// View を取得または設定します。
-        /// View の設定では、EyePosition を内部で算出して設定します。
-        /// </summary>
         public Matrix View
         {
             get { return view.GetValueMatrix(); }
@@ -81,6 +69,7 @@ namespace TerrainDemo.CDLOD
             {
                 view.SetValue(value);
 
+                // eyePosition.
                 Matrix inverse;
                 Matrix.Invert(ref value, out inverse);
                 eyePosition.SetValue(inverse.Translation);
@@ -88,54 +77,36 @@ namespace TerrainDemo.CDLOD
         }
 
         // I/F
-        /// <summary>
-        /// Projection を取得または設定します。
-        /// </summary>
         public Matrix Projection
         {
             get { return projection.GetValueMatrix(); }
             set { projection.SetValue(value); }
         }
 
-        /// <summary>
-        /// AmbientLightColor を取得または設定します。
-        /// </summary>
         public Vector3 AmbientLightColor
         {
             get { return ambientLightColor.GetValueVector3(); }
             set { ambientLightColor.SetValue(value); }
         }
 
-        /// <summary>
-        /// LightDirection を取得または設定します。
-        /// </summary>
         public Vector3 LightDirection
         {
             get { return lightDirection.GetValueVector3(); }
             set { lightDirection.SetValue(value); }
         }
 
-        /// <summary>
-        /// DiffuseLightColor を取得または設定します。
-        /// </summary>
         public Vector3 DiffuseLightColor
         {
             get { return diffuseLightColor.GetValueVector3(); }
             set { diffuseLightColor.SetValue(value); }
         }
 
-        /// <summary>
-        /// TerrainOffset を取得または設定します。
-        /// </summary>
         public Vector3 TerrainOffset
         {
             get { return terrainOffset.GetValueVector3(); }
             set { terrainOffset.SetValue(value); }
         }
 
-        /// <summary>
-        /// TerrainScale を取得または設定します。
-        /// </summary>
         public Vector3 TerrainScale
         {
             get { return terrainScale.GetValueVector3(); }
@@ -154,14 +125,6 @@ namespace TerrainDemo.CDLOD
             set { morphConsts.SetValue(value); }
         }
 
-        /// <summary>
-        /// HeightMap を取得または設定します。
-        /// HeightMap の設定では、
-        /// HeightMapSize、TwoHeightMapSize、
-        /// HeightMapTexelSize、TwoHeightMapTexelSize、
-        /// samplerWorldToTextureScale
-        /// を内部で算出して設定します。
-        /// </summary>
         public Texture2D HeightMap
         {
             get { return heightMap.GetValueTexture2D(); }
@@ -195,9 +158,6 @@ namespace TerrainDemo.CDLOD
             }
         }
 
-        /// <summary>
-        /// PatchGridSize を取得または設定します。
-        /// </summary>
         public float PatchGridSize
         {
             get { return patchGridSize; }
@@ -216,24 +176,12 @@ namespace TerrainDemo.CDLOD
             set { lightEnabled.SetValue(value); }
         }
 
-        /// <summary>
-        /// WhiteSolid technique を取得します。
-        /// </summary>
         public EffectTechnique WhiteSolidTequnique { get; private set; }
 
-        /// <summary>
-        /// HeightColor technique を取得します。
-        /// </summary>
         public EffectTechnique HeightColorTequnique { get; private set; }
 
-        /// <summary>
-        /// Wireframe technique を取得します。
-        /// </summary>
         public EffectTechnique WireframeTequnique { get; private set; }
 
-        /// <summary>
-        /// backingEffect の CurrentTechnique を取得または設定します。
-        /// </summary>
         public EffectTechnique CurrentTechnique
         {
             get { return BackingEffect.CurrentTechnique; }
@@ -241,30 +189,27 @@ namespace TerrainDemo.CDLOD
         }
 
         /// <summary>
-        /// インスタンスを生成します。
-        /// backingEffect の共有を発生させたくない場合は、呼び出し元で Effect の複製を設定してください。
-        /// なお、backingEffect で設定する Effect の Dispose() は呼び出し元で管理してください。
+        /// If not share a backing effect, clone it before specifing to this constructor.
+        /// This class does not the backing effect's Dispose().
         /// </summary>
-        /// <param name="backingEffect">インスタンシングに対応した Effect。</param>
+        /// <param name="backingEffect">An effect supporting the CDLOD instancing.</param>
         public CDLODTerrainEffect(Effect backingEffect)
         {
             if (backingEffect == null) throw new ArgumentNullException("backingEffect");
 
-            this.BackingEffect = backingEffect;
+            BackingEffect = backingEffect;
 
-            InitializeParameters();
-            InitializeTequniques();
+            CacheEffectParameters();
+            CacheEffectTequniques();
         }
 
         /// <summary>
-        /// プロパティからのアクセスに使用する EffectParameter の初期化を行います。
+        /// Cache effect parameter accessors.
         /// </summary>
-        void InitializeParameters()
+        void CacheEffectParameters()
         {
             view = BackingEffect.Parameters["View"];
             projection = BackingEffect.Parameters["Projection"];
-            // View の設定時に [M41, M42, M43] を EyePosition へ設定します。
-            // このため、専用のプロパティによるアクセスを提供しません。
             eyePosition = BackingEffect.Parameters["EyePosition"];
 
             ambientLightColor = BackingEffect.Parameters["AmbientLightColor"];
@@ -292,9 +237,9 @@ namespace TerrainDemo.CDLOD
         }
 
         /// <summary>
-        /// 使用する EffectTechnique の初期化を行います。
+        /// Cache effect technique accessors.
         /// </summary>
-        void InitializeTequniques()
+        void CacheEffectTequniques()
         {
             WhiteSolidTequnique = BackingEffect.Techniques["WhiteSolid"];
             HeightColorTequnique = BackingEffect.Techniques["HeightColor"];

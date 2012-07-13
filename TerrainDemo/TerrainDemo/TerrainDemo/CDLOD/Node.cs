@@ -71,7 +71,7 @@ namespace TerrainDemo.CDLOD
                 int limitX = Math.Min(createDescription.HeightMap.Width, x + size + 1);
                 int limitY = Math.Min(createDescription.HeightMap.Height, y + size + 1);
 
-                // リーフ ノード (Level = 0)
+                // this is a leaf node.
                 createDescription.HeightMap.GetAreaMinMaxHeight(x, y, limitX - x, limitY - y, out minHeight, out maxHeight);
             }
             else
@@ -109,22 +109,26 @@ namespace TerrainDemo.CDLOD
                 selection.Frustum.Contains(ref boundingBox, out containmentType);
             }
 
-            var visibilityRange = selection.Morph.GetVisibilityRange(level);
-            var sphere = new BoundingSphere(selection.EyePosition, visibilityRange);
-            if (!boundingBox.Intersects(sphere))
+            BoundingSphere sphere;
+            bool intersected;
+
+            selection.GetVisibilitySphere(level, out sphere);
+            boundingBox.Intersects(ref sphere, out intersected);
+            if (!intersected)
                 return false;
 
             if (level == 0)
             {
-                // リーフ ノードに到達。
+                // we reach a leaf node.
                 if (containmentType != ContainmentType.Disjoint)
                     selection.AddSelectedNode(this);
                 return true;
             }
 
-            // 次に詳細な LOD の範囲を含まないならば、子を調べる必要はなく、自分を選択。
-            var childVisibilityRange = selection.Morph.GetVisibilityRange(level - 1);
-            if (!boundingBox.Intersects(new BoundingSphere(selection.EyePosition, childVisibilityRange)))
+            // If this node is out of the next visibility, we do not need to check children.
+            selection.GetVisibilitySphere(level - 1, out sphere);
+            boundingBox.Intersects(ref sphere, out intersected);
+            if (!intersected)
             {
                 if (containmentType != ContainmentType.Disjoint)
                     selection.AddSelectedNode(this);
@@ -133,7 +137,7 @@ namespace TerrainDemo.CDLOD
 
             bool weAreCompletelyInFrustum = (containmentType == ContainmentType.Contains);
 
-            // 子ノードの選択を試行 (ここでは SelectedNode の追加を行わずに選択可能性のみを検査)。
+            // Check a child node's visibility on ahead.
             var allChildrenSelected = true;
             allChildrenSelected &= childTopLeft.PreSelect(selection, weAreCompletelyInFrustum);
             allChildrenSelected &= childTopRight.PreSelect(selection, weAreCompletelyInFrustum);
@@ -142,7 +146,7 @@ namespace TerrainDemo.CDLOD
 
             if (allChildrenSelected)
             {
-                // 全ての子ノードが選択される場合にのみ、子ノードの LOD を採用する。
+                // If can select all children, select them.
                 childTopLeft.Select(selection, weAreCompletelyInFrustum);
                 childTopRight.Select(selection, weAreCompletelyInFrustum);
                 childBottomLeft.Select(selection, weAreCompletelyInFrustum);
@@ -150,18 +154,10 @@ namespace TerrainDemo.CDLOD
             }
             else
             {
-                // それ以外の場合は、自ノードの LOD を採用する。
-                // 一部の子ノードのみが選択可能となる状況は、LOD レベルの境界でのみ発生する。
-                // LOD レベル境界における子ノードの詳細さは、
-                // 自ノードと同程度までモーフィングされていると考えられる。
-                // つまり、子ノードの選択を無視し、自ノードの選択としてしまっても、
-                // 視覚上での違和感は発生しないと考えられる。
-                // なお、オリジナル ソースでは、可能な限り子ノードの LOD を採用するために、
-                // メッシュの描画時に子ノードで描画される範囲を描画しないように調整している。
-                // ただし、その方法では、ノード毎にメッシュの形状が変化するため、
-                // 各ノード毎に描画範囲を検査しながら描画する必要がある。
-                // 一方、ここでの方法では、全ノードが同型のメッシュとなるため、
-                // HW インスタンシングによる恩恵を受けることができる。
+                // Select this node for the HW instancing.
+                // The original code tries to select a finer node as far as possible,
+                // and hides parts of a coaser node overlapped by finer nodes on the render time.
+                // But using HW instancing, we must use a same mesh, so avoid such a overlap.
                 if (containmentType != ContainmentType.Disjoint)
                     selection.AddSelectedNode(this);
             }
@@ -174,15 +170,10 @@ namespace TerrainDemo.CDLOD
             BoundingBox boundingBox;
             GetBoundingBox(ref selection.TerrainOffset, selection.PatchScale, selection.HeightScale, out boundingBox);
 
-            //ContainmentType containmentType = ContainmentType.Contains;
-            //if (!parentCompletelyInFrustum)
-            //{
-            //    selection.Frustum.Contains(ref boundingBox, out containmentType);
-            //    if (containmentType == ContainmentType.Disjoint) return false;
-            //}
+            // do not check the intersection between AABB and the view frustum.
 
-            var visibilityRange = selection.Morph.GetVisibilityRange(level);
-            var sphere = new BoundingSphere(selection.EyePosition, visibilityRange);
+            BoundingSphere sphere;
+            selection.GetVisibilitySphere(level, out sphere);
             if (!boundingBox.Intersects(sphere))
                 return false;
 
@@ -202,7 +193,7 @@ namespace TerrainDemo.CDLOD
             boundingBox.Max.Z = (y + size) * patchScale + terrainOffset.Z;
         }
 
-        // TODO: できれば BoundingBox と BoundingFrustum の交差判定の前に球同士で判定したい。
+        // TODO: I want to use the intersection between an AABB and a frustum.
         void GetBoundingSphere(ref Vector3 terrainOffset, float patchScale, float heightScale, out BoundingSphere sphere)
         {
             var min = new Vector3

@@ -7,21 +7,10 @@ using Microsoft.Xna.Framework;
 
 namespace TerrainDemo.CDLOD
 {
-    public abstract class Morph
+    public interface Morph
     {
-        public bool Initialized { get; protected set; }
+        void GetMorphConsts(out Vector2[] results);
 
-        public void Initialize()
-        {
-            InitializeOverride();
-
-            Initialized = true;
-        }
-
-        public abstract void GetMorphConsts(out Vector2[] results);
-
-        public abstract float GetVisibilityRange(int level);
-
-        protected abstract void InitializeOverride();
+        float GetVisibilityRange(int level);
     }
 }

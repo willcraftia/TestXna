@@ -42,7 +42,15 @@ namespace TerrainDemo
 
         RasterizerState defaultRasterizerState = new RasterizerState();
 
+        Settings settings = Settings.Default;
+
         CDLODTerrain terrain;
+
+        Morph morph;
+
+        CDLODTerrainRenderer renderer;
+
+        Selection selection = new Selection();
 
         string helpMessage =
             "[F1] Help\r\n" +
@@ -60,17 +68,17 @@ namespace TerrainDemo
         bool helpVisible;
 
         /// <summary>
-        /// SpriteBatch。
+        /// SpriteBatch.
         /// </summary>
         SpriteBatch spriteBatch;
 
         /// <summary>
-        /// SpriteFont。
+        /// SpriteFont.
         /// </summary>
         SpriteFont font;
 
         /// <summary>
-        /// 塗り潰し用テクスチャ。
+        /// The texture to fill a region。
         /// </summary>
         Texture2D fillTexture;
 
@@ -112,7 +120,7 @@ namespace TerrainDemo
 
         protected override void LoadContent()
         {
-            // ノイズから height map を生成。
+            // create a height map.
             var noiseMap = new NoiseMap();
             noiseMap.GetValue2 = (x, y) => { return sumFractal.GetValue(x, 0, y); };
             noiseMap.Width = noiseMapWidth;
@@ -122,8 +130,12 @@ namespace TerrainDemo
 
             var heightMap = new DefaultHeightMapSource(noiseMap);
 
-            terrain = new CDLODTerrain(GraphicsDevice, Content);
+            terrain = new CDLODTerrain(GraphicsDevice, settings);
             terrain.Initialize(heightMap);
+
+            morph = new DefaultMorph(settings.LevelCount);
+
+            renderer = new CDLODTerrainRenderer(GraphicsDevice, Content, settings);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("Fonts/Debug");
@@ -146,41 +158,46 @@ namespace TerrainDemo
                 helpVisible = !helpVisible;
 
             if (keyboardState.IsKeyUp(Keys.F2) && lastKeyboardState.IsKeyDown(Keys.F2))
-                terrain.NodeBoundingBoxVisible = !terrain.NodeBoundingBoxVisible;
+                renderer.NodeBoundingBoxVisible = !renderer.NodeBoundingBoxVisible;
 
             if (keyboardState.IsKeyUp(Keys.F3) && lastKeyboardState.IsKeyDown(Keys.F3))
-                terrain.WhiteSolidVisible = !terrain.WhiteSolidVisible;
+                renderer.WhiteSolidVisible = !renderer.WhiteSolidVisible;
 
             if (keyboardState.IsKeyUp(Keys.F4) && lastKeyboardState.IsKeyDown(Keys.F4))
-                terrain.HeightColorVisible = !terrain.HeightColorVisible;
+                renderer.HeightColorVisible = !renderer.HeightColorVisible;
 
             if (keyboardState.IsKeyUp(Keys.F5) && lastKeyboardState.IsKeyDown(Keys.F5))
-                terrain.WireframeVisible = !terrain.WireframeVisible;
+                renderer.WireframeVisible = !renderer.WireframeVisible;
 
             if (keyboardState.IsKeyUp(Keys.F6) && lastKeyboardState.IsKeyDown(Keys.F6))
-                terrain.LightEnabled = !terrain.LightEnabled;
+                renderer.LightEnabled = !renderer.LightEnabled;
 
             lastKeyboardState = keyboardState;
-
-            view.Update();
-            projection.Update();
-
-            terrain.View = view.Matrix;
-            terrain.Projection = projection.Matrix;
-            terrain.Update(gameTime);
-
-            Window.Title = string.Format("Selected nodes: {0}", terrain.SelectedNodeCount);
-            //Window.Title = string.Format("Triangles Rendered: {0} - Culling Enabled: {1}", quadTree.IndexCount / 3, quadTree.Cull);
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
+            view.Update();
+            projection.Update();
+
+            // prepare selection's state.
+            selection.Morph = morph;
+            selection.View = view.Matrix;
+            selection.Projection = projection.Matrix;
+            selection.Prepare();
+
+            // select.
+            terrain.Select(selection);
+
+            Window.Title = string.Format("Selected nodes: {0}", selection.SelectedNodeCount);
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.RasterizerState = defaultRasterizerState;
 
-            terrain.Draw(gameTime);
+            // draw
+            renderer.Draw(gameTime, selection);
 
             if (helpVisible)
                 DrawHelp();
@@ -192,7 +209,7 @@ namespace TerrainDemo
         {
             spriteBatch.Begin();
 
-            // 背景領域を計算します。
+            // calculate the background are.
             var layout = new DebugLayout();
             layout.ContainerBounds = GraphicsDevice.Viewport.TitleSafeArea;
             layout.Width = (int) helpMessageFontSize.X + 4;
@@ -205,7 +222,7 @@ namespace TerrainDemo
 
             spriteBatch.Draw(fillTexture, layout.ArrangedBounds, Color.Black * 0.5f);
             
-            // 文字列表示領域を計算します。
+            // calculate the message area.
             layout.ContainerBounds = layout.ArrangedBounds;
             layout.Width = (int) helpMessageFontSize.X;
             layout.Height = (int) helpMessageFontSize.Y;
