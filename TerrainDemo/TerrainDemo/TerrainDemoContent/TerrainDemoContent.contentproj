@@ -42,8 +42,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CDLODTerrainEffect.fx">
-      <Name>CDLODTerrainEffect</Name>
+    <Compile Include="TerrainEffect.fx">
+      <Name>TerrainEffect</Name>
       <Importer>EffectImporter</Importer>
       <Processor>EffectProcessor</Processor>
     </Compile>

@@ -6,7 +6,7 @@ using System;
 
 namespace TerrainDemo.CDLOD
 {
-    public static class CDLODHelper
+    public static class Helper
     {
         public static bool IsPowOf2(int value)
         {

@@ -10,7 +10,7 @@ using TerrainDemo.Framework.Graphics;
 
 namespace TerrainDemo.CDLOD
 {
-    public sealed class CDLODTerrainRenderer
+    public sealed class TerrainRenderer
     {
         public const int DefaultPatchResolution = 2;
 
@@ -35,7 +35,7 @@ namespace TerrainDemo.CDLOD
 
         Effect sourceEffect;
 
-        CDLODTerrainEffect effect;
+        TerrainEffect effect;
 
         Vector3 ambientLightColor = Vector3.Zero;
 
@@ -74,7 +74,7 @@ namespace TerrainDemo.CDLOD
 
         public bool LightEnabled { get; set; }
 
-        public CDLODTerrainRenderer(GraphicsDevice graphicsDevice, ContentManager content, Settings settings)
+        public TerrainRenderer(GraphicsDevice graphicsDevice, ContentManager content, Settings settings)
         {
             GraphicsDevice = graphicsDevice;
             Content = content;
@@ -86,8 +86,8 @@ namespace TerrainDemo.CDLOD
             // patchGridSize = leafNodeSize * patchResolution;
             patchMesh = new PatchMesh(GraphicsDevice, settings.LeafNodeSize * DefaultPatchResolution);
 
-            sourceEffect = Content.Load<Effect>("CDLODTerrainEffect");
-            effect = new CDLODTerrainEffect(sourceEffect);
+            sourceEffect = Content.Load<Effect>("TerrainEffect");
+            effect = new TerrainEffect(sourceEffect);
             effect.PatchGridSize = patchMesh.GridSize;
             effect.LevelCount = settings.LevelCount;
 

@@ -30,7 +30,7 @@ namespace TerrainDemo
 
         KeyboardState lastKeyboardState;
 
-        ImprovedPerlinNoise improvedPerlinNoise = new ImprovedPerlinNoise();
+        ImprovedPerlinNoise noise = new ImprovedPerlinNoise();
 
         SumFractal sumFractal = new SumFractal();
 
@@ -38,17 +38,17 @@ namespace TerrainDemo
 
         PerspectiveFov projection = new PerspectiveFov();
 
-        FreeViewInput freeViewInput = new FreeViewInput();
+        FreeViewInput viewInput = new FreeViewInput();
 
         RasterizerState defaultRasterizerState = new RasterizerState();
 
         Settings settings = Settings.Default;
 
-        CDLODTerrain terrain;
+        Terrain terrain;
 
         Morph morph;
 
-        CDLODTerrainRenderer renderer;
+        TerrainRenderer renderer;
 
         Selection selection = new Selection();
 
@@ -92,13 +92,13 @@ namespace TerrainDemo
 
         protected override void Initialize()
         {
-            improvedPerlinNoise.Seed = 300;
-            sumFractal.Noise3 = improvedPerlinNoise.Noise;
+            noise.Seed = 300;
+            sumFractal.Noise3 = noise.Noise;
 
             var viewport = GraphicsDevice.Viewport;
-            freeViewInput.InitialMousePositionX = viewport.Width / 2;
-            freeViewInput.InitialMousePositionY = viewport.Height / 2;
-            freeViewInput.FreeView = view;
+            viewInput.InitialMousePositionX = viewport.Width / 2;
+            viewInput.InitialMousePositionY = viewport.Height / 2;
+            viewInput.FreeView = view;
 
             view.Position = new Vector3(50, 30, 50);
             view.Yaw(MathHelper.PiOver4 * 5);
@@ -130,12 +130,12 @@ namespace TerrainDemo
 
             var heightMap = new DefaultHeightMapSource(noiseMap);
 
-            terrain = new CDLODTerrain(GraphicsDevice, settings);
+            terrain = new Terrain(GraphicsDevice, settings);
             terrain.Initialize(heightMap);
 
             morph = new DefaultMorph(settings.LevelCount);
 
-            renderer = new CDLODTerrainRenderer(GraphicsDevice, Content, settings);
+            renderer = new TerrainRenderer(GraphicsDevice, Content, settings);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("Fonts/Debug");
@@ -152,7 +152,7 @@ namespace TerrainDemo
             var keyboardState = Keyboard.GetState();
             if (keyboardState.IsKeyDown(Keys.Escape)) Exit();
 
-            freeViewInput.Update(gameTime);
+            viewInput.Update(gameTime);
 
             if (keyboardState.IsKeyUp(Keys.F1) && lastKeyboardState.IsKeyDown(Keys.F1))
                 helpVisible = !helpVisible;
@@ -217,7 +217,7 @@ namespace TerrainDemo
             layout.HorizontalMargin = 8;
             layout.VerticalMargin = 8;
             layout.HorizontalAlignment = DebugHorizontalAlignment.Left;
-            layout.VerticalAlignment = DebugVerticalAlignment.Top;
+            layout.VerticalAlignment = DebugVerticalAlignment.Bottom;
             layout.Arrange();
 
             spriteBatch.Draw(fillTexture, layout.ArrangedBounds, Color.Black * 0.5f);

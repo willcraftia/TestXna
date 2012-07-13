@@ -10,7 +10,7 @@ using TerrainDemo.Framework.Graphics;
 
 namespace TerrainDemo.CDLOD
 {
-    public sealed class CDLODTerrain : IDisposable
+    public sealed class Terrain : IDisposable
     {
         Settings settings;
 
@@ -20,7 +20,7 @@ namespace TerrainDemo.CDLOD
 
         public GraphicsDevice GraphicsDevice { get; private set; }
 
-        public CDLODTerrain(GraphicsDevice graphicsDevice, Settings settings)
+        public Terrain(GraphicsDevice graphicsDevice, Settings settings)
         {
             GraphicsDevice = graphicsDevice;
             this.settings = settings;
@@ -80,7 +80,7 @@ namespace TerrainDemo.CDLOD
 
         bool disposed;
 
-        ~CDLODTerrain()
+        ~Terrain()
         {
             Dispose(false);
         }

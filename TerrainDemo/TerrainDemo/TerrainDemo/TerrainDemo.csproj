@@ -108,10 +108,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CDLOD\BoundingBoxDrawer.cs" />
-    <Compile Include="CDLOD\CDLODHelper.cs" />
-    <Compile Include="CDLOD\CDLODTerrain.cs" />
-    <Compile Include="CDLOD\CDLODTerrainEffect.cs" />
-    <Compile Include="CDLOD\CDLODTerrainRenderer.cs" />
+    <Compile Include="CDLOD\Helper.cs" />
+    <Compile Include="CDLOD\Terrain.cs" />
+    <Compile Include="CDLOD\TerrainEffect.cs" />
+    <Compile Include="CDLOD\TerrainRenderer.cs" />
     <Compile Include="CDLOD\CreateDescription.cs" />
     <Compile Include="CDLOD\DefaultHeightMapSource.cs" />
     <Compile Include="CDLOD\DefaultMorph.cs" />

@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TerrainDemo.CDLOD
 {
-    public sealed class CDLODTerrainEffect : IEffectMatrices
+    public sealed class TerrainEffect : IEffectMatrices
     {
         const int definedMaxLevelCount = 15;
 
@@ -193,7 +193,7 @@ namespace TerrainDemo.CDLOD
         /// This class does not the backing effect's Dispose().
         /// </summary>
         /// <param name="backingEffect">An effect supporting the CDLOD instancing.</param>
-        public CDLODTerrainEffect(Effect backingEffect)
+        public TerrainEffect(Effect backingEffect)
         {
             if (backingEffect == null) throw new ArgumentNullException("backingEffect");
 
