@@ -132,7 +132,6 @@
     <Compile Include="Cameras\FreeView.cs" />
     <Compile Include="Noise\Fractal.cs" />
     <Compile Include="Cameras\FreeViewInput.cs" />
-    <Compile Include="HeightColorCollection.cs" />
     <Compile Include="Noise\NoiseMap.cs" />
     <Compile Include="Noise\ImprovedPerlinNoise.cs" />
     <Compile Include="Framework\Cameras\PerspectiveFov.cs" />
