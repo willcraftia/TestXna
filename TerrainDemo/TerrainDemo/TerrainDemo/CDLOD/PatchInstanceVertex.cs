@@ -26,19 +26,10 @@ namespace TerrainDemo.CDLOD
         /// </summary>
         public float Scale;
 
-        // オリジナルはインスタンシングを使っていない。
-        // しかし、シェーダでモーフィング範囲を使用しているので、
-        // これを示すためのレベルとして使えば良い気がする。
-        // モーフィング範囲は固定でシェーダへ設定しておく。
-        // レベル値は int だが、シェーダでは float で扱う。
-        public float Level;
-
         /// <summary>
-        /// モーフィング定数。
-        /// x = end / (end - start)
-        /// y = 1 / (end - start)
+        /// LOD レベル。
         /// </summary>
-        public Vector2 MorphConsts;
+        public float Level;
 
         /// <summary>
         /// 頂点宣言
@@ -46,9 +37,7 @@ namespace TerrainDemo.CDLOD
         public readonly static VertexDeclaration VertexDecl = new VertexDeclaration(
             Marshal.SizeOf(typeof(PatchInstanceVertex)),
             // Offset, Scale, Level (16バイト)
-            new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1),
-            // MorphConsts (8 バイト)
-            new VertexElement(16, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 2)
+            new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1)
         );
 
         /// <summary>

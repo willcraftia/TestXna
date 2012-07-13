@@ -1,6 +1,7 @@
 ﻿#region Using
 
 using System;
+using Microsoft.Xna.Framework;
 
 #endregion
 
@@ -13,6 +14,14 @@ namespace TerrainDemo.CDLOD
         float detailBalance = 2;
 
         float morphStartRatio/* = 0.66f*/;
+
+        float[] visibilityRanges;
+
+        float[] morphStartRanges;
+
+        float[] morphEndRanges;
+
+        Vector2[] morphConsts;
 
         public float VisibilityDistance
         {
@@ -50,12 +59,26 @@ namespace TerrainDemo.CDLOD
             }
         }
 
-        public DefaultMorph(int heightMapSize)
-            : base(heightMapSize)
+        public DefaultMorph(int levelCount)
         {
+            visibilityRanges = new float[levelCount];
+            morphStartRanges = new float[levelCount];
+            morphEndRanges = new float[levelCount];
+            morphConsts = new Vector2[levelCount];
         }
 
-        protected override void Initialize(float[] visibilityRanges, float[] morphStartRanges, float[] morphEndRanges)
+        public override void GetMorphConsts(out Vector2[] results)
+        {
+            results = new Vector2[morphConsts.Length];
+            Array.Copy(morphConsts, results, morphConsts.Length);
+        }
+
+        public override float GetVisibilityRange(int level)
+        {
+            return visibilityRanges[level];
+        }
+
+        protected override void InitializeOverride()
         {
             float lodNear = 0;
             float lodFar = visibilityDistance;
@@ -80,13 +103,24 @@ namespace TerrainDemo.CDLOD
             currentDetailBalance = 1;
             for (int i = 0; i < visibilityRanges.Length; i++)
             {
+                // Calculate a visibility range.
                 visibilityRanges[i] = lastVisibilityRange + section * currentDetailBalance;
                 lastVisibilityRange = visibilityRanges[i];
                 currentDetailBalance *= detailBalance;
 
+                // Calculate a morph start/end range.
                 morphEndRanges[i] = visibilityRanges[i];
                 morphStartRanges[i] = lastMorphStart + (morphEndRanges[i] - lastMorphStart) * morphStartRatio;
                 lastMorphStart = morphStartRanges[i];
+
+                // Calculate a morph constant.
+                var start = morphStartRanges[i];
+                var end = morphEndRanges[i];
+
+                const float errorFudge = 0.01f;
+                end = MathHelper.Lerp(end, start, errorFudge);
+
+                morphConsts[i] = new Vector2(end / (end - start), 1 / (end - start));
             }
         }
     }

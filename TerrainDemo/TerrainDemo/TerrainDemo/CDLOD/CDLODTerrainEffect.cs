@@ -10,6 +10,8 @@ namespace TerrainDemo.CDLOD
 {
     public sealed class CDLODTerrainEffect : IEffectMatrices
     {
+        const int definedMaxLevelCount = 15;
+
         EffectParameter view;
 
         EffectParameter projection;
@@ -25,6 +27,10 @@ namespace TerrainDemo.CDLOD
         EffectParameter terrainOffset;
 
         EffectParameter terrainScale;
+
+        EffectParameter levelCount;
+
+        EffectParameter morphConsts;
 
         EffectParameter samplerWorldToTextureScale;
 
@@ -134,6 +140,18 @@ namespace TerrainDemo.CDLOD
         {
             get { return terrainScale.GetValueVector3(); }
             set { terrainScale.SetValue(value); }
+        }
+
+        public float LevelCount
+        {
+            get { return levelCount.GetValueSingle(); }
+            set { levelCount.SetValue(value); }
+        }
+
+        public Vector2[] MorphConsts
+        {
+            get { return morphConsts.GetValueVector2Array(definedMaxLevelCount); }
+            set { morphConsts.SetValue(value); }
         }
 
         /// <summary>
@@ -255,6 +273,9 @@ namespace TerrainDemo.CDLOD
 
             terrainOffset = BackingEffect.Parameters["TerrainOffset"];
             terrainScale = BackingEffect.Parameters["TerrainScale"];
+
+            levelCount = BackingEffect.Parameters["LevelCount"];
+            morphConsts = BackingEffect.Parameters["MorphConsts"];
 
             samplerWorldToTextureScale = BackingEffect.Parameters["SamplerWorldToTextureScale"];
             heightMapSize = BackingEffect.Parameters["HeightMapSize"];

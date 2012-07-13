@@ -12,6 +12,8 @@ namespace TerrainDemo.CDLOD
 {
     public sealed class CDLODTerrain : IDisposable
     {
+        public const int MaxLevelCount = 15;
+
         const int maxSelectedNodeCount = 4000;
 
         const float visibilityDistance = 20000;
@@ -206,6 +208,10 @@ namespace TerrainDemo.CDLOD
             };
             effect.HeightMap = heightMapTexture;
             effect.PatchGridSize = patchMesh.GridSize;
+            effect.LevelCount = levelCount;
+            Vector2[] morphConsts;
+            selection.Morph.GetMorphConsts(out morphConsts);
+            effect.MorphConsts = morphConsts;
 
             boundingBoxDrawer = new BoundingBoxDrawer(GraphicsDevice);
             debugEffect = new BasicEffect(GraphicsDevice);
@@ -250,7 +256,6 @@ namespace TerrainDemo.CDLOD
                 instances[i].Offset.Y = selection.SelectedNodes[i].Y * selection.PatchScale + selection.TerrainOffset.Z;
                 instances[i].Scale = selection.SelectedNodes[i].Size * selection.PatchScale;
                 instances[i].Level = selection.SelectedNodes[i].Level;
-                selection.Morph.GetMorphConsts(selection.SelectedNodes[i].Level, out instances[i].MorphConsts);
             }
         }
 

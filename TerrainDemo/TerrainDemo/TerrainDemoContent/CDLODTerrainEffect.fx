@@ -1,4 +1,9 @@
 //=============================================================================
+// Definitions
+//-----------------------------------------------------------------------------
+#define MAX_LEVEL_COUNT 15
+
+//=============================================================================
 // Variables
 //-----------------------------------------------------------------------------
 float4x4 View;
@@ -12,6 +17,9 @@ float3 DiffuseLightColor;
 float3 TerrainOffset;
 float3 TerrainScale;
 
+float LevelCount;
+float2 MorphConsts[MAX_LEVEL_COUNT];
+
 // x = (textureWidth - 1.0f) / textureWidth
 // y = (textureHeight - 1.0f) / textureHeight
 float2 SamplerWorldToTextureScale;
@@ -23,13 +31,12 @@ float2 TwoHeightMapSize;
 float2 HeightMapTexelSize;
 float2 TwoHeightMapTexelSize;
 
-// オリジナルの g_gridDim.y
+// [g_gridDim.y] on the original code.
 float HalfPatchGridSize;
-// オリジナルの g_gridDim.z
+// [g_gridDim.z] on the original code.
 float TwoOverPatchGridSize;
 
-// デバッグ用。
-// 高度範囲に応じた色分けのための色テーブル。
+// (debug) to color by a height.
 float4 heightColorIndices[] =
 {
     { 0,       0,       0.5f,    1 },
@@ -42,7 +49,7 @@ float4 heightColorIndices[] =
     { 1,       1,       1,       1 }
 };
 
-// デバッグ用。
+// (debug) to turn on/off a light.
 bool LightEnabled;
 
 texture HeightMap;
@@ -70,7 +77,7 @@ struct VS_OUTPUT
     float4 Normal : NORMAL0;
     float2 TexCoord : TEXCOORD0;
     float3 EyeDirection : TEXCOORD1;
-// デバッグ用。
+    // (debug) to color by a height.
     float Height : TEXCOORD2;
 };
 
@@ -95,13 +102,7 @@ float2 MorphVertex(float4 position, float2 vertex, float4 quadScale, float morph
 
 float SampleHeightMap(float2 uv)
 {
-//    return tex2Dlod(HeightMapSampler, float4(uv, 0, 0)).x;
-
-// 単純に tex2Dlod で値を取りたいが、
-// 例えば leafNodeSize = 8 かつパッチ サイズ 32 などを行った場合、
-// TextureFilter = POINT の影響により段階的な値の取得となってしまう。
-// XNA 4.0 では SurfaceFormat.Single で TextureFilter = Linear は不可能？
-// ゆえに、コード上での bilinear filtering。
+    // Bilinear filtering on code.
     uv = uv.xy * HeightMapSize - float2(0.5, 0.5);
     float2 uvf = floor( uv.xy );
     float2 f = uv - uvf;
@@ -147,17 +148,15 @@ float4 CalculateNormal(float2 texCoord)
 // instanceParam0:
 //      x: QuadOffset.x
 //      y: QuadOffset.z
-//      z: QuadScale (x, z 共通)
+//      z: QuadScale (x and z shared)
 //      w: Level
-// instanceParam1: morphConsts
 VS_OUTPUT VS(
     VS_INPUT input,
-    float4 instanceParam0 : TEXCOORD1,
-    float4 instanceParam1 : TEXCOORD2)
+    float4 instanceParam0 : TEXCOORD1)
 {
     VS_OUTPUT output;
 
-    // ベースとなる頂点座標の算出。
+    // calculate base vertex position.
     float4 quadOffset = float4(instanceParam0.x, 0, instanceParam0.y, 0);
     float4 quadScale = float4(instanceParam0.z, 0, instanceParam0.z, 0);
     int level = floor(instanceParam0.w);
@@ -169,12 +168,12 @@ VS_OUTPUT VS(
     vertex.y += TerrainOffset.y;
 
     float eyeDistance = distance(vertex.xyz, EyePosition);
-    float morphLerpK = 1 - saturate(instanceParam1.x - eyeDistance * instanceParam1.y);
+    float morphLerpK = 1 - saturate(MorphConsts[level].x - eyeDistance * MorphConsts[level].y);
 
-    // xz をモーフィング。
+    // morph xz.
     vertex.xz = MorphVertex(input.Position, vertex.xz, quadScale, morphLerpK);
 
-    // モーフィング結果で高さを再取得。
+    // get a height with morphed xz.
     float2 globalUV = CalculateGlobalUV(vertex);
     float h = SampleHeightMap(globalUV);
     vertex.y = h;
@@ -189,7 +188,7 @@ VS_OUTPUT VS(
 
     output.Normal = CalculateNormal(globalUV);
 
-    // デバッグ用。
+    // (debug) to decide a height color.
     output.Height = h;
 
     return output;
