@@ -42,13 +42,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="jigsaw.png">
-      <Name>jigsaw</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="CDLODTerrainEffect.fx">
       <Name>CDLODTerrainEffect</Name>
       <Importer>EffectImporter</Importer>
