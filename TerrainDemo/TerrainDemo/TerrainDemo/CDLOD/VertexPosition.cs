@@ -9,22 +9,15 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TerrainDemo.CDLOD
 {
     /// <summary>
-    /// 頂点の位置のみを保持するカスタム頂点構造体です。
+    /// The vertex structure contains a position of a PatchMesh.
     /// </summary>
     public struct VertexPosition : IVertexType
     {
         public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration(
             new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0));
 
-        /// <summary>
-        /// 頂点の位置。
-        /// </summary>
         public Vector3 Position;
 
-        /// <summary>
-        /// コンストラクタ。
-        /// </summary>
-        /// <param name="position">頂点の位置。</param>
         public VertexPosition(Vector3 position)
         {
             Position = position;

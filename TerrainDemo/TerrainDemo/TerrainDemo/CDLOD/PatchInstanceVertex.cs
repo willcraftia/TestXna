@@ -10,39 +10,33 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TerrainDemo.CDLOD
 {
     /// <summary>
-    /// パッチ インスタンス情報格納用の頂点データ構造です。
+    /// The vertex structure represents a patch instance.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct PatchInstanceVertex : IVertexType
     {
         /// <summary>
-        /// ノードの位置 (x, z)。
-        /// QuadTree のオフセット分も含む。
+        /// The position (x, z) of a patch in the world space.
         /// </summary>
         public Vector2 Offset;
 
         /// <summary>
-        /// ノードのスケール。
+        /// The scale of a patch.
         /// </summary>
         public float Scale;
 
         /// <summary>
-        /// LOD レベル。
+        /// The LOD level of a patch.
         /// </summary>
         public float Level;
 
-        /// <summary>
-        /// 頂点宣言
-        /// </summary>
         public readonly static VertexDeclaration VertexDecl = new VertexDeclaration(
             Marshal.SizeOf(typeof(PatchInstanceVertex)),
-            // Offset, Scale, Level (16バイト)
+            // Offset, Scale, Level (16 bytes)
             new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1)
         );
 
-        /// <summary>
-        /// 頂点宣言の取得
-        /// </summary>
+        // I/F
         public VertexDeclaration VertexDeclaration
         {
             get { return VertexDecl; }

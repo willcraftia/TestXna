@@ -30,13 +30,11 @@ namespace TerrainDemo.CDLOD
 
         public PatchMesh(GraphicsDevice graphicsDevice, int gridSize)
         {
-            // パッチのサイズは、leafNodeSize * n になっていないといけない。
-            // n は 2 の自乗でなければならない。
+            // GridSize must be leafNodeSize * n, and n must be power of 2.
             GridSize = gridSize;
 
             int vertexSize = gridSize + 1;
 
-            // 4 つの正方形 (8 つの三角形) の頂点数。
             NumVertices = vertexSize * vertexSize;
             VertexBuffer = new VertexBuffer(graphicsDevice, VertexPosition.VertexDeclaration, NumVertices, BufferUsage.WriteOnly);
 
@@ -47,9 +45,7 @@ namespace TerrainDemo.CDLOD
 
             VertexBuffer.SetData(vertices);
 
-            // 8 つの三角形で構築。
             PrimitiveCount = gridSize * gridSize * 2;
-            // 8 つの三角形のためのインデックス数。
             var indexCount = PrimitiveCount * 3;
             IndexBuffer = new IndexBuffer(graphicsDevice, IndexElementSize.SixteenBits, indexCount, BufferUsage.WriteOnly);
 
@@ -57,7 +53,7 @@ namespace TerrainDemo.CDLOD
             int index = 0;
             int halfSize = gridSize / 2;
 
-            // Top left の面。
+            // Top left.
             for (int z = 0; z < halfSize; z++)
             {
                 for (int x = 0; x < halfSize; x++)
@@ -73,7 +69,7 @@ namespace TerrainDemo.CDLOD
             }
             TopLeftEndIndex = index;
 
-            // Top right の面。
+            // Top right.
             for (int z = 0; z < halfSize; z++)
             {
                 for (int x = halfSize; x < gridSize; x++)
@@ -89,7 +85,7 @@ namespace TerrainDemo.CDLOD
             }
             TopRightEndIndex = index;
 
-            // Bottom left の面。
+            // Bottom left.
             for (int z = halfSize; z < gridSize; z++)
             {
                 for (int x = 0; x < halfSize; x++)
@@ -105,7 +101,7 @@ namespace TerrainDemo.CDLOD
             }
             BottomLeftEndIndex = index;
 
-            // Bottom right の面。
+            // Bottom right.
             for (int z = halfSize; z < gridSize; z++)
             {
                 for (int x = halfSize; x < gridSize; x++)
