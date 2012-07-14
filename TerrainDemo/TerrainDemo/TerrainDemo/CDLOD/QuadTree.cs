@@ -20,14 +20,8 @@ namespace TerrainDemo.CDLOD
             for (int i = 1; i < createDescription.LevelCount; i++)
                 topNodeSize *= 2;
 
-            topNodeCountX = (createDescription.HeightMap.Width - 1) / topNodeSize;
-            topNodeCountY = (createDescription.HeightMap.Height - 1) / topNodeSize;
-            
-            // adjust top node counts when the top node size is over the height map size.
-            if (createDescription.HeightMap.Width - 1 < topNodeSize)
-                topNodeCountX++;
-            if (createDescription.HeightMap.Height - 1 < topNodeSize)
-                topNodeCountY++;
+            topNodeCountX = (int) Math.Ceiling((createDescription.HeightMap.Width - 1) / (float) topNodeSize);
+            topNodeCountY = (int) Math.Ceiling((createDescription.HeightMap.Height - 1) / (float) topNodeSize);
 
             topNodes = new Node[topNodeCountX, topNodeCountY];
             for (int y = 0; y < topNodeCountY; y++)
