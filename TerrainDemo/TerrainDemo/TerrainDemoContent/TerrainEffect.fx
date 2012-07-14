@@ -119,7 +119,7 @@ float2 MorphVertex(float4 position, float2 vertex, float4 quadScale, float morph
 
 float SampleHeightMap(float2 uv)
 {
-    // Bilinear filtering on code.
+    // A manual bilinear interpolation.
     uv = uv.xy * HeightMapSize - float2(0.5, 0.5);
     float2 uvf = floor( uv.xy );
     float2 f = uv - uvf;
@@ -127,15 +127,22 @@ float SampleHeightMap(float2 uv)
 
     float t00 = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y, 0, 0 ) ).x;
     float t10 = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y, 0, 0 ) ).x;
-
     float tA = lerp( t00, t10, f.x );
 
     float t01 = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
     float t11 = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
-
     float tB = lerp( t01, t11, f.x );
 
     return lerp( tA, tB, f.y );
+    // The following codes are a simple bilinear interporation but low accuracy.
+/*    float tl = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y, 0, 0 ) ).x;
+    float tr = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y, 0, 0 ) ).x;
+    float bl = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
+    float br = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
+    float2 f = frac(uv.xy * HeightMapSize);
+    float tA = lerp(tl, tr, f.x);
+    float tB = lerp(bl, br, f.x);
+    return lerp(tA, tB, f.y);*/
 }
 
 float4 CalculateNormal(float2 texCoord)
