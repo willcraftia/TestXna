@@ -44,7 +44,7 @@ namespace TerrainDemo.CDLOD
             float near = 0;
             float lastRange = near;
             float currentDetailBalance = 1;
-            float section = MostDetailRange / settings.PatchScale;
+            float section = MostDetailRange;
             for (int i = 0; i < ranges.Length; i++)
             {
                 ranges[i] = lastRange + section * currentDetailBalance;
