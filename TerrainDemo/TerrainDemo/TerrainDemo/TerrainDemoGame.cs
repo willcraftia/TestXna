@@ -18,13 +18,16 @@ namespace TerrainDemo
 {
     public class TerrainDemoGame : Game
     {
-        const int noiseMapWidth = 512 * 1 + 1;
+        // noise parameters for debugs.
+        int noiseMapWidth = 512 * 1 + 1;
+        int noiseMapHeight = 512 * 1 + 1;
+        float noiseSampleWidth = 10;
+        float noiseSampleHeight = 10;
 
-        const int noiseMapHeight = 512 * 1 + 1;
-
-        const float noiseSampleWidth = 10;
-        
-        const float noiseSampleHeight = 10;
+        // CDLOD settings for debus.
+        int levelCount = Settings.DefaultLevelCount;
+        int leafNodeSize = Settings.DefaultLeafNodeSize;
+        float visibilityDistance = Settings.DefaultVisibilityDistance;
 
         GraphicsDeviceManager graphics;
 
@@ -130,9 +133,9 @@ namespace TerrainDemo
 
             var heightMap = new DefaultHeightMapSource(noiseMap);
 
-            // for debug parameters.
-            //settings.LevelCount = 10;
-            //settings.LeafNodeSize = 2;
+            settings.LevelCount = levelCount;
+            settings.LeafNodeSize = leafNodeSize;
+            settings.VisibilityDistance = visibilityDistance;
 
             visibilityRanges = new VisibilityRanges(settings);
             terrain = new Terrain(GraphicsDevice, settings);
@@ -186,7 +189,6 @@ namespace TerrainDemo
             projection.Update();
 
             // prepare selection's state.
-            //selection.Morph = morph;
             selection.View = view.Matrix;
             selection.Projection = projection.Matrix;
             selection.Prepare();

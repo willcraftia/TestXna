@@ -108,7 +108,7 @@ namespace TerrainDemo.CDLOD
             }
         }
 
-        public bool Select(Selection selection, bool parentCompletelyInFrustum)
+        public bool Select(Selection selection, bool parentCompletelyInFrustum, bool ignoreVisibilityCheck)
         {
             BoundingBox boundingBox;
             GetBoundingBox(ref selection.TerrainOffset, selection.PatchScale, selection.HeightScale, out boundingBox);
@@ -120,12 +120,15 @@ namespace TerrainDemo.CDLOD
             }
 
             BoundingSphere sphere;
-            bool intersected;
+            bool intersected = true;
 
-            selection.GetVisibilitySphere(level, out sphere);
-            boundingBox.Intersects(ref sphere, out intersected);
-            if (!intersected)
-                return false;
+            if (!ignoreVisibilityCheck)
+            {
+                selection.GetVisibilitySphere(level, out sphere);
+                boundingBox.Intersects(ref sphere, out intersected);
+                if (!intersected)
+                    return false;
+            }
 
             if (level == 0)
             {
@@ -148,32 +151,32 @@ namespace TerrainDemo.CDLOD
             bool weAreCompletelyInFrustum = (containmentType == ContainmentType.Contains);
 
             // Check a child node's visibility on ahead.
-            var allChildrenSelected = true;
-            allChildrenSelected &= childTopLeft.PreSelect(selection, weAreCompletelyInFrustum);
+            var someChildrenSelected = false;
+            someChildrenSelected |= childTopLeft.PreSelect(selection, weAreCompletelyInFrustum);
             if (childTopRight != null)
-                allChildrenSelected &= childTopRight.PreSelect(selection, weAreCompletelyInFrustum);
+                someChildrenSelected |= childTopRight.PreSelect(selection, weAreCompletelyInFrustum);
             if (childBottomLeft != null)
-                allChildrenSelected &= childBottomLeft.PreSelect(selection, weAreCompletelyInFrustum);
+                someChildrenSelected |= childBottomLeft.PreSelect(selection, weAreCompletelyInFrustum);
             if (childBottomRight != null)
-                allChildrenSelected &= childBottomRight.PreSelect(selection, weAreCompletelyInFrustum);
+                someChildrenSelected |= childBottomRight.PreSelect(selection, weAreCompletelyInFrustum);
 
-            if (allChildrenSelected)
+            if (someChildrenSelected)
             {
-                // If can select all children, select them.
-                childTopLeft.Select(selection, weAreCompletelyInFrustum);
+                // Select all children to avoid T-junctions by ignoring a visibiliy range check
+                // if can select at least one.
+                // The original code tries to select finer nodes as far as possible,
+                // and hides parts of a coaser node overlapped by them at render time.
+                // But using HW instancing, we must use a same mesh, so can not use such a overlap.
+                childTopLeft.Select(selection, weAreCompletelyInFrustum, true);
                 if (childTopRight != null)
-                    childTopRight.Select(selection, weAreCompletelyInFrustum);
+                    childTopRight.Select(selection, weAreCompletelyInFrustum, true);
                 if (childBottomLeft != null)
-                    childBottomLeft.Select(selection, weAreCompletelyInFrustum);
+                    childBottomLeft.Select(selection, weAreCompletelyInFrustum, true);
                 if (childBottomRight != null)
-                    childBottomRight.Select(selection, weAreCompletelyInFrustum);
+                    childBottomRight.Select(selection, weAreCompletelyInFrustum, true);
             }
             else
             {
-                // Select this node for the HW instancing.
-                // The original code tries to select a finer node as far as possible,
-                // and hides parts of a coaser node overlapped by finer nodes on the render time.
-                // But using HW instancing, we must use a same mesh, so avoid such a overlap.
                 if (containmentType != ContainmentType.Disjoint)
                     selection.AddSelectedNode(this);
             }

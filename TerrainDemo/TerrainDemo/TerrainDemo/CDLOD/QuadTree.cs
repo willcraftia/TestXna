@@ -45,7 +45,7 @@ namespace TerrainDemo.CDLOD
             {
                 for (int x = 0; x < topNodeCountX; x++)
                 {
-                    topNodes[x, y].Select(selection, false);
+                    topNodes[x, y].Select(selection, false, false);
                 }
             }
         }
