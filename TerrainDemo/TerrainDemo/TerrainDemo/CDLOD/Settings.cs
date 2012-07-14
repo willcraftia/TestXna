@@ -14,10 +14,6 @@ namespace TerrainDemo.CDLOD
 
         public const int DefaultLevelCount = 7;
 
-        public const float DefaultVisibilityDistance = 20000;
-
-        public const float DefaultDetailBalance = 2;
-
         public const float DefaultPatchScale = 2;
 
         public const float DefaultHeightScale = 255;
@@ -25,10 +21,6 @@ namespace TerrainDemo.CDLOD
         public int LeafNodeSize;
 
         public int LevelCount;
-
-        public float VisibilityDistance;
-
-        public float DetailBalance;
 
         public float PatchScale;
 
@@ -42,8 +34,6 @@ namespace TerrainDemo.CDLOD
                 {
                     LeafNodeSize = DefaultLeafNodeSize,
                     LevelCount = DefaultLevelCount,
-                    VisibilityDistance = DefaultVisibilityDistance,
-                    DetailBalance = DefaultDetailBalance,
                     PatchScale = DefaultPatchScale,
                     HeightScale = DefaultHeightScale
                 };

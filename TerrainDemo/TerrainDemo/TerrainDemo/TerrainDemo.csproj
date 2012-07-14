@@ -108,7 +108,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CDLOD\BoundingBoxDrawer.cs" />
+    <Compile Include="CDLOD\DefaultVisibleRanges.cs" />
     <Compile Include="CDLOD\Helper.cs" />
+    <Compile Include="CDLOD\IVisibleRanges.cs" />
+    <Compile Include="CDLOD\MorphConsts.cs" />
+    <Compile Include="CDLOD\OriginalVisibleRanges.cs" />
     <Compile Include="CDLOD\Terrain.cs" />
     <Compile Include="CDLOD\TerrainEffect.cs" />
     <Compile Include="CDLOD\TerrainRenderer.cs" />
@@ -123,7 +127,6 @@
     <Compile Include="CDLOD\Selection.cs" />
     <Compile Include="CDLOD\Settings.cs" />
     <Compile Include="CDLOD\VertexPosition.cs" />
-    <Compile Include="CDLOD\VisibilityRanges.cs" />
     <Compile Include="Framework\Debug\DebugHorizontalAlignment.cs" />
     <Compile Include="Framework\Debug\DebugLayout.cs" />
     <Compile Include="Framework\Debug\DebugVerticalAlignment.cs" />

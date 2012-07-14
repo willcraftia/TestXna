@@ -74,7 +74,7 @@ namespace TerrainDemo.CDLOD
 
         public bool LightEnabled { get; set; }
 
-        public TerrainRenderer(GraphicsDevice graphicsDevice, ContentManager content, Settings settings, VisibilityRanges visibilityRanges)
+        public TerrainRenderer(GraphicsDevice graphicsDevice, ContentManager content, Settings settings)
         {
             GraphicsDevice = graphicsDevice;
             Content = content;
@@ -91,10 +91,6 @@ namespace TerrainDemo.CDLOD
             effect.PatchGridSize = patchMesh.GridSize;
             effect.LevelCount = settings.LevelCount;
 
-            Vector2[] morphConsts;
-            visibilityRanges.CreateMorphConsts(out morphConsts);
-            effect.MorphConsts = morphConsts;
-
             lightDirection = new Vector3(0, -1, -1);
             lightDirection.Normalize();
 
@@ -105,6 +101,14 @@ namespace TerrainDemo.CDLOD
 
             HeightColorVisible = true;
             LightEnabled = true;
+        }
+
+        // Invoke this method if the state of a IVisibleRanges instance is changed.
+        public void InitializeMorphConsts(IVisibleRanges visibleRanges)
+        {
+            Vector2[] morphConsts;
+            MorphConsts.Create(visibleRanges, out morphConsts);
+            effect.MorphConsts = morphConsts;
         }
 
         public void Draw(GameTime gameTime, Selection selection)

@@ -18,22 +18,30 @@ namespace TerrainDemo
 {
     public class TerrainDemoGame : Game
     {
-        // noise parameters for debugs.
+        // noise parameters for debug.
         int noiseSeed = 300;
         // A map can not be over 4096x4096 in HiDef profile.
-        int noiseMapWidth = 256 /** 15*/ + 1;
-        int noiseMapHeight = 256 /** 15*/ + 1;
+        int noiseMapWidth = 256 * 1 + 1;
+        int noiseMapHeight = 256 * 1 + 1;
+        //int noiseMapWidth = 256 * 8 + 1;
+        //int noiseMapHeight = 256 * 8 + 1;
         float noiseSampleX = 0;
         float noiseSampleY = 0;
         float noiseSampleWidth = 6;
         float noiseSampleHeight = 6;
 
-        // CDLOD settings for debus.
+        // CDLOD settings for debug.
         int levelCount = Settings.DefaultLevelCount;
+        //int levelCount = 10;
         int leafNodeSize = Settings.DefaultLeafNodeSize;
-        float visibilityDistance = Settings.DefaultVisibilityDistance;
+        //int leafNodeSize = Settings.DefaultLeafNodeSize * 2 * 2;
         float patchScale = Settings.DefaultPatchScale;
-        float heightScale = Settings.DefaultHeightScale/* * 3*/ * 0.1f;
+        float heightScale = Settings.DefaultHeightScale * 0.1f;
+        //float heightScale = Settings.DefaultHeightScale;
+        //float heightScale = Settings.DefaultHeightScale * 3;
+
+        // View settings for debug.
+        float farPlaneDistance = 100000;
 
         GraphicsDeviceManager graphics;
 
@@ -53,7 +61,7 @@ namespace TerrainDemo
 
         Settings settings = Settings.Default;
 
-        VisibilityRanges visibilityRanges;
+        IVisibleRanges visibleRanges;
 
         Terrain terrain;
 
@@ -111,7 +119,7 @@ namespace TerrainDemo
 
             view.Position = new Vector3(50, 30, 50);
             view.Yaw(MathHelper.PiOver4 * 5);
-            projection.FarPlaneDistance = 10000;
+            projection.FarPlaneDistance = farPlaneDistance;
 
             defaultRasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
             defaultRasterizerState.FillMode = FillMode.Solid;
@@ -141,15 +149,17 @@ namespace TerrainDemo
 
             settings.LevelCount = levelCount;
             settings.LeafNodeSize = leafNodeSize;
-            settings.VisibilityDistance = visibilityDistance;
             settings.PatchScale = patchScale;
             settings.HeightScale = heightScale;
 
-            visibilityRanges = new VisibilityRanges(settings);
+            visibleRanges = new DefaultVisibleRanges(settings);
+            visibleRanges.Initialize();
+
             terrain = new Terrain(GraphicsDevice, settings);
             terrain.Initialize(heightMap);
-            renderer = new TerrainRenderer(GraphicsDevice, Content, settings, visibilityRanges);
-            selection = new Selection(settings, visibilityRanges);
+            renderer = new TerrainRenderer(GraphicsDevice, Content, settings);
+            renderer.InitializeMorphConsts(visibleRanges);
+            selection = new Selection(settings, visibleRanges);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("Fonts/Debug");

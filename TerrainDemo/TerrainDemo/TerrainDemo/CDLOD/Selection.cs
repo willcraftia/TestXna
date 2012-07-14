@@ -26,7 +26,7 @@ namespace TerrainDemo.CDLOD
 
         SelectedNode[] selectedNodes;
 
-        public VisibilityRanges VisibilityRanges { get; private set; }
+        public IVisibleRanges VisibleRanges { get; private set; }
 
         public BoundingFrustum Frustum { get; private set; }
 
@@ -55,10 +55,10 @@ namespace TerrainDemo.CDLOD
             }
         }
 
-        public Selection(Settings settings, VisibilityRanges visibilityRanges)
+        public Selection(Settings settings, IVisibleRanges visibleRanges)
         {
             this.settings = settings;
-            VisibilityRanges = visibilityRanges;
+            VisibleRanges = visibleRanges;
 
             Frustum = new BoundingFrustum(Matrix.Identity);
             selectedNodes = new SelectedNode[MaxSelectedNodeCount];
@@ -88,7 +88,7 @@ namespace TerrainDemo.CDLOD
 
         public void GetVisibilitySphere(int level, out BoundingSphere sphere)
         {
-            sphere = new BoundingSphere(EyePosition, VisibilityRanges[level]);
+            sphere = new BoundingSphere(EyePosition, VisibleRanges[level]);
         }
 
         public void AddSelectedNode(Node node)
