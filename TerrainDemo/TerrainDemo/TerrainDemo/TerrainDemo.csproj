@@ -114,7 +114,6 @@
     <Compile Include="CDLOD\TerrainRenderer.cs" />
     <Compile Include="CDLOD\CreateDescription.cs" />
     <Compile Include="CDLOD\DefaultHeightMapSource.cs" />
-    <Compile Include="CDLOD\DefaultMorph.cs" />
     <Compile Include="CDLOD\PatchInstanceVertex.cs" />
     <Compile Include="CDLOD\PatchMesh.cs" />
     <Compile Include="CDLOD\IHeightMapSource.cs" />
@@ -122,9 +121,9 @@
     <Compile Include="CDLOD\QuadTree.cs" />
     <Compile Include="CDLOD\SelectedNode.cs" />
     <Compile Include="CDLOD\Selection.cs" />
-    <Compile Include="CDLOD\Morph.cs" />
     <Compile Include="CDLOD\Settings.cs" />
     <Compile Include="CDLOD\VertexPosition.cs" />
+    <Compile Include="CDLOD\VisibilityRanges.cs" />
     <Compile Include="Framework\Debug\DebugHorizontalAlignment.cs" />
     <Compile Include="Framework\Debug\DebugLayout.cs" />
     <Compile Include="Framework\Debug\DebugVerticalAlignment.cs" />

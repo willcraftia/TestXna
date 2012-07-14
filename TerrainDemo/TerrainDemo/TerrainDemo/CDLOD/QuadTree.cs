@@ -20,10 +20,15 @@ namespace TerrainDemo.CDLOD
             for (int i = 1; i < createDescription.LevelCount; i++)
                 topNodeSize *= 2;
 
-            // オリジナルでは + 1 としているが、
-            // + 1 では height map の領域をはみ出すので削除してみた。
-            topNodeCountX = (createDescription.HeightMap.Width - 1) / topNodeSize /*+ 1*/;
-            topNodeCountY = (createDescription.HeightMap.Height - 1) / topNodeSize /*+ 1*/;
+            topNodeCountX = (createDescription.HeightMap.Width - 1) / topNodeSize;
+            topNodeCountY = (createDescription.HeightMap.Height - 1) / topNodeSize;
+            
+            // adjust top node counts when the top node size is over the height map size.
+            if (createDescription.HeightMap.Width - 1 < topNodeSize)
+                topNodeCountX++;
+            if (createDescription.HeightMap.Height - 1 < topNodeSize)
+                topNodeCountY++;
+
             topNodes = new Node[topNodeCountX, topNodeCountY];
             for (int y = 0; y < topNodeCountY; y++)
             {

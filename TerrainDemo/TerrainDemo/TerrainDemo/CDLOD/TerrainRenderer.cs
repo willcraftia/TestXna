@@ -74,7 +74,7 @@ namespace TerrainDemo.CDLOD
 
         public bool LightEnabled { get; set; }
 
-        public TerrainRenderer(GraphicsDevice graphicsDevice, ContentManager content, Settings settings)
+        public TerrainRenderer(GraphicsDevice graphicsDevice, ContentManager content, Settings settings, VisibilityRanges visibilityRanges)
         {
             GraphicsDevice = graphicsDevice;
             Content = content;
@@ -90,6 +90,10 @@ namespace TerrainDemo.CDLOD
             effect = new TerrainEffect(sourceEffect);
             effect.PatchGridSize = patchMesh.GridSize;
             effect.LevelCount = settings.LevelCount;
+
+            Vector2[] morphConsts;
+            visibilityRanges.CreateMorphConsts(out morphConsts);
+            effect.MorphConsts = morphConsts;
 
             lightDirection = new Vector3(0, -1, -1);
             lightDirection.Normalize();
@@ -120,20 +124,14 @@ namespace TerrainDemo.CDLOD
             GraphicsDevice.Indices = patchMesh.IndexBuffer;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            // prepare effect parameters.
-            Vector2[] morphConsts;
-            selection.Morph.GetMorphConsts(out morphConsts);
-            effect.MorphConsts = morphConsts;
+            // Prepare effect parameters.
+            // per a selection (a terrain).
             effect.TerrainOffset = selection.TerrainOffset;
-            effect.TerrainScale = new Vector3
-            {
-                X = (selection.HeightMapTexture.Width - 1) * selection.PatchScale,
-                Y = selection.HeightScale,
-                Z = (selection.HeightMapTexture.Height - 1) * selection.PatchScale
-            };
+            effect.TerrainScale = selection.TerrainScale;
             effect.HeightMap = selection.HeightMapTexture;
             effect.View = selection.View;
             effect.Projection = selection.Projection;
+            // render settings.
             effect.AmbientLightColor = ambientLightColor;
             effect.LightDirection = lightDirection;
             effect.DiffuseLightColor = diffuseLightColor;

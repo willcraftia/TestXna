@@ -14,9 +14,17 @@ namespace TerrainDemo.CDLOD
 
         public const int DefaultLevelCount = 7;
 
+        public const float DefaultVisibilityDistance = 20000;
+
+        public const float DefaultDetailBalance = 2;
+
         public int LeafNodeSize;
 
         public int LevelCount;
+
+        public float VisibilityDistance;
+
+        public float DetailBalance;
 
         public static Settings Default
         {
@@ -25,7 +33,9 @@ namespace TerrainDemo.CDLOD
                 return new Settings
                 {
                     LeafNodeSize = DefaultLeafNodeSize,
-                    LevelCount = DefaultLevelCount
+                    LevelCount = DefaultLevelCount,
+                    VisibilityDistance = DefaultVisibilityDistance,
+                    DetailBalance = DefaultDetailBalance
                 };
             }
         }

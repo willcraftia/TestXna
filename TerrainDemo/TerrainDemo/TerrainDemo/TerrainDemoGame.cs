@@ -44,13 +44,13 @@ namespace TerrainDemo
 
         Settings settings = Settings.Default;
 
-        Terrain terrain;
+        VisibilityRanges visibilityRanges;
 
-        Morph morph;
+        Terrain terrain;
 
         TerrainRenderer renderer;
 
-        Selection selection = new Selection();
+        Selection selection;
 
         string helpMessage =
             "[F1] Help\r\n" +
@@ -130,12 +130,15 @@ namespace TerrainDemo
 
             var heightMap = new DefaultHeightMapSource(noiseMap);
 
+            // for debug parameters.
+            //settings.LevelCount = 10;
+            //settings.LeafNodeSize = 2;
+
+            visibilityRanges = new VisibilityRanges(settings);
             terrain = new Terrain(GraphicsDevice, settings);
             terrain.Initialize(heightMap);
-
-            morph = new DefaultMorph(settings.LevelCount);
-
-            renderer = new TerrainRenderer(GraphicsDevice, Content, settings);
+            renderer = new TerrainRenderer(GraphicsDevice, Content, settings, visibilityRanges);
+            selection = new Selection(settings, visibilityRanges);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("Fonts/Debug");
@@ -183,7 +186,7 @@ namespace TerrainDemo
             projection.Update();
 
             // prepare selection's state.
-            selection.Morph = morph;
+            //selection.Morph = morph;
             selection.View = view.Matrix;
             selection.Projection = projection.Matrix;
             selection.Prepare();

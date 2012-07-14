@@ -82,17 +82,27 @@ namespace TerrainDemo.CDLOD
                 minHeight = childTopLeft.minHeight;
                 maxHeight = childTopLeft.maxHeight;
 
-                childTopRight = new Node(x + childSize, y, childSize, ref createDescription);
-                minHeight = MathHelper.Min(minHeight, childTopRight.minHeight);
-                maxHeight = MathHelper.Max(maxHeight, childTopRight.maxHeight);
+                if (x + childSize < createDescription.HeightMap.Width - 1)
+                {
+                    childTopRight = new Node(x + childSize, y, childSize, ref createDescription);
+                    minHeight = MathHelper.Min(minHeight, childTopRight.minHeight);
+                    maxHeight = MathHelper.Max(maxHeight, childTopRight.maxHeight);
+                }
 
-                childBottomLeft = new Node(x, y + childSize, childSize, ref createDescription);
-                minHeight = MathHelper.Min(minHeight, childBottomLeft.minHeight);
-                maxHeight = MathHelper.Max(maxHeight, childBottomLeft.maxHeight);
+                if (y + childSize < createDescription.HeightMap.Height - 1)
+                {
+                    childBottomLeft = new Node(x, y + childSize, childSize, ref createDescription);
+                    minHeight = MathHelper.Min(minHeight, childBottomLeft.minHeight);
+                    maxHeight = MathHelper.Max(maxHeight, childBottomLeft.maxHeight);
+                }
 
-                childBottomRight = new Node(x + childSize, y + childSize, childSize, ref createDescription);
-                minHeight = MathHelper.Min(minHeight, childBottomRight.minHeight);
-                maxHeight = MathHelper.Max(maxHeight, childBottomRight.maxHeight);
+                if (x + childSize < createDescription.HeightMap.Width - 1 &&
+                    y + childSize < createDescription.HeightMap.Height - 1)
+                {
+                    childBottomRight = new Node(x + childSize, y + childSize, childSize, ref createDescription);
+                    minHeight = MathHelper.Min(minHeight, childBottomRight.minHeight);
+                    maxHeight = MathHelper.Max(maxHeight, childBottomRight.maxHeight);
+                }
 
                 level = childTopLeft.level + 1;
             }
@@ -140,17 +150,23 @@ namespace TerrainDemo.CDLOD
             // Check a child node's visibility on ahead.
             var allChildrenSelected = true;
             allChildrenSelected &= childTopLeft.PreSelect(selection, weAreCompletelyInFrustum);
-            allChildrenSelected &= childTopRight.PreSelect(selection, weAreCompletelyInFrustum);
-            allChildrenSelected &= childBottomLeft.PreSelect(selection, weAreCompletelyInFrustum);
-            allChildrenSelected &= childBottomRight.PreSelect(selection, weAreCompletelyInFrustum);
+            if (childTopRight != null)
+                allChildrenSelected &= childTopRight.PreSelect(selection, weAreCompletelyInFrustum);
+            if (childBottomLeft != null)
+                allChildrenSelected &= childBottomLeft.PreSelect(selection, weAreCompletelyInFrustum);
+            if (childBottomRight != null)
+                allChildrenSelected &= childBottomRight.PreSelect(selection, weAreCompletelyInFrustum);
 
             if (allChildrenSelected)
             {
                 // If can select all children, select them.
                 childTopLeft.Select(selection, weAreCompletelyInFrustum);
-                childTopRight.Select(selection, weAreCompletelyInFrustum);
-                childBottomLeft.Select(selection, weAreCompletelyInFrustum);
-                childBottomRight.Select(selection, weAreCompletelyInFrustum);
+                if (childTopRight != null)
+                    childTopRight.Select(selection, weAreCompletelyInFrustum);
+                if (childBottomLeft != null)
+                    childBottomLeft.Select(selection, weAreCompletelyInFrustum);
+                if (childBottomRight != null)
+                    childBottomRight.Select(selection, weAreCompletelyInFrustum);
             }
             else
             {

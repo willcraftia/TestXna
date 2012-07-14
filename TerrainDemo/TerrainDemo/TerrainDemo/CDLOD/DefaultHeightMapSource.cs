@@ -23,8 +23,8 @@ namespace TerrainDemo.CDLOD
 
             heights = new float[Width, Height];
 
-            // 単純に [-1, 1] で clamp して設定。
-            // ほとんどの height は [-1, 1] に収まるため。
+            // All values must be [-1, 1].
+            // Almost noise values are [-1, 1], so simply clamp them.
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)

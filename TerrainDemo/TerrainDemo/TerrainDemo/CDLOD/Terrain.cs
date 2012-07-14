@@ -60,7 +60,7 @@ namespace TerrainDemo.CDLOD
 
         public void Select(Selection selection)
         {
-            // Prepare selection's state per an update.
+            // Prepare selection's state per a terrain.
             selection.ClearSelectedNodes();
 
             // Select visible nodes.

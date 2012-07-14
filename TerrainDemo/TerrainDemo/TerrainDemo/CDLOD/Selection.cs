@@ -22,8 +22,6 @@ namespace TerrainDemo.CDLOD
 
         public Vector3 TerrainOffset;
 
-        public Morph Morph;
-
         public Matrix View;
 
         public Matrix Projection;
@@ -32,16 +30,35 @@ namespace TerrainDemo.CDLOD
 
         public Texture2D HeightMapTexture;
 
+        Settings settings;
+
         SelectedNode[] selectedNodes;
 
-        public int SelectedNodeCount { get; private set; }
+        public VisibilityRanges VisibilityRanges { get; private set; }
 
         public BoundingFrustum Frustum { get; private set; }
 
-        public Selection()
-        {
-            Frustum = new BoundingFrustum(Matrix.Identity);
+        public int SelectedNodeCount { get; private set; }
 
+        public Vector3 TerrainScale
+        {
+            get
+            {
+                return new Vector3
+                {
+                    X = (HeightMapTexture.Width - 1) * PatchScale,
+                    Y = HeightScale,
+                    Z = (HeightMapTexture.Height - 1) * PatchScale
+                };
+            }
+        }
+
+        public Selection(Settings settings, VisibilityRanges visibilityRanges)
+        {
+            this.settings = settings;
+            VisibilityRanges = visibilityRanges;
+
+            Frustum = new BoundingFrustum(Matrix.Identity);
             selectedNodes = new SelectedNode[MaxSelectedNodeCount];
         }
 
@@ -69,8 +86,7 @@ namespace TerrainDemo.CDLOD
 
         public void GetVisibilitySphere(int level, out BoundingSphere sphere)
         {
-            var visibilityRange = Morph.GetVisibilityRange(level);
-            sphere = new BoundingSphere(EyePosition, visibilityRange);
+            sphere = new BoundingSphere(EyePosition, VisibilityRanges[level]);
         }
 
         public void AddSelectedNode(Node node)
