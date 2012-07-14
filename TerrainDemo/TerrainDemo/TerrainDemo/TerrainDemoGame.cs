@@ -19,15 +19,21 @@ namespace TerrainDemo
     public class TerrainDemoGame : Game
     {
         // noise parameters for debugs.
-        int noiseMapWidth = 512 * 1 + 1;
-        int noiseMapHeight = 512 * 1 + 1;
-        float noiseSampleWidth = 10;
-        float noiseSampleHeight = 10;
+        int noiseSeed = 300;
+        // A map can not be over 4096x4096 in HiDef profile.
+        int noiseMapWidth = 256 /** 15*/ + 1;
+        int noiseMapHeight = 256 /** 15*/ + 1;
+        float noiseSampleX = 0;
+        float noiseSampleY = 0;
+        float noiseSampleWidth = 6;
+        float noiseSampleHeight = 6;
 
         // CDLOD settings for debus.
         int levelCount = Settings.DefaultLevelCount;
         int leafNodeSize = Settings.DefaultLeafNodeSize;
         float visibilityDistance = Settings.DefaultVisibilityDistance;
+        float patchScale = Settings.DefaultPatchScale;
+        float heightScale = Settings.DefaultHeightScale/* * 3*/ * 0.1f;
 
         GraphicsDeviceManager graphics;
 
@@ -95,7 +101,7 @@ namespace TerrainDemo
 
         protected override void Initialize()
         {
-            noise.Seed = 300;
+            noise.Seed = noiseSeed;
             sumFractal.Noise3 = noise.Noise;
 
             var viewport = GraphicsDevice.Viewport;
@@ -128,7 +134,7 @@ namespace TerrainDemo
             noiseMap.GetValue2 = (x, y) => { return sumFractal.GetValue(x, 0, y); };
             noiseMap.Width = noiseMapWidth;
             noiseMap.Height = noiseMapHeight;
-            noiseMap.SetBounds(0, 0, noiseSampleWidth, noiseSampleHeight);
+            noiseMap.SetBounds(noiseSampleX, noiseSampleY, noiseSampleWidth, noiseSampleHeight);
             noiseMap.Build();
 
             var heightMap = new DefaultHeightMapSource(noiseMap);
@@ -136,6 +142,8 @@ namespace TerrainDemo
             settings.LevelCount = levelCount;
             settings.LeafNodeSize = leafNodeSize;
             settings.VisibilityDistance = visibilityDistance;
+            settings.PatchScale = patchScale;
+            settings.HeightScale = heightScale;
 
             visibilityRanges = new VisibilityRanges(settings);
             terrain = new Terrain(GraphicsDevice, settings);

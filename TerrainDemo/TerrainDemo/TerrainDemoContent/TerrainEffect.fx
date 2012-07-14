@@ -2,6 +2,10 @@
 // Definitions
 //-----------------------------------------------------------------------------
 #define MAX_LEVEL_COUNT 15
+// (debug) to color by a height.
+#define HEIGHT_INDEX_COUNT 8
+// (debug) to color by a height.
+#define HEIGHT_COLOR_BLEND_RATIO 0.8f
 
 //=============================================================================
 // Variables
@@ -37,7 +41,7 @@ float HalfPatchGridSize;
 float TwoOverPatchGridSize;
 
 // (debug) to color by a height.
-float4 heightColorIndices[] =
+float4 HeightColors[] =
 {
     { 0,       0,       0.5f,    1 },
     { 0,       0,       1,       1 },
@@ -45,8 +49,21 @@ float4 heightColorIndices[] =
     { 0.9411f, 0.9411f, 0.2509f, 1 },
     { 0.1254f, 0.6274f, 0,       1 },
     { 0.8784f, 0.8784f, 0,       1 },
-    { 0.2509f, 0.2509f, 0.2509f, 1 },
+//    { 0.2509f, 0.2509f, 0.2509f, 1 },
+    { 0.5,     0.5f,    0.5f,    1 },
     { 1,       1,       1,       1 }
+};
+// (debug) to color by a height.
+float Heights[] =
+{
+    -1.0000f,
+    -0.2500f,
+    0.0000f,
+    0.0625f,
+    0.1250f,
+    0.3750f,
+    0.7500f,
+    1.0000f
 };
 
 // (debug) to turn on/off a light.
@@ -197,24 +214,15 @@ VS_OUTPUT VS(
 //=============================================================================
 // Pixel shader helper
 //-----------------------------------------------------------------------------
-float CalculateDiffuseStrength(float3 normal, float3 lightDir)
+float3 CalculateLight(float3 E, float3 N)
 {
-   return saturate(-dot( normal, lightDir ));
-}
+    float3 diffuse = AmbientLightColor;
 
-float CalculateSpecularStrength(float3 normal, float3 lightDir, float3 eyeDir)
-{
-   float3 diff = saturate(dot(normal, -lightDir));
-   float3 reflect = normalize(2 * diff * normal + lightDir);
-
-   return saturate(dot(reflect, eyeDir));
-}
-
-float CalculateDirectionalLight(float3 normal, float3 lightDir, float3 eyeDir, float specularPow, float specularMul)
-{
-   float3 light0 = normalize(lightDir);
-
-   return CalculateDiffuseStrength(normal, light0) + specularMul * pow(CalculateSpecularStrength(normal, light0, eyeDir), specularPow);
+    float3 L = -LightDirection;
+    float3 H = normalize(E + L);
+    float dt = max(0, dot(L, N));
+    diffuse += DiffuseLightColor * dt;
+    return diffuse;
 }
 
 //=============================================================================
@@ -222,35 +230,54 @@ float CalculateDirectionalLight(float3 normal, float3 lightDir, float3 eyeDir, f
 //-----------------------------------------------------------------------------
 float4 WhiteSolidPS(VS_OUTPUT input) : COLOR0
 {
+    // Always white.
     float4 color = float4(1, 1, 1, 1);
+
     if (LightEnabled)
     {
         float3 normal = input.Normal.xyz;
-        float directionalLight = CalculateDirectionalLight(normal, normalize(LightDirection), normalize(input.EyeDirection), 16, 0);
-        color = float4(AmbientLightColor + color.rgb * DiffuseLightColor * directionalLight, 1);
+        float3 E = normalize(input.EyeDirection);
+        float3 N = normalize(input.Normal.xyz);
+        float3 light = CalculateLight(E, N);
+        color.rgb *= light;
     }
+
     return color;
 }
 
 float4 HeightColorPS(VS_OUTPUT input) : COLOR0
 {
-    int colorIndex = 6;
-    float h = input.Height;
-    if (h < -0.2500f) colorIndex = 0;
-    else if (h < 0.0000f) colorIndex = 1;
-    else if (h < 0.0625f) colorIndex = 2;
-    else if (h < 0.1250f) colorIndex = 3;
-    else if (h < 0.3750f) colorIndex = 4;
-    else if (h < 0.7500f) colorIndex = 5;
-    else if (h < 1.0000f) colorIndex = 6;
+    float4 color = float4(0, 0, 0, 1);
 
-    float4 color = heightColorIndices[colorIndex];
+    float weight;
+    float4 range;
+
+    // The height color blending.
+    // index = 0
+    range = (Heights[1] - Heights[0]) * HEIGHT_COLOR_BLEND_RATIO;
+    weight = saturate(1 - abs(input.Height - Heights[0]) / range);
+    color.rgb += HeightColors[0] * weight;
+    // index = [1, HEIGHT_INDEX_COUNT - 2]
+    for (int i = 1; i < HEIGHT_INDEX_COUNT - 1; i++)
+    {
+        range = (Heights[i + 1] - Heights[i - 1]) * 0.5f * HEIGHT_COLOR_BLEND_RATIO;
+        weight = saturate(1 - abs(input.Height - Heights[i]) / range);
+        color.rgb += HeightColors[i] * weight;
+    }
+    // index = HEIGHT_INDEX_COUNT - 1
+    range = (Heights[HEIGHT_INDEX_COUNT - 1] - Heights[HEIGHT_INDEX_COUNT - 2]) * HEIGHT_COLOR_BLEND_RATIO;
+    weight = saturate(1 - abs(input.Height - Heights[HEIGHT_INDEX_COUNT - 1]) / range);
+    color.rgb += HeightColors[HEIGHT_INDEX_COUNT - 1] * weight;
+
     if (LightEnabled)
     {
         float3 normal = input.Normal.xyz;
-        float directionalLight = CalculateDirectionalLight(normal, normalize(LightDirection), normalize(input.EyeDirection), 16, 0);
-        color = float4(AmbientLightColor + color.rgb * DiffuseLightColor * directionalLight, 1);
+        float3 E = normalize(input.EyeDirection);
+        float3 N = normalize(input.Normal.xyz);
+        float3 light = CalculateLight(E, N);
+        color.rgb *= light;
     }
+
     return color;
 }
 

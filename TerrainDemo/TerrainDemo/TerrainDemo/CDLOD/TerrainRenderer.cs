@@ -37,7 +37,7 @@ namespace TerrainDemo.CDLOD
 
         TerrainEffect effect;
 
-        Vector3 ambientLightColor = Vector3.Zero;
+        Vector3 ambientLightColor = new Vector3(0.6f);
 
         Vector3 lightDirection = Vector3.One;
 
@@ -167,7 +167,7 @@ namespace TerrainDemo.CDLOD
                     selection.GetSelectedNode(i, out selectedNode);
 
                     selectedNode.GetBoundingBox(
-                        ref selection.TerrainOffset, selection.PatchScale, selection.HeightScale, out box);
+                        ref selection.TerrainOffset, settings.PatchScale, settings.HeightScale, out box);
                     var level = selectedNode.Level;
                     level %= 4;
                     boundingBoxDrawer.Draw(ref box, debugEffect, ref debugLevelColors[level]);

@@ -12,14 +12,6 @@ namespace TerrainDemo.CDLOD
     {
         public const int MaxSelectedNodeCount = 4000;
 
-        public const float DefaultPatchScale = 2;
-
-        public const float DefaultHeightScale = 50;
-
-        public float PatchScale = DefaultPatchScale;
-
-        public float HeightScale = DefaultHeightScale;
-
         public Vector3 TerrainOffset;
 
         public Matrix View;
@@ -40,15 +32,25 @@ namespace TerrainDemo.CDLOD
 
         public int SelectedNodeCount { get; private set; }
 
+        public float PatchScale
+        {
+            get { return settings.PatchScale; }
+        }
+
+        public float HeightScale
+        {
+            get { return settings.HeightScale; }
+        }
+
         public Vector3 TerrainScale
         {
             get
             {
                 return new Vector3
                 {
-                    X = (HeightMapTexture.Width - 1) * PatchScale,
-                    Y = HeightScale,
-                    Z = (HeightMapTexture.Height - 1) * PatchScale
+                    X = (HeightMapTexture.Width - 1) * settings.PatchScale,
+                    Y = settings.HeightScale,
+                    Z = (HeightMapTexture.Height - 1) * settings.PatchScale
                 };
             }
         }
@@ -107,9 +109,9 @@ namespace TerrainDemo.CDLOD
         public void GetPatchInstanceVertex(int index, out PatchInstanceVertex instance)
         {
             instance = new PatchInstanceVertex();
-            instance.Offset.X = selectedNodes[index].X * PatchScale + TerrainOffset.X;
-            instance.Offset.Y = selectedNodes[index].Y * PatchScale + TerrainOffset.Z;
-            instance.Scale = selectedNodes[index].Size * PatchScale;
+            instance.Offset.X = selectedNodes[index].X * settings.PatchScale + TerrainOffset.X;
+            instance.Offset.Y = selectedNodes[index].Y * settings.PatchScale + TerrainOffset.Z;
+            instance.Scale = selectedNodes[index].Size * settings.PatchScale;
             instance.Level = selectedNodes[index].Level;
         }
     }

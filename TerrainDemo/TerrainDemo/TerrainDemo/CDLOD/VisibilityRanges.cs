@@ -73,7 +73,6 @@ namespace TerrainDemo.CDLOD
             float section = (lodFar - lodNear) / total;
 
             float lastVisibilityRange = lodNear;
-            float lastMorphStart = lodNear;
             currentDetailBalance = 1;
             for (int i = 0; i < settings.LevelCount; i++)
             {
