@@ -76,11 +76,12 @@ namespace TerrainDemo
             "[F4] Height color\r\n" +
             "[F5] Wireframe\r\n" +
             "[F6] Light\r\n" +
-            "\r\n" +
             "[w][s][a][d][q][z] Movement\r\n" +
             "[Mouse] Camera orientation";
 
         Vector2 helpMessageFontSize;
+
+        Vector2 selectedNodesTextFontSize;
 
         bool helpVisible;
 
@@ -165,6 +166,7 @@ namespace TerrainDemo
             font = Content.Load<SpriteFont>("Fonts/Debug");
             fillTexture = Texture2DHelper.CreateFillTexture(GraphicsDevice);
             helpMessageFontSize = font.MeasureString(helpMessage);
+            selectedNodesTextFontSize = font.MeasureString("Quads: XXXXX");
         }
 
         protected override void UnloadContent()
@@ -214,7 +216,7 @@ namespace TerrainDemo
             // select.
             terrain.Select(selection);
 
-            Window.Title = string.Format("Selected nodes: {0}", selection.SelectedNodeCount);
+            //Window.Title = string.Format("Selected nodes: {0}", selection.SelectedNodeCount);
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.RasterizerState = defaultRasterizerState;
@@ -232,8 +234,35 @@ namespace TerrainDemo
         {
             spriteBatch.Begin();
 
-            // calculate the background are.
             var layout = new DebugLayout();
+
+            var selectedNodesText = string.Format("Quads: {0}", selection.SelectedNodeCount);
+
+            // calculate the background area for information.
+            layout.ContainerBounds = GraphicsDevice.Viewport.TitleSafeArea;
+            layout.Width = (int) selectedNodesTextFontSize.X + 4;
+            layout.Height = (int) selectedNodesTextFontSize.Y + 2;
+            layout.HorizontalMargin = 8;
+            layout.VerticalMargin = 8;
+            layout.HorizontalAlignment = DebugHorizontalAlignment.Left;
+            layout.VerticalAlignment = DebugVerticalAlignment.Top;
+            layout.Arrange();
+            // draw the rectangle.
+            spriteBatch.Draw(fillTexture, layout.ArrangedBounds, Color.Black * 0.5f);
+
+            // calculate the text area for help messages.
+            layout.ContainerBounds = layout.ArrangedBounds;
+            layout.Width = (int) selectedNodesTextFontSize.X;
+            layout.Height = (int) selectedNodesTextFontSize.Y;
+            layout.HorizontalMargin = 2;
+            layout.VerticalMargin = 0;
+            layout.HorizontalAlignment = DebugHorizontalAlignment.Center;
+            layout.VerticalAlignment = DebugVerticalAlignment.Center;
+            layout.Arrange();
+            // draw the text.
+            spriteBatch.DrawString(font, selectedNodesText, new Vector2(layout.ArrangedBounds.X, layout.ArrangedBounds.Y), Color.Yellow);
+
+            // calculate the background area for help messages.
             layout.ContainerBounds = GraphicsDevice.Viewport.TitleSafeArea;
             layout.Width = (int) helpMessageFontSize.X + 4;
             layout.Height = (int) helpMessageFontSize.Y + 2;
@@ -242,10 +271,10 @@ namespace TerrainDemo
             layout.HorizontalAlignment = DebugHorizontalAlignment.Left;
             layout.VerticalAlignment = DebugVerticalAlignment.Bottom;
             layout.Arrange();
-
+            // draw the rectangle.
             spriteBatch.Draw(fillTexture, layout.ArrangedBounds, Color.Black * 0.5f);
-            
-            // calculate the message area.
+
+            // calculate the text area for help messages.
             layout.ContainerBounds = layout.ArrangedBounds;
             layout.Width = (int) helpMessageFontSize.X;
             layout.Height = (int) helpMessageFontSize.Y;
@@ -254,7 +283,7 @@ namespace TerrainDemo
             layout.HorizontalAlignment = DebugHorizontalAlignment.Center;
             layout.VerticalAlignment = DebugVerticalAlignment.Center;
             layout.Arrange();
-
+            // draw the text.
             spriteBatch.DrawString(font, helpMessage, new Vector2(layout.ArrangedBounds.X, layout.ArrangedBounds.Y), Color.Yellow);
 
             spriteBatch.End();
