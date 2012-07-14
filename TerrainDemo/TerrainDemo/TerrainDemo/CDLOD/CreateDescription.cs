@@ -8,9 +8,7 @@ namespace TerrainDemo.CDLOD
 {
     public struct CreateDescription
     {
-        public int LeafNodeSize;
-
-        public int LevelCount;
+        public Settings Settings;
 
         public IHeightMapSource HeightMap;
     }

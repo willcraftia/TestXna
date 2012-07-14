@@ -16,8 +16,8 @@ namespace TerrainDemo.CDLOD
 
         public void Build(ref CreateDescription createDescription)
         {
-            var topNodeSize = createDescription.LeafNodeSize;
-            for (int i = 1; i < createDescription.LevelCount; i++)
+            var topNodeSize = createDescription.Settings.LeafNodeSize;
+            for (int i = 1; i < createDescription.Settings.LevelCount; i++)
                 topNodeSize *= 2;
 
             topNodeCountX = (int) Math.Ceiling((createDescription.HeightMap.Width - 1) / (float) topNodeSize);

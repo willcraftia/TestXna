@@ -66,7 +66,7 @@ namespace TerrainDemo.CDLOD
             this.y = y;
             this.size = size;
 
-            if (size == createDescription.LeafNodeSize)
+            if (size == createDescription.Settings.LeafNodeSize)
             {
                 int limitX = Math.Min(createDescription.HeightMap.Width, x + size + 1);
                 int limitY = Math.Min(createDescription.HeightMap.Height, y + size + 1);

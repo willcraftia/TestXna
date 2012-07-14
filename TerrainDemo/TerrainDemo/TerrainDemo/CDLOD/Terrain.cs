@@ -31,8 +31,7 @@ namespace TerrainDemo.CDLOD
             // Build the quadtree.
             var createDescription = new CreateDescription
             {
-                LeafNodeSize = settings.LeafNodeSize,
-                LevelCount = settings.LevelCount,
+                Settings = settings,
                 HeightMap = heightMap
             };
             quadTree.Build(ref createDescription);
