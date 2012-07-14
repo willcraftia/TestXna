@@ -7,7 +7,7 @@ using System;
 namespace TerrainDemo.Noise
 {
     /// <summary>
-    /// Height map を管理するクラスです。
+    /// The class manages 2-dimensional noise values as 1-dimensional array.
     /// </summary>
     public sealed class NoiseMap
     {
@@ -30,7 +30,7 @@ namespace TerrainDemo.Noise
         float[] heights;
 
         /// <summary>
-        /// 各 height 値を生成するためのメソッドを取得または設定します。
+        /// Gets/sets a method generating 2-dimensional noise values.
         /// </summary>
         public DelegateGetValue2 GetValue2
         {
@@ -50,10 +50,7 @@ namespace TerrainDemo.Noise
             set { height = value; }
         }
 
-        /// <summary>
-        /// Height 値の配列を取得します。
-        /// </summary>
-        public float[] Heights
+        public float[] Values
         {
             get { return heights; }
         }
@@ -67,7 +64,7 @@ namespace TerrainDemo.Noise
         }
 
         /// <summary>
-        /// Height map を生成します。
+        /// Builds 2-dimensional noise values.
         /// </summary>
         public void Build()
         {

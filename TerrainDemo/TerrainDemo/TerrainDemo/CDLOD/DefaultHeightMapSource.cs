@@ -16,10 +16,10 @@ namespace TerrainDemo.CDLOD
 
         public int Height { get; private set; }
 
-        public DefaultHeightMapSource(NoiseMap noiseMap)
+        public DefaultHeightMapSource(float[] sourceHeights, int width, int height)
         {
-            Width = noiseMap.Width;
-            Height = noiseMap.Height;
+            Width = width;
+            Height = height;
 
             heights = new float[Width, Height];
 
@@ -29,7 +29,7 @@ namespace TerrainDemo.CDLOD
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    var h = noiseMap.Heights[x + y * Width];
+                    var h = sourceHeights[x + y * Width];
                     heights[x, y] = MathHelper.Clamp(h, -1, 1);
                 }
             }
