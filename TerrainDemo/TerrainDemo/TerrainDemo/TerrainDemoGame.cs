@@ -21,27 +21,27 @@ namespace TerrainDemo
         // noise parameters for debug.
         int noiseSeed = 300;
         // A map can not be over 4096x4096 in HiDef profile.
-        //int noiseMapWidth = 256 * 1 + 1;
-        //int noiseMapHeight = 256 * 1 + 1;
-        int noiseMapWidth = 256 * 8 + 1;
-        int noiseMapHeight = 256 * 8 + 1;
+        int noiseMapWidth = 256 * 1 + 1;
+        int noiseMapHeight = 256 * 1 + 1;
+        //int noiseMapWidth = 256 * 8 + 1;
+        //int noiseMapHeight = 256 * 8 + 1;
         float noiseSampleX = 0;
         float noiseSampleY = 0;
-        //float noiseSampleWidth = 6;
-        //float noiseSampleHeight = 6;
         float noiseSampleWidth = 12;
         float noiseSampleHeight = 12;
+        //float noiseSampleWidth = 6;
+        //float noiseSampleHeight = 6;
 
         // CDLOD settings for debug.
         int levelCount = Settings.DefaultLevelCount;
         //int levelCount = 10;
-        //int leafNodeSize = Settings.DefaultLeafNodeSize;
-        int leafNodeSize = Settings.DefaultLeafNodeSize * 2 * 2;
-        //float patchScale = Settings.DefaultPatchScale;
-        float patchScale = Settings.DefaultPatchScale * 2 * 2;
-        //float heightScale = Settings.DefaultHeightScale * 0.1f;
+        int leafNodeSize = Settings.DefaultLeafNodeSize;
+        //int leafNodeSize = Settings.DefaultLeafNodeSize * 2 * 2;
+        float patchScale = Settings.DefaultPatchScale;
+        //float patchScale = Settings.DefaultPatchScale * 2 * 2;
+        float heightScale = Settings.DefaultHeightScale * 0.1f;
         //float heightScale = Settings.DefaultHeightScale;
-        float heightScale = Settings.DefaultHeightScale * 3;
+        //float heightScale = Settings.DefaultHeightScale * 3;
 
         // View settings for debug.
         float farPlaneDistance = 100000;
@@ -158,7 +158,7 @@ namespace TerrainDemo
 
             visibleRanges = new DefaultVisibleRanges(settings);
             //visibleRanges.MostDetailRange = DefaultVisibleRanges.DefaultMostDetailRange;
-            visibleRanges.MostDetailRange = 400;
+            visibleRanges.FinestNodeSize = 3;
             visibleRanges.DetailBalance = 2;
             visibleRanges.Initialize();
 

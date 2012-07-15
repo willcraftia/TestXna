@@ -8,7 +8,7 @@ namespace TerrainDemo.CDLOD
 {
     public sealed class DefaultVisibleRanges : IVisibleRanges
     {
-        public const float DefaultMostDetailRange = 200;
+        public const float DefaultFinestNodeSize = 3;
 
         public const float DefaultDetailBalance = 2;
 
@@ -16,7 +16,7 @@ namespace TerrainDemo.CDLOD
 
         float[] ranges;
 
-        public float MostDetailRange { get; set; }
+        public float FinestNodeSize { get; set; }
 
         public float DetailBalance { get; set; }
 
@@ -34,7 +34,7 @@ namespace TerrainDemo.CDLOD
         {
             this.settings = settings;
 
-            MostDetailRange = DefaultMostDetailRange;
+            FinestNodeSize = DefaultFinestNodeSize;
             DetailBalance = DefaultDetailBalance;
             ranges = new float[settings.LevelCount];
         }
@@ -44,7 +44,7 @@ namespace TerrainDemo.CDLOD
             float near = 0;
             float lastRange = near;
             float currentDetailBalance = 1;
-            float section = MostDetailRange;
+            float section = FinestNodeSize * settings.LeafNodeSize * settings.PatchScale;
             for (int i = 0; i < ranges.Length; i++)
             {
                 ranges[i] = lastRange + section * currentDetailBalance;
