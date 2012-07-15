@@ -23,13 +23,13 @@ namespace TerrainDemo
         // noise parameters for debug.
         int noiseSeed = 300;
         // A map can not be over 4096x4096 in HiDef profile.
-        //int noiseMapWidth = 256 * 1 + 1;
-        //int noiseMapHeight = 256 * 1 + 1;
+        int noiseMapWidth = 256 * 1 + 1;
+        int noiseMapHeight = 256 * 1 + 1;
         //int noiseMapWidth = 256 * 8 + 1;
         //int noiseMapHeight = 256 * 8 + 1;
         // for recording settings
-        int noiseMapWidth = 256 * 16;
-        int noiseMapHeight = 256 * 16;
+        //int noiseMapWidth = 256 * 16;
+        //int noiseMapHeight = 256 * 16;
         float noiseSampleX = 0;
         float noiseSampleY = 0;
         float noiseSampleWidth = 12;
@@ -49,7 +49,7 @@ namespace TerrainDemo
         float heightScale = Settings.DefaultHeightScale * 3;
 
         // View settings for debug.
-        float farPlaneDistance = 100000;
+        float farPlaneDistance = 150000;
         float wireframeGap = 3f;
         float moveVelocity = 100;
         float dashFactor = 2;
@@ -113,6 +113,8 @@ namespace TerrainDemo
         /// The texture to fill a regionÅB
         /// </summary>
         Texture2D fillTexture;
+
+        bool active = true;
 
         public TerrainDemoGame()
         {
@@ -204,6 +206,8 @@ namespace TerrainDemo
 
         protected override void Update(GameTime gameTime)
         {
+            if (!active) return;
+
             var keyboardState = Keyboard.GetState();
             if (keyboardState.IsKeyDown(Keys.Escape)) Exit();
 
@@ -265,6 +269,20 @@ namespace TerrainDemo
                 DrawHelp();
 
             base.Draw(gameTime);
+        }
+
+        protected override void OnActivated(object sender, EventArgs args)
+        {
+            active = true;
+
+            base.OnActivated(sender, args);
+        }
+
+        protected override void OnDeactivated(object sender, EventArgs args)
+        {
+            active = false;
+
+            base.OnDeactivated(sender, args);
         }
 
         void BuildInformationMessage(int quadCount)
