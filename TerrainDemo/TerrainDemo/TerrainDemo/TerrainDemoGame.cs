@@ -23,13 +23,13 @@ namespace TerrainDemo
         // noise parameters for debug.
         int noiseSeed = 300;
         // A map can not be over 4096x4096 in HiDef profile.
-        int noiseMapWidth = 256 * 1 + 1;
-        int noiseMapHeight = 256 * 1 + 1;
+        //int noiseMapWidth = 256 * 1 + 1;
+        //int noiseMapHeight = 256 * 1 + 1;
         //int noiseMapWidth = 256 * 8 + 1;
         //int noiseMapHeight = 256 * 8 + 1;
         // for recording settings
-        //int noiseMapWidth = 256 * 16;
-        //int noiseMapHeight = 256 * 16;
+        int noiseMapWidth = 256 * 16;
+        int noiseMapHeight = 256 * 16;
         float noiseSampleX = 0;
         float noiseSampleY = 0;
         float noiseSampleWidth = 12;
@@ -46,7 +46,7 @@ namespace TerrainDemo
         float patchScale = Settings.DefaultPatchScale * 2 * 2;
         //float heightScale = Settings.DefaultHeightScale * 0.1f;
         //float heightScale = Settings.DefaultHeightScale;
-        float heightScale = Settings.DefaultHeightScale * 3;
+        float heightScale = Settings.DefaultHeightScale * 4;
 
         // View settings for debug.
         float farPlaneDistance = 150000;
@@ -119,11 +119,11 @@ namespace TerrainDemo
         public TerrainDemoGame()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
+            //graphics.PreferredBackBufferWidth = 1280;
+            //graphics.PreferredBackBufferHeight = 720;
             // for recording settings
-            //graphics.PreferredBackBufferWidth = 640;
-            //graphics.PreferredBackBufferHeight = 480;
+            graphics.PreferredBackBufferWidth = 640;
+            graphics.PreferredBackBufferHeight = 480;
             graphics.PreferMultiSampling = true;
 
             Content.RootDirectory = "Content";
@@ -157,6 +157,8 @@ namespace TerrainDemo
             fpsCounter.HorizontalAlignment = DebugHorizontalAlignment.Right;
             fpsCounter.SampleSpan = TimeSpan.FromSeconds(2);
             Components.Add(fpsCounter);
+            //fpsCounter.Enabled = false;
+            //fpsCounter.Visible = false;
 
             base.Initialize();
         }
