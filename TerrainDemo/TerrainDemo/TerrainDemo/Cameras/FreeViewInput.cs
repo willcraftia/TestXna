@@ -12,8 +12,6 @@ namespace TerrainDemo.Cameras
     {
         const float twoPi = 2 * MathHelper.Pi;
 
-        const float dashFactor = 20;
-
         public int InitialMousePositionX { get; set; }
 
         public int InitialMousePositionY { get; set; }
@@ -22,12 +20,15 @@ namespace TerrainDemo.Cameras
 
         public float MoveVelocity { get; set; }
 
+        public float DashFactor { get; set; }
+
         public FreeView FreeView { get; set; }
 
         public FreeViewInput()
         {
             RotationVelocity = 0.3f;
             MoveVelocity = 30;
+            DashFactor = 2;
         }
 
         public void Initialize(int initialMousePositionX, int initialMousePositionY)
@@ -63,7 +64,7 @@ namespace TerrainDemo.Cameras
             
             // Shift で加速。
             if (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
-                distance *= dashFactor;
+                distance *= DashFactor;
 
             if (keyboardState.IsKeyDown(Keys.W)) FreeView.Move(distance);
             if (keyboardState.IsKeyDown(Keys.S)) FreeView.Move(-distance);

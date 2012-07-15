@@ -1,10 +1,12 @@
 #region Using
 
 using System;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TerrainDemo.Framework;
 using TerrainDemo.Framework.Cameras;
 using TerrainDemo.Framework.Debug;
 using TerrainDemo.Framework.Graphics;
@@ -21,10 +23,13 @@ namespace TerrainDemo
         // noise parameters for debug.
         int noiseSeed = 300;
         // A map can not be over 4096x4096 in HiDef profile.
-        int noiseMapWidth = 256 * 1 + 1;
-        int noiseMapHeight = 256 * 1 + 1;
+        //int noiseMapWidth = 256 * 1 + 1;
+        //int noiseMapHeight = 256 * 1 + 1;
         //int noiseMapWidth = 256 * 8 + 1;
         //int noiseMapHeight = 256 * 8 + 1;
+        // for recording settings
+        int noiseMapWidth = 256 * 16;
+        int noiseMapHeight = 256 * 16;
         float noiseSampleX = 0;
         float noiseSampleY = 0;
         float noiseSampleWidth = 12;
@@ -35,16 +40,19 @@ namespace TerrainDemo
         // CDLOD settings for debug.
         int levelCount = Settings.DefaultLevelCount;
         //int levelCount = 10;
-        int leafNodeSize = Settings.DefaultLeafNodeSize;
-        //int leafNodeSize = Settings.DefaultLeafNodeSize * 2 * 2;
-        float patchScale = Settings.DefaultPatchScale;
-        //float patchScale = Settings.DefaultPatchScale * 2 * 2;
-        float heightScale = Settings.DefaultHeightScale * 0.1f;
+        //int leafNodeSize = Settings.DefaultLeafNodeSize;
+        int leafNodeSize = Settings.DefaultLeafNodeSize * 2 * 2;
+        //float patchScale = Settings.DefaultPatchScale;
+        float patchScale = Settings.DefaultPatchScale * 2 * 2;
+        //float heightScale = Settings.DefaultHeightScale * 0.1f;
         //float heightScale = Settings.DefaultHeightScale;
-        //float heightScale = Settings.DefaultHeightScale * 3;
+        float heightScale = Settings.DefaultHeightScale * 3;
 
         // View settings for debug.
         float farPlaneDistance = 100000;
+        float wireframeGap = 3f;
+        float moveVelocity = 100;
+        float dashFactor = 2;
 
         GraphicsDeviceManager graphics;
 
@@ -80,13 +88,16 @@ namespace TerrainDemo
             "[F5] Wireframe\r\n" +
             "[F6] Light\r\n" +
             "[w][s][a][d][q][z] Movement\r\n" +
-            "[Mouse] Camera orientation";
+            "[Mouse] Camera orientation\r\n" +
+            "[PageUp][PageDown] Move velocity";
 
         Vector2 helpMessageFontSize;
 
-        Vector2 selectedNodesTextFontSize;
+        Vector2 informationTextFontSize;
 
         bool helpVisible;
+
+        StringBuilder stringBuilder = new StringBuilder();
 
         /// <summary>
         /// SpriteBatch.
@@ -106,6 +117,13 @@ namespace TerrainDemo
         public TerrainDemoGame()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
+            // for recording settings
+            //graphics.PreferredBackBufferWidth = 640;
+            //graphics.PreferredBackBufferHeight = 480;
+            graphics.PreferMultiSampling = true;
+
             Content.RootDirectory = "Content";
 
             //IsMouseVisible = true;
@@ -120,6 +138,8 @@ namespace TerrainDemo
             viewInput.InitialMousePositionX = viewport.Width / 2;
             viewInput.InitialMousePositionY = viewport.Height / 2;
             viewInput.FreeView = view;
+            viewInput.MoveVelocity = moveVelocity;
+            viewInput.DashFactor = dashFactor;
 
             view.Position = new Vector3(50, 30, 50);
             view.Yaw(MathHelper.PiOver4 * 5);
@@ -166,13 +186,16 @@ namespace TerrainDemo
             terrain.Initialize(heightMap);
             renderer = new TerrainRenderer(GraphicsDevice, Content, settings);
             renderer.InitializeMorphConsts(visibleRanges);
+            renderer.WireframeGap = wireframeGap;
             selection = new Selection(settings, visibleRanges);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("Fonts/Debug");
             fillTexture = Texture2DHelper.CreateFillTexture(GraphicsDevice);
             helpMessageFontSize = font.MeasureString(helpMessage);
-            selectedNodesTextFontSize = font.MeasureString("Quads: XXXXX");
+
+            BuildInformationMessage(9999);
+            informationTextFontSize = font.MeasureString(stringBuilder);
         }
 
         protected override void UnloadContent()
@@ -203,6 +226,14 @@ namespace TerrainDemo
 
             if (keyboardState.IsKeyUp(Keys.F6) && lastKeyboardState.IsKeyDown(Keys.F6))
                 renderer.LightEnabled = !renderer.LightEnabled;
+
+            if (keyboardState.IsKeyDown(Keys.PageUp))
+                viewInput.MoveVelocity += 10;
+            if (keyboardState.IsKeyDown(Keys.PageDown))
+            {
+                viewInput.MoveVelocity -= 10;
+                if (viewInput.MoveVelocity < 10) viewInput.MoveVelocity = 10;
+            }
 
             lastKeyboardState = keyboardState;
 
@@ -236,18 +267,35 @@ namespace TerrainDemo
             base.Draw(gameTime);
         }
 
+        void BuildInformationMessage(int quadCount)
+        {
+            stringBuilder.Length = 0;
+            stringBuilder.Append("Screen: ");
+            stringBuilder.AppendNumber(graphics.PreferredBackBufferWidth).Append('x').Append(graphics.PreferredBackBufferHeight).AppendLine();
+            stringBuilder.Append("Height map: ");
+            stringBuilder.AppendNumber(noiseMapWidth).Append('x').Append(noiseMapHeight).AppendLine();
+            stringBuilder.Append("Quads: ");
+            stringBuilder.AppendNumber(quadCount).AppendLine();
+            stringBuilder.Append("Level count: ");
+            stringBuilder.AppendNumber(settings.LevelCount).Append(", ");
+            stringBuilder.Append("Leaf node size: ");
+            stringBuilder.AppendNumber(settings.LeafNodeSize).AppendLine();
+            stringBuilder.Append("Far plane distance: ");
+            stringBuilder.AppendNumber(farPlaneDistance).AppendLine();
+            stringBuilder.Append("Move velocity: ");
+            stringBuilder.AppendNumber(viewInput.MoveVelocity);
+        }
+
         void DrawHelp()
         {
             spriteBatch.Begin();
 
             var layout = new DebugLayout();
 
-            var selectedNodesText = string.Format("Quads: {0}", selection.SelectedNodeCount);
-
             // calculate the background area for information.
             layout.ContainerBounds = GraphicsDevice.Viewport.TitleSafeArea;
-            layout.Width = (int) selectedNodesTextFontSize.X + 4;
-            layout.Height = (int) selectedNodesTextFontSize.Y + 2;
+            layout.Width = (int) informationTextFontSize.X + 4;
+            layout.Height = (int) informationTextFontSize.Y + 2;
             layout.HorizontalMargin = 8;
             layout.VerticalMargin = 8;
             layout.HorizontalAlignment = DebugHorizontalAlignment.Left;
@@ -258,15 +306,16 @@ namespace TerrainDemo
 
             // calculate the text area for help messages.
             layout.ContainerBounds = layout.ArrangedBounds;
-            layout.Width = (int) selectedNodesTextFontSize.X;
-            layout.Height = (int) selectedNodesTextFontSize.Y;
+            layout.Width = (int) informationTextFontSize.X;
+            layout.Height = (int) informationTextFontSize.Y;
             layout.HorizontalMargin = 2;
             layout.VerticalMargin = 0;
             layout.HorizontalAlignment = DebugHorizontalAlignment.Center;
             layout.VerticalAlignment = DebugVerticalAlignment.Center;
             layout.Arrange();
             // draw the text.
-            spriteBatch.DrawString(font, selectedNodesText, new Vector2(layout.ArrangedBounds.X, layout.ArrangedBounds.Y), Color.Yellow);
+            BuildInformationMessage(selection.SelectedNodeCount);
+            spriteBatch.DrawString(font, stringBuilder, new Vector2(layout.ArrangedBounds.X, layout.ArrangedBounds.Y), Color.Yellow);
 
             // calculate the background area for help messages.
             layout.ContainerBounds = GraphicsDevice.Viewport.TitleSafeArea;

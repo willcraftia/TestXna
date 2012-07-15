@@ -127,6 +127,7 @@
     <Compile Include="CDLOD\Selection.cs" />
     <Compile Include="CDLOD\Settings.cs" />
     <Compile Include="CDLOD\VertexPosition.cs" />
+    <Compile Include="Framework\AppendNumberOptions.cs" />
     <Compile Include="Framework\Debug\DebugHorizontalAlignment.cs" />
     <Compile Include="Framework\Debug\DebugLayout.cs" />
     <Compile Include="Framework\Debug\DebugVerticalAlignment.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="Framework\Graphics\Texture2DHelper.cs" />
     <Compile Include="Framework\Graphics\WritableVertexBuffer.cs" />
     <Compile Include="Cameras\FreeView.cs" />
+    <Compile Include="Framework\StringBuilderExtension.cs" />
     <Compile Include="Noise\Fractal.cs" />
     <Compile Include="Cameras\FreeViewInput.cs" />
     <Compile Include="Noise\NoiseMap.cs" />

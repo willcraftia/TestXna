@@ -74,6 +74,8 @@ namespace TerrainDemo.CDLOD
 
         public bool LightEnabled { get; set; }
 
+        public float WireframeGap { get; set; }
+
         public TerrainRenderer(GraphicsDevice graphicsDevice, ContentManager content, Settings settings)
         {
             GraphicsDevice = graphicsDevice;
@@ -101,6 +103,8 @@ namespace TerrainDemo.CDLOD
 
             HeightColorVisible = true;
             LightEnabled = true;
+
+            WireframeGap = 0.01f;
         }
 
         // Invoke this method if the state of a IVisibleRanges instance is changed.
@@ -153,7 +157,7 @@ namespace TerrainDemo.CDLOD
             if (WireframeVisible)
             {
                 var wireframeTerrainOffset = selection.TerrainOffset;
-                wireframeTerrainOffset.Y += 0.05f;
+                wireframeTerrainOffset.Y += WireframeGap;
                 effect.TerrainOffset = wireframeTerrainOffset;
                 DrawPatchInstances(effect.WireframeTequnique, selection.SelectedNodeCount);
                 effect.TerrainOffset = selection.TerrainOffset;
