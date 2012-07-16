@@ -46,6 +46,7 @@ namespace TerrainDemo
         float patchScale = Settings.DefaultPatchScale * 2 * 2;
         //float heightScale = Settings.DefaultHeightScale * 0.1f;
         //float heightScale = Settings.DefaultHeightScale;
+        // for recording settings
         float heightScale = Settings.DefaultHeightScale * 4;
 
         // View settings for debug.
@@ -114,8 +115,6 @@ namespace TerrainDemo
         /// </summary>
         Texture2D fillTexture;
 
-        bool active = true;
-
         public TerrainDemoGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -124,7 +123,7 @@ namespace TerrainDemo
             // for recording settings
             graphics.PreferredBackBufferWidth = 640;
             graphics.PreferredBackBufferHeight = 480;
-            graphics.PreferMultiSampling = true;
+            //graphics.PreferMultiSampling = true;
 
             Content.RootDirectory = "Content";
 
@@ -157,8 +156,8 @@ namespace TerrainDemo
             fpsCounter.HorizontalAlignment = DebugHorizontalAlignment.Right;
             fpsCounter.SampleSpan = TimeSpan.FromSeconds(2);
             Components.Add(fpsCounter);
-            //fpsCounter.Enabled = false;
-            //fpsCounter.Visible = false;
+            fpsCounter.Enabled = false;
+            fpsCounter.Visible = false;
 
             base.Initialize();
         }
@@ -208,7 +207,7 @@ namespace TerrainDemo
 
         protected override void Update(GameTime gameTime)
         {
-            if (!active) return;
+            if (!IsActive) return;
 
             var keyboardState = Keyboard.GetState();
             if (keyboardState.IsKeyDown(Keys.Escape)) Exit();
@@ -271,20 +270,6 @@ namespace TerrainDemo
                 DrawHelp();
 
             base.Draw(gameTime);
-        }
-
-        protected override void OnActivated(object sender, EventArgs args)
-        {
-            active = true;
-
-            base.OnActivated(sender, args);
-        }
-
-        protected override void OnDeactivated(object sender, EventArgs args)
-        {
-            active = false;
-
-            base.OnDeactivated(sender, args);
         }
 
         void BuildInformationMessage(int quadCount)
