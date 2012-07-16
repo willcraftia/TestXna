@@ -129,6 +129,8 @@
     <Compile Include="CDLOD\TerrainEffect.cs" />
     <Compile Include="CDLOD\TerrainRenderer.cs" />
     <Compile Include="CDLOD\VertexPosition.cs" />
+    <Compile Include="DemoLandscape\DemoPartitionContext.cs" />
+    <Compile Include="DemoLandscape\DemoPartitionFactory.cs" />
     <Compile Include="Framework\AppendNumberOptions.cs" />
     <Compile Include="Framework\Cameras\PerspectiveFov.cs" />
     <Compile Include="Framework\Cameras\ProjectionBase.cs" />
@@ -142,6 +144,14 @@
     <Compile Include="Framework\Projection.cs" />
     <Compile Include="Framework\StringBuilderExtension.cs" />
     <Compile Include="Framework\View.cs" />
+    <Compile Include="DemoLandscape\DemoPartition.cs" />
+    <Compile Include="Landscape\Partition.cs" />
+    <Compile Include="Landscape\PartitionFactory.cs" />
+    <Compile Include="Landscape\PartitionLoadResultCallback.cs" />
+    <Compile Include="Landscape\PartitionLoadQueue.cs" />
+    <Compile Include="Landscape\PartitionManager.cs" />
+    <Compile Include="Landscape\PartitionLoadState.cs" />
+    <Compile Include="Landscape\Pool.cs" />
     <Compile Include="Noise\Fractal.cs" />
     <Compile Include="Noise\ImprovedPerlinNoise.cs" />
     <Compile Include="Noise\NoiseMap.cs" />
