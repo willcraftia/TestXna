@@ -64,7 +64,7 @@ namespace TiledTerrainDemo.Landscape
             loadQueue = new PartitionLoadQueue(LoadResultCallback);
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             // update the queue.
             loadQueue.Update();
@@ -73,17 +73,12 @@ namespace TiledTerrainDemo.Landscape
             SelectPartitions();
         }
 
-        public void Draw()
+        public void Draw(GameTime gameTime)
         {
             foreach (var partition in partitions)
             {
-                switch (partition.LoadState)
-                {
-                    case PartitionLoadState.Loaded:
-                        break;
-                    default:
-                        break;
-                }
+                if (partition.LoadState == PartitionLoadState.Loaded)
+                    partition.Draw(gameTime);
             }
         }
 
@@ -144,8 +139,12 @@ namespace TiledTerrainDemo.Landscape
 
                     // A new partition.
                     var partition = partitionPool.Borrow();
+                    partition.LoadState = PartitionLoadState.WaitLoad;
                     partition.X = x;
                     partition.Y = y;
+                    partitions.Add(partition);
+
+                    // load.
                     loadQueue.Enqueue(partition);
                 }
             }

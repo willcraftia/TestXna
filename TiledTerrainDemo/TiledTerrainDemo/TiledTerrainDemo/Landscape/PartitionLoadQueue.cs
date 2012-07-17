@@ -34,7 +34,7 @@ namespace TiledTerrainDemo.Landscape
         /// <summary>
         /// 利用できる Thread の上限。
         /// </summary>
-        public const int MaxThreadCount = 3;
+        public const int MaxThreadCount = 4;
 
         PartitionLoadResultCallback loadResultCallback;
 

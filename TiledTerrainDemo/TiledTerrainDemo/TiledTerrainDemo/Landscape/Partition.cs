@@ -1,6 +1,7 @@
 ﻿#region Using
 
 using System;
+using Microsoft.Xna.Framework;
 
 #endregion
 
@@ -19,6 +20,6 @@ namespace TiledTerrainDemo.Landscape
 
         public abstract void UnloadContent();
 
-        public abstract void Draw();
+        public abstract void Draw(GameTime gameTime);
     }
 }

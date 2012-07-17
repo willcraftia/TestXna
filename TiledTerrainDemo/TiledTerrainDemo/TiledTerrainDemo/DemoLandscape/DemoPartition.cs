@@ -1,7 +1,10 @@
 ﻿#region Using
 
 using System;
+using Microsoft.Xna.Framework;
+using TiledTerrainDemo.CDLOD;
 using TiledTerrainDemo.Landscape;
+using TiledTerrainDemo.Noise;
 
 #endregion
 
@@ -11,24 +14,67 @@ namespace TiledTerrainDemo.DemoLandscape
     {
         DemoPartitionContext context;
 
+        NoiseMap noiseMap = new NoiseMap();
+
+        DemoHeightMapSource heightMap = new DemoHeightMapSource();
+
+        Terrain terrain;
+
         public DemoPartition(DemoPartitionContext context)
         {
             this.context = context;
+
+            noiseMap.Width = context.HeightMapWidth;
+            noiseMap.Height = context.HeightMapHeight;
+            noiseMap.GetValue2 = context.GetNoiseValue;
+
+            heightMap.Width = context.HeightMapWidth;
+            heightMap.Height = context.HeightMapHeight;
+            heightMap.NoiseMap = noiseMap;
+
+            terrain = new Terrain(context.GraphicsDevice, context.Settings);
         }
 
         public override void LoadContent()
         {
-            throw new NotImplementedException();
+            // Set the current noise bounds.
+            noiseMap.SetBounds(
+                context.NoiseMinX + X * context.NoiseWidth,
+                context.NoiseMinY + Y * context.NoiseHeight,
+                context.NoiseWidth,
+                context.NoiseHeight);
+
+            noiseMap.Build();
+
+            // TODO: modified QuadTree and Node to avoid GC.
+            terrain.Initialize(heightMap);
         }
 
         public override void UnloadContent()
         {
-            throw new NotImplementedException();
+            terrain.Dispose();
         }
 
-        public override void Draw()
+        public override void Draw(GameTime gameTime)
         {
-            throw new NotImplementedException();
+            var terrainOffset = new Vector3(X, 0, Y);
+            terrainOffset.X *= (context.HeightMapWidth - 1);
+            terrainOffset.Z *= (context.HeightMapHeight - 1);
+            terrainOffset *= context.Settings.PatchScale;
+
+            context.Selection.TerrainOffset = terrainOffset;
+
+            // select.
+            terrain.Select(context.Selection);
+
+            #region Debug
+
+            context.TotalSelectedNodeCount += context.Selection.SelectedNodeCount;
+            context.DrawPartitionCount += 1;
+
+            #endregion
+
+            context.TerrainRenderer.Draw(gameTime, context.Selection);
         }
     }
 }

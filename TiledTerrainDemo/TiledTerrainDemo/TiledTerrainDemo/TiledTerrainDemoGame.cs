@@ -1,13 +1,19 @@
 #region Using
 
 using System;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TiledTerrainDemo.Framework;
 using TiledTerrainDemo.Framework.Cameras;
 using TiledTerrainDemo.Framework.Debug;
+using TiledTerrainDemo.Framework.Graphics;
 using TiledTerrainDemo.Cameras;
+using TiledTerrainDemo.CDLOD;
+using TiledTerrainDemo.DemoLandscape;
+using TiledTerrainDemo.Landscape;
 
 #endregion
 
@@ -15,6 +21,19 @@ namespace TiledTerrainDemo
 {
     public class TiledTerrainDemoGame : Game
     {
+        int heightMapWidth = 256 * 4 + 1;
+        int heightMapHeight = 256 * 4 + 1;
+        float noiseSampleX = 0;
+        float noiseSampleY = 0;
+        float noiseSampleWidth = 12;
+        float noiseSampleHeight = 12;
+
+        // CDLOD settings for debug.
+        int levelCount = Settings.DefaultLevelCount;
+        int leafNodeSize = Settings.DefaultLeafNodeSize * 2 * 2;
+        float patchScale = Settings.DefaultPatchScale * 2;
+        float heightScale = Settings.DefaultHeightScale;
+
         // View settings for debug.
         float farPlaneDistance = 150000;
         float moveVelocity = 100;
@@ -31,6 +50,52 @@ namespace TiledTerrainDemo
         FreeViewInput viewInput = new FreeViewInput();
 
         RasterizerState defaultRasterizerState = new RasterizerState();
+
+        PartitionManager partitionManager;
+
+        Settings settings = Settings.Default;
+
+        DemoPartitionContext partitionContext;
+
+        DemoPartitionFactory partitionFactory;
+
+        #region Debug
+
+        string helpMessage =
+            "[F1] Help\r\n" +
+            "[F2] Node bounding box\r\n" +
+            "[F3] White solid\r\n" +
+            "[F4] Height color\r\n" +
+            "[F5] Wireframe\r\n" +
+            "[F6] Light\r\n" +
+            "[w][s][a][d][q][z] Movement\r\n" +
+            "[Mouse] Camera orientation\r\n" +
+            "[PageUp][PageDown] Move velocity";
+
+        Vector2 helpMessageFontSize;
+
+        Vector2 informationTextFontSize;
+
+        bool helpVisible;
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        /// <summary>
+        /// SpriteBatch.
+        /// </summary>
+        SpriteBatch spriteBatch;
+
+        /// <summary>
+        /// SpriteFont.
+        /// </summary>
+        SpriteFont font;
+
+        /// <summary>
+        /// The texture to fill a regionÅB
+        /// </summary>
+        Texture2D fillTexture;
+
+        #endregion
 
         public TiledTerrainDemoGame()
         {
@@ -56,7 +121,10 @@ namespace TiledTerrainDemo
 
             view.Position = new Vector3(50, 30, 50);
             view.Yaw(MathHelper.PiOver4 * 5);
+            view.Update();
+
             projection.FarPlaneDistance = farPlaneDistance;
+            projection.Update();
 
             defaultRasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
             defaultRasterizerState.FillMode = FillMode.Solid;
@@ -72,6 +140,36 @@ namespace TiledTerrainDemo
 
         protected override void LoadContent()
         {
+            settings.LevelCount = levelCount;
+            settings.LeafNodeSize = leafNodeSize;
+            settings.PatchScale = patchScale;
+            settings.HeightScale = heightScale;
+
+            partitionContext = new DemoPartitionContext(
+                GraphicsDevice, Content,
+                heightMapWidth, heightMapHeight,
+                noiseSampleX, noiseSampleY, noiseSampleWidth, noiseSampleHeight, settings);
+
+            partitionFactory = new DemoPartitionFactory(partitionContext);
+
+            partitionManager = new PartitionManager(partitionFactory.Create);
+            partitionManager.PartitionWidth = settings.PatchScale * (heightMapWidth - 1);
+            partitionManager.PartitionHeight = settings.PatchScale * (heightMapHeight - 1);
+            partitionManager.ActivationRange = partitionManager.PartitionHeight * 2;
+            partitionManager.DeactivationRange = partitionManager.ActivationRange * 1.5f;
+            partitionManager.EyePosition = view.Position;
+
+            #region Debug
+
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            font = Content.Load<SpriteFont>("Fonts/Debug");
+            fillTexture = Texture2DHelper.CreateFillTexture(GraphicsDevice);
+            helpMessageFontSize = font.MeasureString(helpMessage);
+
+            BuildInformationMessage(9999, 99);
+            informationTextFontSize = font.MeasureString(stringBuilder);
+
+            #endregion
         }
 
         protected override void UnloadContent()
@@ -95,7 +193,31 @@ namespace TiledTerrainDemo
                 if (viewInput.MoveVelocity < 10) viewInput.MoveVelocity = 10;
             }
 
+            #region Debug
+
+            if (keyboardState.IsKeyUp(Keys.F1) && lastKeyboardState.IsKeyDown(Keys.F1))
+                helpVisible = !helpVisible;
+
+            if (keyboardState.IsKeyUp(Keys.F2) && lastKeyboardState.IsKeyDown(Keys.F2))
+                partitionContext.TerrainRenderer.NodeBoundingBoxVisible = !partitionContext.TerrainRenderer.NodeBoundingBoxVisible;
+
+            if (keyboardState.IsKeyUp(Keys.F3) && lastKeyboardState.IsKeyDown(Keys.F3))
+                partitionContext.TerrainRenderer.WhiteSolidVisible = !partitionContext.TerrainRenderer.WhiteSolidVisible;
+
+            if (keyboardState.IsKeyUp(Keys.F4) && lastKeyboardState.IsKeyDown(Keys.F4))
+                partitionContext.TerrainRenderer.HeightColorVisible = !partitionContext.TerrainRenderer.HeightColorVisible;
+
+            if (keyboardState.IsKeyUp(Keys.F5) && lastKeyboardState.IsKeyDown(Keys.F5))
+                partitionContext.TerrainRenderer.WireframeVisible = !partitionContext.TerrainRenderer.WireframeVisible;
+
+            if (keyboardState.IsKeyUp(Keys.F6) && lastKeyboardState.IsKeyDown(Keys.F6))
+                partitionContext.TerrainRenderer.LightEnabled = !partitionContext.TerrainRenderer.LightEnabled;
+
+            #endregion
+
             lastKeyboardState = keyboardState;
+
+            partitionManager.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -108,7 +230,106 @@ namespace TiledTerrainDemo
             GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.RasterizerState = defaultRasterizerState;
 
+            partitionContext.Selection.View = view.Matrix;
+            partitionContext.Selection.Projection = projection.Matrix;
+            partitionContext.Selection.Prepare();
+
+            #region Debug
+
+            partitionContext.TotalSelectedNodeCount = 0;
+            partitionContext.DrawPartitionCount = 0;
+
+            #endregion
+
+            partitionManager.EyePosition = view.Position;
+            partitionManager.Draw(gameTime);
+
+            #region Debug
+
+            if (helpVisible) DrawHelp();
+
+            #endregion
+
             base.Draw(gameTime);
+        }
+
+        void BuildInformationMessage(int quadCount, int partitionCount)
+        {
+            stringBuilder.Length = 0;
+            stringBuilder.Append("Screen: ");
+            stringBuilder.AppendNumber(graphics.PreferredBackBufferWidth).Append('x').Append(graphics.PreferredBackBufferHeight).AppendLine();
+            stringBuilder.Append("Height map: ");
+            stringBuilder.AppendNumber(heightMapWidth).Append('x').Append(heightMapHeight).AppendLine();
+            stringBuilder.Append("Quads: ");
+            stringBuilder.AppendNumber(quadCount).AppendLine();
+            stringBuilder.Append("Partitions: ");
+            stringBuilder.AppendNumber(partitionCount).AppendLine();
+            stringBuilder.Append("Level count: ");
+            stringBuilder.AppendNumber(settings.LevelCount).Append(", ");
+            stringBuilder.Append("Leaf node size: ");
+            stringBuilder.AppendNumber(settings.LeafNodeSize).AppendLine();
+            stringBuilder.Append("Far plane distance: ");
+            stringBuilder.AppendNumber(farPlaneDistance).AppendLine();
+            stringBuilder.Append("Move velocity: ");
+            stringBuilder.AppendNumber(viewInput.MoveVelocity);
+        }
+
+        void DrawHelp()
+        {
+            spriteBatch.Begin();
+
+            var layout = new DebugLayout();
+
+            // calculate the background area for information.
+            layout.ContainerBounds = GraphicsDevice.Viewport.TitleSafeArea;
+            layout.Width = (int) informationTextFontSize.X + 4;
+            layout.Height = (int) informationTextFontSize.Y + 2;
+            layout.HorizontalMargin = 8;
+            layout.VerticalMargin = 8;
+            layout.HorizontalAlignment = DebugHorizontalAlignment.Left;
+            layout.VerticalAlignment = DebugVerticalAlignment.Top;
+            layout.Arrange();
+            // draw the rectangle.
+            spriteBatch.Draw(fillTexture, layout.ArrangedBounds, Color.Black * 0.5f);
+
+            // calculate the text area for help messages.
+            layout.ContainerBounds = layout.ArrangedBounds;
+            layout.Width = (int) informationTextFontSize.X;
+            layout.Height = (int) informationTextFontSize.Y;
+            layout.HorizontalMargin = 2;
+            layout.VerticalMargin = 0;
+            layout.HorizontalAlignment = DebugHorizontalAlignment.Center;
+            layout.VerticalAlignment = DebugVerticalAlignment.Center;
+            layout.Arrange();
+            // draw the text.
+            BuildInformationMessage(partitionContext.TotalSelectedNodeCount, partitionContext.DrawPartitionCount);
+            spriteBatch.DrawString(font, stringBuilder, new Vector2(layout.ArrangedBounds.X, layout.ArrangedBounds.Y), Color.Yellow);
+
+            // calculate the background area for help messages.
+            layout.ContainerBounds = GraphicsDevice.Viewport.TitleSafeArea;
+            layout.Width = (int) helpMessageFontSize.X + 4;
+            layout.Height = (int) helpMessageFontSize.Y + 2;
+            layout.HorizontalMargin = 8;
+            layout.VerticalMargin = 8;
+            layout.HorizontalAlignment = DebugHorizontalAlignment.Left;
+            layout.VerticalAlignment = DebugVerticalAlignment.Bottom;
+            layout.Arrange();
+            // draw the rectangle.
+            spriteBatch.Draw(fillTexture, layout.ArrangedBounds, Color.Black * 0.5f);
+
+            // calculate the text area for help messages.
+            layout.ContainerBounds = layout.ArrangedBounds;
+            layout.Width = (int) helpMessageFontSize.X;
+            layout.Height = (int) helpMessageFontSize.Y;
+            layout.HorizontalMargin = 2;
+            layout.VerticalMargin = 0;
+            layout.HorizontalAlignment = DebugHorizontalAlignment.Center;
+            layout.VerticalAlignment = DebugVerticalAlignment.Center;
+            layout.Arrange();
+            // draw the text.
+            spriteBatch.DrawString(font, helpMessage, new Vector2(layout.ArrangedBounds.X, layout.ArrangedBounds.Y), Color.Yellow);
+
+            spriteBatch.End();
         }
     }
 }
