@@ -32,12 +32,12 @@ namespace TiledTerrainDemo
 
         // CDLOD settings for debug.
         int levelCount = Settings.DefaultLevelCount;
-        int leafNodeSize = Settings.DefaultLeafNodeSize;
-        //int leafNodeSize = Settings.DefaultLeafNodeSize * 2 * 2;
+        //int leafNodeSize = Settings.DefaultLeafNodeSize;
+        int leafNodeSize = Settings.DefaultLeafNodeSize * 2 * 2;
         //float patchScale = Settings.DefaultPatchScale;
         float patchScale = Settings.DefaultPatchScale * 2 * 2;
-        //float heightScale = Settings.DefaultHeightScale;
-        float heightScale = Settings.DefaultHeightScale * 0.5f;
+        float heightScale = Settings.DefaultHeightScale;
+        //float heightScale = Settings.DefaultHeightScale * 0.5f;
 
         // View settings for debug.
         float farPlaneDistance = 150000;

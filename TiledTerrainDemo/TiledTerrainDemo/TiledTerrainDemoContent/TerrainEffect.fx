@@ -172,10 +172,28 @@ float SampleHeightMap(float2 uv)
 float4 CalculateNormal(float2 texCoord)
 {
     // From http://graphics.ethz.ch/teaching/gamelab11/course_material/lecture06/XNA_Shaders_Terrain.pdf
-    float n = SampleHeightMap(texCoord + float2(0, -HeightMapTexelSize.x));
+/*    float n = SampleHeightMap(texCoord + float2(0, -HeightMapTexelSize.x));
     float s = SampleHeightMap(texCoord + float2(0,  HeightMapTexelSize.x));
     float e = SampleHeightMap(texCoord + float2(-HeightMapTexelSize.y, 0));
     float w = SampleHeightMap(texCoord + float2( HeightMapTexelSize.y, 0));
+
+    float3 sn = float3(0, (s - n) * TerrainScale.y, -TwoHeightMapTexelSize.y);
+    float3 ew = float3(-TwoHeightMapTexelSize.x, (e - w) * TerrainScale.y, 0);
+    sn *= TwoHeightMapSize.y;
+    ew *= TwoHeightMapSize.x;
+    sn = normalize(sn);
+    ew = normalize(ew);
+
+    float4 normal = float4(normalize(cross(sn, ew)), 1);
+    normal.x = -normal.x;
+
+    return normal;*/
+
+// TODO: really?
+    float n = SampleHeightMap(texCoord + float2(0, 0));
+    float s = SampleHeightMap(texCoord + float2(0, HeightMapTexelSize.x));
+    float e = SampleHeightMap(texCoord + float2(0, 0));
+    float w = SampleHeightMap(texCoord + float2(HeightMapTexelSize.y, 0));
 
     float3 sn = float3(0, (s - n) * TerrainScale.y, -TwoHeightMapTexelSize.y);
     float3 ew = float3(-TwoHeightMapTexelSize.x, (e - w) * TerrainScale.y, 0);
