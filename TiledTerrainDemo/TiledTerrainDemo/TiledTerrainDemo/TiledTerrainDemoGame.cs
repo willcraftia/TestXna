@@ -21,8 +21,10 @@ namespace TiledTerrainDemo
 {
     public class TiledTerrainDemoGame : Game
     {
-        int heightMapWidth = 256 * 4 + 1;
-        int heightMapHeight = 256 * 4 + 1;
+        int heightMapWidth = 256 * 2 + 1;
+        int heightMapHeight = 256 * 2 + 1;
+        //int heightMapWidth = 256 * 4 + 1;
+        //int heightMapHeight = 256 * 4 + 1;
         float noiseSampleX = 0;
         float noiseSampleY = 0;
         float noiseSampleWidth = 12;
@@ -30,9 +32,12 @@ namespace TiledTerrainDemo
 
         // CDLOD settings for debug.
         int levelCount = Settings.DefaultLevelCount;
-        int leafNodeSize = Settings.DefaultLeafNodeSize * 2 * 2;
-        float patchScale = Settings.DefaultPatchScale * 2;
-        float heightScale = Settings.DefaultHeightScale;
+        int leafNodeSize = Settings.DefaultLeafNodeSize;
+        //int leafNodeSize = Settings.DefaultLeafNodeSize * 2 * 2;
+        //float patchScale = Settings.DefaultPatchScale;
+        float patchScale = Settings.DefaultPatchScale * 2 * 2;
+        //float heightScale = Settings.DefaultHeightScale;
+        float heightScale = Settings.DefaultHeightScale * 0.5f;
 
         // View settings for debug.
         float farPlaneDistance = 150000;
@@ -133,6 +138,8 @@ namespace TiledTerrainDemo
             fpsCounter.Content.RootDirectory = "Content";
             fpsCounter.HorizontalAlignment = DebugHorizontalAlignment.Right;
             fpsCounter.SampleSpan = TimeSpan.FromSeconds(2);
+            //fpsCounter.Enabled = false;
+            //fpsCounter.Visible = false;
             Components.Add(fpsCounter);
 
             base.Initialize();
