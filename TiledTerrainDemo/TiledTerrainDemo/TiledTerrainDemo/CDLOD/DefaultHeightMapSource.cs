@@ -2,6 +2,7 @@
 
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using TiledTerrainDemo.Noise;
 
 #endregion
@@ -16,8 +17,15 @@ namespace TiledTerrainDemo.CDLOD
 
         public int Height { get; private set; }
 
-        public DefaultHeightMapSource(float[] sourceHeights, int width, int height)
+        public Texture2D Texture { get; private set; }
+
+        public GraphicsDevice GraphicsDevice { get; private set; }
+
+        public DefaultHeightMapSource(GraphicsDevice graphicsDevice, float[] sourceHeights, int width, int height)
         {
+            if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
+
+            GraphicsDevice = graphicsDevice;
             Width = width;
             Height = height;
 
@@ -33,6 +41,18 @@ namespace TiledTerrainDemo.CDLOD
                     heights[x, y] = MathHelper.Clamp(h, -1, 1);
                 }
             }
+        }
+
+        public void Build()
+        {
+            Texture = new Texture2D(GraphicsDevice, Width, Height, false, SurfaceFormat.Single);
+
+            var data = new float[Width * Height];
+            for (int y = 0; y < Height; y++)
+                for (int x = 0; x < Width; x++)
+                    data[x + y * Width] = heights[x, y];
+
+            Texture.SetData(data);
         }
 
         public float GetHeight(int x, int y)

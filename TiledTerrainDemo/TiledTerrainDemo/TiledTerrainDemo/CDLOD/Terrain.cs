@@ -10,15 +10,17 @@ using TiledTerrainDemo.Framework.Graphics;
 
 namespace TiledTerrainDemo.CDLOD
 {
-    public sealed class Terrain : IDisposable
+    public sealed class Terrain/* : IDisposable*/
     {
         Settings settings;
 
         QuadTree quadTree = new QuadTree();
 
-        Texture2D heightMapTexture;
+        //Texture2D heightMapTexture;
 
         public GraphicsDevice GraphicsDevice { get; private set; }
+
+        public IHeightMapSource HeightMap { get; set; }
 
         public Terrain(GraphicsDevice graphicsDevice, Settings settings)
         {
@@ -26,18 +28,21 @@ namespace TiledTerrainDemo.CDLOD
             this.settings = settings;
         }
 
-        public void Initialize(IHeightMapSource heightMap)
+        public void Build()
         {
+            if (HeightMap == null)
+                throw new InvalidOperationException("HeightMap is null.");
+
             // Build the quadtree.
             var createDescription = new CreateDescription
             {
                 Settings = settings,
-                HeightMap = heightMap
+                HeightMap = HeightMap
             };
             quadTree.Build(ref createDescription);
 
             // Initialize a height map texture.
-            InitializeHeightMapTexture(heightMap);
+            //InitializeHeightMapTexture(HeightMap);
         }
 
         /// <summary>
@@ -45,17 +50,17 @@ namespace TiledTerrainDemo.CDLOD
         /// The height map texture is created with SurfaceFormat.Single.
         /// </summary>
         /// <param name="heightMap"></param>
-        void InitializeHeightMapTexture(IHeightMapSource heightMap)
-        {
-            heightMapTexture = new Texture2D(GraphicsDevice, heightMap.Width, heightMap.Height, false, SurfaceFormat.Single);
+        //void InitializeHeightMapTexture(IHeightMapSource heightMap)
+        //{
+        //    heightMapTexture = new Texture2D(GraphicsDevice, heightMap.Width, heightMap.Height, false, SurfaceFormat.Single);
 
-            var heights = new float[heightMap.Width * heightMap.Height];
-            for (int y = 0; y < heightMap.Height; y++)
-                for (int x = 0; x < heightMap.Width; x++)
-                    heights[x + y * heightMap.Width] = heightMap.GetHeight(x, y);
+        //    var heights = new float[heightMap.Width * heightMap.Height];
+        //    for (int y = 0; y < heightMap.Height; y++)
+        //        for (int x = 0; x < heightMap.Width; x++)
+        //            heights[x + y * heightMap.Width] = heightMap.GetHeight(x, y);
 
-            heightMapTexture.SetData(heights);
-        }
+        //    heightMapTexture.SetData(heights);
+        //}
 
         public void Select(Selection selection)
         {
@@ -66,36 +71,36 @@ namespace TiledTerrainDemo.CDLOD
             quadTree.Select(selection);
 
             // Set the height map texture to render.
-            selection.HeightMapTexture = heightMapTexture;
+            selection.HeightMapTexture = HeightMap.Texture;
         }
 
-        #region IDisposable
+        //#region IDisposable
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        //public void Dispose()
+        //{
+        //    Dispose(true);
+        //    GC.SuppressFinalize(this);
+        //}
 
-        bool disposed;
+        //bool disposed;
 
-        ~Terrain()
-        {
-            Dispose(false);
-        }
+        //~Terrain()
+        //{
+        //    Dispose(false);
+        //}
 
-        void Dispose(bool disposing)
-        {
-            if (disposed) return;
+        //void Dispose(bool disposing)
+        //{
+        //    if (disposed) return;
 
-            if (disposing)
-            {
-                if (heightMapTexture != null) heightMapTexture.Dispose();
-            }
+        //    if (disposing)
+        //    {
+        //        if (heightMapTexture != null) heightMapTexture.Dispose();
+        //    }
 
-            disposed = true;
-        }
+        //    disposed = true;
+        //}
 
-        #endregion
+        //#endregion
     }
 }

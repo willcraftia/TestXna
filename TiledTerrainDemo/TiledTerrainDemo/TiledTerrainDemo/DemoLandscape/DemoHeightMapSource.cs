@@ -2,6 +2,7 @@
 
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using TiledTerrainDemo.CDLOD;
 using TiledTerrainDemo.Noise;
 
@@ -9,17 +10,49 @@ using TiledTerrainDemo.Noise;
 
 namespace TiledTerrainDemo.DemoLandscape
 {
-    public sealed class DemoHeightMapSource : IHeightMapSource
+    public sealed class DemoHeightMapSource : IHeightMapSource, IDisposable
     {
-        public int Width { get; set; }
+        public int Width
+        {
+            get
+            {
+                return (TiledNoiseMap != null) ? TiledNoiseMap.Width : 0;
+            }
+        }
 
-        public int Height { get; set; }
+        public int Height
+        {
+            get
+            {
+                return (TiledNoiseMap != null) ? TiledNoiseMap.Height : 0;
+            }
+        }
 
-        public NoiseMap NoiseMap { get; set; }
+        public Texture2D Texture { get; private set; }
+
+        public GraphicsDevice GraphicsDevice { get; private set; }
+
+        public TiledNoiseMap TiledNoiseMap { get; set; }
+
+        public DemoHeightMapSource(GraphicsDevice graphicsDevice)
+        {
+            if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
+
+            GraphicsDevice = graphicsDevice;
+        }
+
+        public void Build()
+        {
+            if (TiledNoiseMap == null)
+                throw new InvalidOperationException("TiledNoiseMap is null.");
+
+            Texture = new Texture2D(GraphicsDevice, TiledNoiseMap.Width, TiledNoiseMap.Height, false, SurfaceFormat.Single);
+            Texture.SetData(TiledNoiseMap.RawValues);
+        }
 
         public float GetHeight(int x, int y)
         {
-            return NoiseMap.Values[x + y * Width];
+            return TiledNoiseMap[x, y];
         }
 
         public void GetAreaMinMaxHeight(int x, int y, int sizeX, int sizeY, out float minHeight, out float maxHeight)
@@ -36,5 +69,34 @@ namespace TiledTerrainDemo.DemoLandscape
                 }
             }
         }
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        bool disposed;
+
+        ~DemoHeightMapSource()
+        {
+            Dispose(false);
+        }
+
+        void Dispose(bool disposing)
+        {
+            if (disposed) return;
+
+            if (disposing)
+            {
+                if (Texture != null) Texture.Dispose();
+            }
+
+            disposed = true;
+        }
+
+        #endregion
     }
 }

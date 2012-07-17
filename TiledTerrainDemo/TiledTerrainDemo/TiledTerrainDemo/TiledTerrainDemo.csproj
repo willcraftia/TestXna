@@ -132,6 +132,7 @@
     <Compile Include="DemoLandscape\DemoHeightMapSource.cs" />
     <Compile Include="DemoLandscape\DemoPartitionContext.cs" />
     <Compile Include="DemoLandscape\DemoPartitionFactory.cs" />
+    <Compile Include="DemoLandscape\TiledNoiseMap.cs" />
     <Compile Include="Framework\AppendNumberOptions.cs" />
     <Compile Include="Framework\Cameras\PerspectiveFov.cs" />
     <Compile Include="Framework\Cameras\ProjectionBase.cs" />

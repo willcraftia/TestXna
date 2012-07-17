@@ -104,8 +104,16 @@ struct VS_OUTPUT
 float2 CalculateGlobalUV(float4 vertex)
 {
     float2 globalUV = (vertex.xz - TerrainOffset.xz) / TerrainScale.xz;
-    globalUV *= SamplerWorldToTextureScale;
-    globalUV += HeightMapTexelSize * 0.5;
+/*    globalUV *= SamplerWorldToTextureScale;
+    globalUV += HeightMapTexelSize * 0.5;*/
+
+//    float2 actualTextureSize = HeightMapSize - 2;
+//    float2 actualTexelSize = 1 / actualTextureSize;
+
+    float2 worldToTexel = (HeightMapSize - 1) * HeightMapTexelSize;
+    globalUV *= worldToTexel;
+//    globalUV += HeightMapTexelSize;
+
     return globalUV;
 }
 
@@ -120,7 +128,7 @@ float2 MorphVertex(float4 position, float2 vertex, float4 quadScale, float morph
 float SampleHeightMap(float2 uv)
 {
     // A manual bilinear interpolation.
-    uv = uv.xy * HeightMapSize - float2(0.5, 0.5);
+/*    uv = uv.xy * HeightMapSize - float2(0.5, 0.5);
     float2 uvf = floor( uv.xy );
     float2 f = uv - uvf;
     uv = (uvf + float2(0.5, 0.5)) * HeightMapTexelSize;
@@ -133,7 +141,23 @@ float SampleHeightMap(float2 uv)
     float t11 = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
     float tB = lerp( t01, t11, f.x );
 
+    return lerp( tA, tB, f.y );*/
+
+    uv = uv.xy * HeightMapSize;
+    float2 uvf = floor( uv.xy );
+    float2 f = uv - uvf;
+    uv = uvf * HeightMapTexelSize;
+
+    float t00 = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y, 0, 0 ) ).x;
+    float t10 = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y, 0, 0 ) ).x;
+    float tA = lerp( t00, t10, f.x );
+
+    float t01 = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
+    float t11 = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
+    float tB = lerp( t01, t11, f.x );
+
     return lerp( tA, tB, f.y );
+
     // The following codes are a simple bilinear interporation but low accuracy.
 /*    float tl = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y, 0, 0 ) ).x;
     float tr = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y, 0, 0 ) ).x;

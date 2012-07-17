@@ -181,6 +181,9 @@ namespace TiledTerrainDemo.CDLOD
                     boundingBoxDrawer.Draw(ref box, debugEffect, ref debugLevelColors[level]);
                 }
             }
+
+            // unbind the height map texture.
+            effect.HeightMap = null;
         }
 
         void DrawPatchInstances(EffectTechnique technique, int selectedNodeCount)

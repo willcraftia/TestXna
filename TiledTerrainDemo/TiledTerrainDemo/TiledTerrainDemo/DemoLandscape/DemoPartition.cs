@@ -14,9 +14,9 @@ namespace TiledTerrainDemo.DemoLandscape
     {
         DemoPartitionContext context;
 
-        NoiseMap noiseMap = new NoiseMap();
+        TiledNoiseMap tiledNoiseMap = new TiledNoiseMap();
 
-        DemoHeightMapSource heightMap = new DemoHeightMapSource();
+        DemoHeightMapSource heightMap;
 
         Terrain terrain;
 
@@ -24,35 +24,40 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             this.context = context;
 
-            noiseMap.Width = context.HeightMapWidth;
-            noiseMap.Height = context.HeightMapHeight;
-            noiseMap.GetValue2 = context.GetNoiseValue;
+            tiledNoiseMap.Width = context.HeightMapWidth;
+            tiledNoiseMap.Height = context.HeightMapHeight;
+            tiledNoiseMap.GetValue2 = context.GetNoiseValue;
 
-            heightMap.Width = context.HeightMapWidth;
-            heightMap.Height = context.HeightMapHeight;
-            heightMap.NoiseMap = noiseMap;
+            heightMap = new DemoHeightMapSource(context.GraphicsDevice);
+            heightMap.TiledNoiseMap = tiledNoiseMap;
 
             terrain = new Terrain(context.GraphicsDevice, context.Settings);
+            terrain.HeightMap = heightMap;
         }
 
         public override void LoadContent()
         {
             // Set the current noise bounds.
-            noiseMap.SetBounds(
+            tiledNoiseMap.SetBounds(
                 context.NoiseMinX + X * context.NoiseWidth,
                 context.NoiseMinY + Y * context.NoiseHeight,
                 context.NoiseWidth,
                 context.NoiseHeight);
+            // Build noise values.
+            tiledNoiseMap.Build();
 
-            noiseMap.Build();
+            // Build the height map.
+            heightMap.Build();
 
             // TODO: modified QuadTree and Node to avoid GC.
-            terrain.Initialize(heightMap);
+            // Build the terrain.
+            terrain.Build();
         }
 
         public override void UnloadContent()
         {
-            terrain.Dispose();
+            heightMap.Dispose();
+            //terrain.Dispose();
         }
 
         public override void Draw(GameTime gameTime)

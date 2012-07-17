@@ -132,29 +132,32 @@ namespace TiledTerrainDemo.CDLOD
             {
                 heightMap.SetValue(value);
 
-                // heightMapSize
-                // twoHeightMapSize
-                var size = new Vector2(value.Width, value.Height);
-                heightMapSize.SetValue(size);
-                twoHeightMapSize.SetValue(2 * size);
-
-                // heightMapTexelSize
-                // twoHeightMapTexelSize
-                var texelSize = new Vector2
+                if (value != null)
                 {
-                    X = 1 / size.X,
-                    Y = 1 / size.Y
-                };
-                heightMapTexelSize.SetValue(texelSize);
-                twoHeightMapTexelSize.SetValue(2 * texelSize);
+                    // heightMapSize
+                    // twoHeightMapSize
+                    var size = new Vector2(value.Width, value.Height);
+                    heightMapSize.SetValue(size);
+                    twoHeightMapSize.SetValue(2 * size);
 
-                // samplerWorldToTextureScale
-                var worldToTextureScale = new Vector2
-                {
-                    X = (size.X - 1) * texelSize.X,
-                    Y = (size.Y - 1) * texelSize.Y
-                };
-                samplerWorldToTextureScale.SetValue(worldToTextureScale);
+                    // heightMapTexelSize
+                    // twoHeightMapTexelSize
+                    var texelSize = new Vector2
+                    {
+                        X = 1 / size.X,
+                        Y = 1 / size.Y
+                    };
+                    heightMapTexelSize.SetValue(texelSize);
+                    twoHeightMapTexelSize.SetValue(2 * texelSize);
+
+                    // samplerWorldToTextureScale
+                    var worldToTextureScale = new Vector2
+                    {
+                        X = (size.X - 1) * texelSize.X,
+                        Y = (size.Y - 1) * texelSize.Y
+                    };
+                    samplerWorldToTextureScale.SetValue(worldToTextureScale);
+                }
             }
         }
 
