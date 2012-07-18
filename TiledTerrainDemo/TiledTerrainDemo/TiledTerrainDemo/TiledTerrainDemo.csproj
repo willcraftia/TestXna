@@ -154,9 +154,15 @@
     <Compile Include="Landscape\PartitionLoadState.cs" />
     <Compile Include="Landscape\Pool.cs" />
     <Compile Include="Noise\Fractal.cs" />
+    <Compile Include="Noise\Heterofractal.cs" />
+    <Compile Include="Noise\HybridMultifractal.cs" />
     <Compile Include="Noise\ImprovedPerlinNoise.cs" />
+    <Compile Include="Noise\Multifractal.cs" />
     <Compile Include="Noise\NoiseMap.cs" />
+    <Compile Include="Noise\RidgedMultifractal.cs" />
+    <Compile Include="Noise\SinFractal.cs" />
     <Compile Include="Noise\SumFractal.cs" />
+    <Compile Include="Noise\Turbulence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="TiledTerrainDemoGame.cs" />

@@ -89,7 +89,7 @@ namespace PerlinNoiseDemo
                 for (int j = 0; j < heightMapCountY; j++)
                 {
                     var map = new HeightMap();
-                    map.GetValue2 = (x, y) => { return sumFractal.GetValue(x, 0, y); };
+                    map.GetValue2 = (x, y) => { return hybridMultifractal.GetValue(x, 0, y); };
                     map.Size = heightMapSize;
                     var w = 1;
                     var h = 1;

@@ -20,7 +20,13 @@ namespace TiledTerrainDemo.DemoLandscape
 
         ImprovedPerlinNoise noise = new ImprovedPerlinNoise();
 
-        SumFractal fractal = new SumFractal();
+        SumFractal sumFractal = new SumFractal();
+        Turbulence turbulence = new Turbulence();
+        Multifractal multifractal = new Multifractal();
+        Heterofractal heterofractal = new Heterofractal();
+        HybridMultifractal hybridMultifractal = new HybridMultifractal();
+        RidgedMultifractal ridgedMultifractal = new RidgedMultifractal();
+        SinFractal sinFractal = new SinFractal();
 
         DefaultVisibleRanges visibleRanges;
 
@@ -75,7 +81,13 @@ namespace TiledTerrainDemo.DemoLandscape
             this.settings = settings;
 
             noise.Seed = noiseSeed;
-            fractal.Noise3 = noise.Noise;
+            sumFractal.Noise3 = noise.Noise;
+            turbulence.Noise3 = noise.Noise;
+            multifractal.Noise3 = noise.Noise;
+            heterofractal.Noise3 = noise.Noise;
+            hybridMultifractal.Noise3 = noise.Noise;
+            ridgedMultifractal.Noise3 = noise.Noise;
+            sinFractal.Noise3 = noise.Noise;
 
             visibleRanges = new DefaultVisibleRanges(settings);
             visibleRanges.Initialize();
@@ -88,7 +100,14 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public float GetNoiseValue(float x, float y)
         {
-            return MathHelper.Clamp(fractal.GetValue(x, 0, y), -1, 1);
+            return sumFractal.GetValue(x, 0, y);
+            //return turbulence.GetValue(x, 0, y);
+            //return multifractal.GetValue(x, 0, y);
+            //return heterofractal.GetValue(x, 0, y);
+            //return hybridMultifractal.GetValue(x, 0, y);
+            //return ridgedMultifractal.GetValue(x, 0, y);
+            //return sinFractal.GetValue(x, 0, y);
+            //return sinFractal.GetValue(x, 0, y);
         }
     }
 }
