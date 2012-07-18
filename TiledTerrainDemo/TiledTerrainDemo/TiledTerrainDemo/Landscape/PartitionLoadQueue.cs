@@ -11,17 +11,6 @@ namespace TiledTerrainDemo.Landscape
 {
     public sealed class PartitionLoadQueue
     {
-        #region ThreadResult
-
-        struct ThreadResult
-        {
-            public Partition Partition;
-
-            public Exception Exception;
-        }
-
-        #endregion
-
         #region PartitionInThread
 
         class PartitionInThread
@@ -42,7 +31,7 @@ namespace TiledTerrainDemo.Landscape
 
         Queue<PartitionInThread> freeThreads;
 
-        Queue<ThreadResult> resultQueue = new Queue<ThreadResult>();
+        Queue<Partition> resultQueue = new Queue<Partition>();
 
         public int ThreadCount { get; private set;}
 
@@ -122,7 +111,7 @@ namespace TiledTerrainDemo.Landscape
         {
             // process one result per update.
 
-            ThreadResult result;
+            Partition result;
             lock (resultQueue)
             {
                 // No results.
@@ -132,29 +121,17 @@ namespace TiledTerrainDemo.Landscape
             }
 
             // callback.
-            loadResultCallback(result.Partition, result.Exception);
+            loadResultCallback(result);
         }
 
         void WaitCallback(object state)
         {
             var partitionInThread = state as PartitionInThread;
 
-            // load.
-            var result = new ThreadResult
-            {
-                Partition = partitionInThread.Partition
-            };
-            try
-            {
-                partitionInThread.Partition.LoadContent();
-            }
-            catch (Exception e)
-            {
-                result.Exception = e;
-            }
+            partitionInThread.Partition.LoadContent();
 
             lock (resultQueue)
-                resultQueue.Enqueue(result);
+                resultQueue.Enqueue(partitionInThread.Partition);
 
             // free this slot.
             partitionInThread.Partition = null;

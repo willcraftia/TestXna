@@ -13,6 +13,8 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public DemoPartitionFactory(DemoPartitionContext context)
         {
+            if (context == null) throw new ArgumentNullException("context");
+
             this.context = context;
         }
 

@@ -110,7 +110,6 @@
     <Compile Include="Cameras\FreeView.cs" />
     <Compile Include="Cameras\FreeViewInput.cs" />
     <Compile Include="CDLOD\BoundingBoxDrawer.cs" />
-    <Compile Include="CDLOD\CreateDescription.cs" />
     <Compile Include="CDLOD\DefaultHeightMapSource.cs" />
     <Compile Include="CDLOD\DefaultVisibleRanges.cs" />
     <Compile Include="CDLOD\Helper.cs" />

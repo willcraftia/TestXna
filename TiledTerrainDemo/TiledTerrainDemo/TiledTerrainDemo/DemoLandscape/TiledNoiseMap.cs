@@ -60,6 +60,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public void Build()
         {
+            // overlap the bounds of the next noise map slightly.
             var dx = boundWidth * (1 / (float) backingNoiseMap.Width);
             var dy = boundHeight * (1 / (float) backingNoiseMap.Height);
             backingNoiseMap.SetBounds(boundX, boundY, boundWidth + dx, boundWidth + dy);

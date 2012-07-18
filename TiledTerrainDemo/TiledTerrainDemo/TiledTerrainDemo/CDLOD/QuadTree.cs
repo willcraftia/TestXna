@@ -8,29 +8,34 @@ namespace TiledTerrainDemo.CDLOD
 {
     public sealed class QuadTree
     {
+        int topNodeSize;
+
         int topNodeCountX;
 
         int topNodeCountY;
 
         Node[,] topNodes;
 
-        public void Build(ref CreateDescription createDescription)
+        public QuadTree(Settings settings)
         {
-            var topNodeSize = createDescription.Settings.LeafNodeSize;
-            for (int i = 1; i < createDescription.Settings.LevelCount; i++)
+            topNodeSize = settings.LeafNodeSize;
+            for (int i = 1; i < settings.LevelCount; i++)
                 topNodeSize *= 2;
 
-            topNodeCountX = (int) Math.Ceiling((createDescription.HeightMap.Width - 1) / (float) topNodeSize);
-            topNodeCountY = (int) Math.Ceiling((createDescription.HeightMap.Height - 1) / (float) topNodeSize);
+            topNodeCountX = (int) Math.Ceiling((settings.HeightMapWidth - 1) / (float) topNodeSize);
+            topNodeCountY = (int) Math.Ceiling((settings.HeightMapHeight - 1) / (float) topNodeSize);
 
             topNodes = new Node[topNodeCountX, topNodeCountY];
             for (int y = 0; y < topNodeCountY; y++)
-            {
                 for (int x = 0; x < topNodeCountX; x++)
-                {
-                    topNodes[x, y] = new Node(x * topNodeSize, y * topNodeSize, topNodeSize, ref createDescription);
-                }
-            }
+                    topNodes[x, y] = new Node(x * topNodeSize, y * topNodeSize, topNodeSize, ref settings);
+        }
+
+        public void Build(IHeightMapSource heightMap)
+        {
+            for (int y = 0; y < topNodeCountY; y++)
+                for (int x = 0; x < topNodeCountX; x++)
+                    topNodes[x, y].Build(heightMap);
         }
 
         public void Select(Selection selection)

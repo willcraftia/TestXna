@@ -60,51 +60,73 @@ namespace TiledTerrainDemo.CDLOD
             get { return level; }
         }
 
-        public Node(int x, int y, int size, ref CreateDescription createDescription)
+        public Node(int x, int y, int size, ref Settings settings)
         {
             this.x = x;
             this.y = y;
             this.size = size;
 
-            if (size == createDescription.Settings.LeafNodeSize)
+            if (settings.LeafNodeSize < size)
             {
-                int limitX = Math.Min(createDescription.HeightMap.Width, x + size + 1);
-                int limitY = Math.Min(createDescription.HeightMap.Height, y + size + 1);
+                // if not a leaf node, then create child nodes.
 
-                // this is a leaf node.
-                createDescription.HeightMap.GetAreaMinMaxHeight(x, y, limitX - x, limitY - y, out minHeight, out maxHeight);
+                int childSize = size / 2;
+                childTopLeft = new Node(x, y, childSize, ref settings);
+                level = childTopLeft.level + 1;
+
+                if (x + childSize < settings.HeightMapWidth - 1)
+                {
+                    childTopRight = new Node(x + childSize, y, childSize, ref settings);
+                }
+
+                if (y + childSize < settings.HeightMapHeight - 1)
+                {
+                    childBottomLeft = new Node(x, y + childSize, childSize, ref settings);
+                }
+
+                if (x + childSize < settings.HeightMapWidth - 1 &&
+                    y + childSize < settings.HeightMapHeight - 1)
+                {
+                    childBottomRight = new Node(x + childSize, y + childSize, childSize, ref settings);
+                }
+            }
+        }
+
+        public void Build(IHeightMapSource heightMap)
+        {
+            if (level == 0)
+            {
+                // a leaf node.
+                int limitX = Math.Min(heightMap.Width, x + size + 1);
+                int limitY = Math.Min(heightMap.Height, y + size + 1);
+                heightMap.GetAreaMinMaxHeight(x, y, limitX - x, limitY - y, out minHeight, out maxHeight);
             }
             else
             {
-                int childSize = size / 2;
-
-                childTopLeft = new Node(x, y, childSize, ref createDescription);
+                childTopLeft.Build(heightMap);
                 minHeight = childTopLeft.minHeight;
                 maxHeight = childTopLeft.maxHeight;
 
-                if (x + childSize < createDescription.HeightMap.Width - 1)
+                if (childTopRight != null)
                 {
-                    childTopRight = new Node(x + childSize, y, childSize, ref createDescription);
+                    childTopRight.Build(heightMap);
                     minHeight = MathHelper.Min(minHeight, childTopRight.minHeight);
                     maxHeight = MathHelper.Max(maxHeight, childTopRight.maxHeight);
                 }
 
-                if (y + childSize < createDescription.HeightMap.Height - 1)
+                if (childBottomLeft != null)
                 {
-                    childBottomLeft = new Node(x, y + childSize, childSize, ref createDescription);
+                    childBottomLeft.Build(heightMap);
                     minHeight = MathHelper.Min(minHeight, childBottomLeft.minHeight);
                     maxHeight = MathHelper.Max(maxHeight, childBottomLeft.maxHeight);
                 }
 
-                if (x + childSize < createDescription.HeightMap.Width - 1 &&
-                    y + childSize < createDescription.HeightMap.Height - 1)
+                if (childBottomRight != null)
                 {
-                    childBottomRight = new Node(x + childSize, y + childSize, childSize, ref createDescription);
+                    childBottomRight.Build(heightMap);
                     minHeight = MathHelper.Min(minHeight, childBottomRight.minHeight);
                     maxHeight = MathHelper.Max(maxHeight, childBottomRight.maxHeight);
                 }
-
-                level = childTopLeft.level + 1;
             }
         }
 

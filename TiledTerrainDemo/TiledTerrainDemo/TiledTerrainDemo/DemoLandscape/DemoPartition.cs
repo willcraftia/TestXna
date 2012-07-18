@@ -22,6 +22,8 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public DemoPartition(DemoPartitionContext context)
         {
+            if (context == null) throw new ArgumentNullException("context");
+
             this.context = context;
 
             tiledNoiseMap.Width = context.HeightMapWidth;
@@ -31,25 +33,23 @@ namespace TiledTerrainDemo.DemoLandscape
             heightMap = new DemoHeightMapSource(context.GraphicsDevice);
             heightMap.TiledNoiseMap = tiledNoiseMap;
 
-            terrain = new Terrain(context.GraphicsDevice, context.Settings);
+            terrain = new Terrain(context.Settings);
             terrain.HeightMap = heightMap;
         }
 
         public override void LoadContent()
         {
-            // Set the current noise bounds.
+            // Build noise values with the noise bounds for this partition.
             tiledNoiseMap.SetBounds(
                 context.NoiseMinX + X * context.NoiseWidth,
                 context.NoiseMinY + Y * context.NoiseHeight,
                 context.NoiseWidth,
                 context.NoiseHeight);
-            // Build noise values.
             tiledNoiseMap.Build();
 
             // Build the height map.
             heightMap.Build();
 
-            // TODO: modified QuadTree and Node to avoid GC.
             // Build the terrain.
             terrain.Build();
         }
@@ -57,7 +57,6 @@ namespace TiledTerrainDemo.DemoLandscape
         public override void UnloadContent()
         {
             heightMap.Dispose();
-            //terrain.Dispose();
         }
 
         public override void Draw(GameTime gameTime)

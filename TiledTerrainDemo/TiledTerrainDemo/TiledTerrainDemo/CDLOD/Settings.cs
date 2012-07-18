@@ -18,6 +18,10 @@ namespace TiledTerrainDemo.CDLOD
 
         public const float DefaultHeightScale = 255;
 
+        public const int DefaultHeightMapWidth = 256 + 1;
+
+        public const int DefaultHeightMapHeight = 256 + 1;
+
         public int LeafNodeSize;
 
         public int LevelCount;
@@ -25,6 +29,10 @@ namespace TiledTerrainDemo.CDLOD
         public float PatchScale;
 
         public float HeightScale;
+
+        public int HeightMapWidth;
+
+        public int HeightMapHeight;
 
         public static Settings Default
         {
@@ -35,7 +43,9 @@ namespace TiledTerrainDemo.CDLOD
                     LeafNodeSize = DefaultLeafNodeSize,
                     LevelCount = DefaultLevelCount,
                     PatchScale = DefaultPatchScale,
-                    HeightScale = DefaultHeightScale
+                    HeightScale = DefaultHeightScale,
+                    HeightMapWidth = DefaultHeightMapWidth,
+                    HeightMapHeight = DefaultHeightMapHeight
                 };
             }
         }

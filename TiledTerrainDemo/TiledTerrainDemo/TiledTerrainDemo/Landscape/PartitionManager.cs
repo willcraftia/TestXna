@@ -160,11 +160,8 @@ namespace TiledTerrainDemo.Landscape
             rectangle = new Rectangle(minX, minY, maxX - minX, maxY - minY);
         }
 
-        void LoadResultCallback(Partition partition, Exception exception)
+        void LoadResultCallback(Partition partition)
         {
-            // TODO
-            if (exception != null) throw exception;
-
             // mark.
             partition.LoadState = PartitionLoadState.Loaded;
         }

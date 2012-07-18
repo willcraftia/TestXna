@@ -151,6 +151,8 @@ namespace TiledTerrainDemo
             settings.LeafNodeSize = leafNodeSize;
             settings.PatchScale = patchScale;
             settings.HeightScale = heightScale;
+            settings.HeightMapWidth = heightMapWidth;
+            settings.HeightMapHeight = heightMapHeight;
 
             partitionContext = new DemoPartitionContext(
                 GraphicsDevice, Content,

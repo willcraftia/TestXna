@@ -6,5 +6,5 @@ using System;
 
 namespace TiledTerrainDemo.Landscape
 {
-    public delegate void PartitionLoadResultCallback(Partition partition, Exception exception);
+    public delegate void PartitionLoadResultCallback(Partition partition);
 }
