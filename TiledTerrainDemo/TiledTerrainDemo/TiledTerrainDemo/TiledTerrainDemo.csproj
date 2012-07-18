@@ -159,6 +159,7 @@
     <Compile Include="Noise\ImprovedPerlinNoise.cs" />
     <Compile Include="Noise\Multifractal.cs" />
     <Compile Include="Noise\NoiseMap.cs" />
+    <Compile Include="Noise\PerlinNoise.cs" />
     <Compile Include="Noise\RidgedMultifractal.cs" />
     <Compile Include="Noise\SinFractal.cs" />
     <Compile Include="Noise\SumFractal.cs" />

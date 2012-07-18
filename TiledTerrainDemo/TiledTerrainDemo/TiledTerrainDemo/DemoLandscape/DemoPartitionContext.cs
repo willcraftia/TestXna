@@ -18,7 +18,8 @@ namespace TiledTerrainDemo.DemoLandscape
         // noise parameters for debug.
         int noiseSeed = 300;
 
-        ImprovedPerlinNoise noise = new ImprovedPerlinNoise();
+        PerlinNoise perlinNoise = new PerlinNoise();
+        ImprovedPerlinNoise improvedPerlinNoise = new ImprovedPerlinNoise();
 
         SumFractal sumFractal = new SumFractal();
         Turbulence turbulence = new Turbulence();
@@ -80,7 +81,12 @@ namespace TiledTerrainDemo.DemoLandscape
 
             this.settings = settings;
 
-            noise.Seed = noiseSeed;
+            perlinNoise.Seed = noiseSeed;
+            improvedPerlinNoise.Seed = noiseSeed;
+
+            //var noise = perlinNoise;
+            var noise = improvedPerlinNoise;
+
             sumFractal.Noise3 = noise.Noise;
             turbulence.Noise3 = noise.Noise;
             multifractal.Noise3 = noise.Noise;
@@ -102,11 +108,14 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             return sumFractal.GetValue(x, 0, y);
             //return turbulence.GetValue(x, 0, y);
-            //return multifractal.GetValue(x, 0, y);
-            //return heterofractal.GetValue(x, 0, y);
-            //return hybridMultifractal.GetValue(x, 0, y);
-            //return ridgedMultifractal.GetValue(x, 0, y);
-            //return sinFractal.GetValue(x, 0, y);
+            // take down.
+            //return multifractal.GetValue(x, 0, y) - 1;
+            // take down.
+            //return heterofractal.GetValue(x, 0, y) - 1;
+            // take down.
+            //return hybridMultifractal.GetValue(x, 0, y) - 1;
+            // take down.
+            //return ridgedMultifractal.GetValue(x, 0, y) - 1;
             //return sinFractal.GetValue(x, 0, y);
         }
     }
