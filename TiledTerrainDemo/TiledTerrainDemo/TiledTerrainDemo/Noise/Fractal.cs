@@ -8,58 +8,29 @@ namespace TiledTerrainDemo.Noise
 {
     public abstract class Fractal
     {
-        public delegate float DelegateNoise1(float x);
+        public const int MaxOctaveCount = 30;
 
-        public delegate float DelegateNoise2(float x, float y);
+        public const float DefaultHurst = 0.9f;
 
-        public delegate float DelegateNoise3(float x, float y, float z);
+        public const float DefaultFrequency = 1;
 
-        protected const int maxOctaveCount = 30;
+        public const float DefaultLacunarity = 2;
 
-        protected float hurst = 0.9f;
+        public const int DefaultOctaveCount = 6;
 
-        protected float frequency = 1;
+        protected float hurst = DefaultHurst;
 
-        protected float lacunarity = 2;
+        protected float frequency = DefaultFrequency;
 
-        protected float[] spectralWeights = new float[maxOctaveCount];
+        protected float lacunarity = DefaultLacunarity;
 
-        protected int octaveCount = 6;
+        protected int octaveCount = DefaultOctaveCount;
 
-        DelegateNoise1 noise1;
-
-        DelegateNoise2 noise2;
-
-        DelegateNoise3 noise3;
+        protected float[] spectralWeights = new float[MaxOctaveCount];
 
         bool initialized;
 
-        /// <summary>
-        /// 1 次元ノイズ関数を取得または設定します。
-        /// </summary>
-        public DelegateNoise1 Noise1
-        {
-            get { return noise1; }
-            set { noise1 = value; }
-        }
-
-        /// <summary>
-        /// 2 次元ノイズ関数を取得または設定します。
-        /// </summary>
-        public DelegateNoise2 Noise2
-        {
-            get { return noise2; }
-            set { noise2 = value; }
-        }
-
-        /// <summary>
-        /// 3 次元ノイズ関数を取得または設定します。
-        /// </summary>
-        public DelegateNoise3 Noise3
-        {
-            get { return noise3; }
-            set { noise3 = value; }
-        }
+        public NoiseDelegate Noise { get; set; }
 
         /// <summary>
         /// Hurst を取得または設定します。
@@ -134,26 +105,11 @@ namespace TiledTerrainDemo.Noise
         protected void InitializeSpectralWeights()
         {
             float f = frequency;
-            for (int i = 0; i < maxOctaveCount; i++)
+            for (int i = 0; i < MaxOctaveCount; i++)
             {
                 spectralWeights[i] = (float) Math.Pow(f, -hurst);
                 f *= lacunarity;
             }
-        }
-
-        protected float Noise(float x)
-        {
-            return noise1(x);
-        }
-
-        protected float Noise(float x, float y)
-        {
-            return noise2(x, y);
-        }
-
-        protected float Noise(float x, float y, float z)
-        {
-            return noise3(x, y, z);
         }
     }
 }

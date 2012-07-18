@@ -58,7 +58,7 @@ namespace TiledTerrainDemo.Noise
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
-        public float Noise(float x)
+        public float GetValue(float x)
         {
             if (!initialized) Reseed();
 
@@ -68,7 +68,7 @@ namespace TiledTerrainDemo.Noise
             var distanceFromL = t - (int) t;
             var distanceFromR = distanceFromL - 1;
 
-            var sx = EaseCurve(distanceFromL);
+            var sx = NoiseHelper.CubicSCurve(distanceFromL);
 
             var u = distanceFromL * gradients1[permutation[gridPointL]];
             var v = distanceFromR * gradients1[permutation[gridPointR]];
@@ -82,7 +82,7 @@ namespace TiledTerrainDemo.Noise
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public float Noise(float x, float y)
+        public float GetValue(float x, float y)
         {
             if (!initialized) Reseed();
 
@@ -108,8 +108,8 @@ namespace TiledTerrainDemo.Noise
             var indexLU = permutation[indexL + gridPointU];
             var indexRU = permutation[indexR + gridPointU];
 
-            var sx = EaseCurve(distanceFromL);
-            var sy = EaseCurve(distanceFromD);
+            var sx = NoiseHelper.CubicSCurve(distanceFromL);
+            var sy = NoiseHelper.CubicSCurve(distanceFromD);
 
             Vector2 q;
             float u;
@@ -137,7 +137,7 @@ namespace TiledTerrainDemo.Noise
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <returns></returns>
-        public float Noise(float x, float y, float z)
+        public float GetValue(float x, float y, float z)
         {
             if (!initialized) Reseed();
 
@@ -169,9 +169,9 @@ namespace TiledTerrainDemo.Noise
             var indexLU = permutation[indexL + gridPointU];
             var indexRU = permutation[indexR + gridPointU];
 
-            var sx = EaseCurve(distanceFromL);
-            var sy = EaseCurve(distanceFromD);
-            var sz = EaseCurve(distanceFromB);
+            var sx = NoiseHelper.CubicSCurve(distanceFromL);
+            var sy = NoiseHelper.CubicSCurve(distanceFromD);
+            var sz = NoiseHelper.CubicSCurve(distanceFromB);
 
             Vector3 q;
             float u;
@@ -262,16 +262,6 @@ namespace TiledTerrainDemo.Noise
                 gradients2[index] = gradients2[i];
                 gradients3[index] = gradients3[i];
             }
-        }
-
-        /// <summary>
-        /// S カーブに基づく値を算出します。
-        /// </summary>
-        /// <param name="t"></param>
-        /// <returns></returns>
-        float EaseCurve(float t)
-        {
-            return t * t * (3.0f - 2.0f * t);
         }
     }
 }

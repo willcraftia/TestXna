@@ -27,8 +27,10 @@ namespace TiledTerrainDemo
         //int heightMapHeight = 256 * 4 + 1;
         float noiseSampleX = 0;
         float noiseSampleY = 0;
-        float noiseSampleWidth = 12;
-        float noiseSampleHeight = 12;
+        //float noiseSampleWidth = 12;
+        //float noiseSampleHeight = 12;
+        float noiseSampleWidth = 4;
+        float noiseSampleHeight = 4;
 
         // CDLOD settings for debug.
         int levelCount = Settings.DefaultLevelCount;
