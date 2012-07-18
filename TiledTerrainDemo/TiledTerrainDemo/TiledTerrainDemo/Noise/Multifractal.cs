@@ -8,7 +8,7 @@ namespace TiledTerrainDemo.Noise
 {
     public sealed class Multifractal : Fractal
     {
-        float offset = 0.8f;
+        float offset = 1f;
 
         public float Offset
         {

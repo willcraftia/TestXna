@@ -9,9 +9,15 @@ namespace TiledTerrainDemo.Noise
 {
     public sealed class RidgedMultifractal : Fractal
     {
-        float offset = 0;
+        public const float MusgraveHurst = 1;
 
-        float gain = 2;
+        public const float MusgraveOffset = 1;
+
+        public const float MusgraveGain = 2;
+
+        float offset = MusgraveOffset;
+
+        float gain = MusgraveGain;
 
         public float Offset
         {
@@ -23,6 +29,11 @@ namespace TiledTerrainDemo.Noise
         {
             get { return gain; }
             set { gain = value; }
+        }
+
+        public RidgedMultifractal()
+        {
+            Hurst = MusgraveHurst;
         }
 
         protected override float GetValueOverride(float x, float y, float z)
