@@ -83,8 +83,8 @@ namespace TiledTerrainDemo.Noise
             if (values == null || values.Length != length)
                 values = new float[length];
 
-            var deltaX = boundWidth * (1 / (float) width);
-            var deltaY = boundHeight * (1 / (float) height);
+            var deltaX = boundWidth / (float) width;
+            var deltaY = boundHeight / (float) height;
 
             float y = boundY;
             for (int i = 0; i < height; i++)
