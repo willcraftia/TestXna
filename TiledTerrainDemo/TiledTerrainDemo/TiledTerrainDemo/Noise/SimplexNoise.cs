@@ -56,9 +56,10 @@ namespace TiledTerrainDemo.Noise
             float xs = x + s;
             float ys = y + s;
             float zs = z + s;
-            int i = Floor(xs);
-            int j = Floor(ys);
-            int k = Floor(zs);
+            // NOTE: (int)Math.Floor(v) is a lot faster than fastfloor(x) in the original code.
+            int i = (int) Math.Floor(xs);
+            int j = (int) Math.Floor(ys);
+            int k = (int) Math.Floor(zs);
 
             float t = (float) (i + j + k) * G3;
             // Unskew the cell origin back to (x,y,z) space
@@ -175,12 +176,6 @@ namespace TiledTerrainDemo.Noise
             // Add contributions from each corner to get the final noise value.
             // The result is scaled to stay just inside [-1,1]
             return 32.0f * (n0 + n1 + n2 + n3);
-        }
-
-        static int Floor(float v)
-        {
-            // Faster than using (int) Math.Floor(x).
-            return 0 < v ? (int) v : (int) v - 1;
         }
 
         static float CalculateGradient(int hash, float x, float y, float z)

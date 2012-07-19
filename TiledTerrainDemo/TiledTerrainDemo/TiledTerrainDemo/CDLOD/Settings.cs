@@ -15,7 +15,7 @@ namespace TiledTerrainDemo.CDLOD
 
         public const int DefaultLevelCount = 7;
 
-        public const int DefaultPatchResolution = 2 * 2;
+        public const int DefaultPatchResolution = 2;
 
         public const float DefaultPatchScale = 2;
 

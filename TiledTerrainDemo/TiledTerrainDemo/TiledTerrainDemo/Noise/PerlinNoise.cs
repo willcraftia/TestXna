@@ -24,11 +24,7 @@ namespace TiledTerrainDemo.Noise
 
         int[] permutation = new int[wrapIndex * 2 + 2];
 
-        float[] gradients1 = new float[wrapIndex * 2 + 2];
-
-        Vector2[] gradients2 = new Vector2[wrapIndex * 2 + 2];
-
-        Vector3[] gradients3 = new Vector3[wrapIndex * 2 + 2];
+        Vector3[] gradients = new Vector3[wrapIndex * 2 + 2];
 
         bool initialized;
 
@@ -90,29 +86,29 @@ namespace TiledTerrainDemo.Noise
             float c;
             float d;
 
-            q = gradients3[indexLD + gridPointB];
+            q = gradients[indexLD + gridPointB];
             u = Vector3.Dot(new Vector3(distanceFromL, distanceFromD, distanceFromB), q);
-            q = gradients3[indexRD + gridPointB];
+            q = gradients[indexRD + gridPointB];
             v = Vector3.Dot(new Vector3(distanceFromR, distanceFromD, distanceFromB), q);
             a = MathHelper.Lerp(u, v, sx);
 
-            q = gradients3[indexLU + gridPointB];
+            q = gradients[indexLU + gridPointB];
             u = Vector3.Dot(new Vector3(distanceFromL, distanceFromU, distanceFromB), q);
-            q = gradients3[indexRU + gridPointB];
+            q = gradients[indexRU + gridPointB];
             v = Vector3.Dot(new Vector3(distanceFromR, distanceFromU, distanceFromB), q);
             b = MathHelper.Lerp(u, v, sx);
 
             c = MathHelper.Lerp(a, b, sy);
 
-            q = gradients3[indexLD + gridPointF];
+            q = gradients[indexLD + gridPointF];
             u = Vector3.Dot(new Vector3(distanceFromL, distanceFromD, distanceFromF), q);
-            q = gradients3[indexRD + gridPointF];
+            q = gradients[indexRD + gridPointF];
             v = Vector3.Dot(new Vector3(distanceFromR, distanceFromD, distanceFromF), q);
             a = MathHelper.Lerp(u, v, sx);
 
-            q = gradients3[indexLU + gridPointF];
+            q = gradients[indexLU + gridPointF];
             u = Vector3.Dot(new Vector3(distanceFromL, distanceFromU, distanceFromF), q);
-            q = gradients3[indexRU + gridPointF];
+            q = gradients[indexRU + gridPointF];
             v = Vector3.Dot(new Vector3(distanceFromR, distanceFromU, distanceFromF), q);
             b = MathHelper.Lerp(u, v, sx);
 
@@ -133,15 +129,9 @@ namespace TiledTerrainDemo.Noise
             {
                 permutation[i] = i;
 
-                gradients1[i] = GenerateGradientValue();
-
-                var value2d = new Vector2(GenerateGradientValue(), GenerateGradientValue());
-                value2d.Normalize();
-                gradients2[i] = value2d;
-
-                var value3d = new Vector3(GenerateGradientValue(), GenerateGradientValue(), GenerateGradientValue());
-                value3d.Normalize();
-                gradients3[i] = value3d;
+                var value = new Vector3(GenerateGradientValue(), GenerateGradientValue(), GenerateGradientValue());
+                value.Normalize();
+                gradients[i] = value;
             }
 
             // Shuffle.
@@ -160,9 +150,7 @@ namespace TiledTerrainDemo.Noise
 
                 permutation[index] = permutation[i];
 
-                gradients1[index] = gradients1[i];
-                gradients2[index] = gradients2[i];
-                gradients3[index] = gradients3[i];
+                gradients[index] = gradients[i];
             }
         }
     }
