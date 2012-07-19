@@ -15,6 +15,8 @@ namespace TiledTerrainDemo.CDLOD
 
         public const int DefaultLevelCount = 7;
 
+        public const int DefaultPatchResolution = 2 * 2;
+
         public const float DefaultPatchScale = 2;
 
         public const float DefaultHeightScale = 255;
@@ -28,6 +30,8 @@ namespace TiledTerrainDemo.CDLOD
         public int LeafNodeSize;
 
         public int LevelCount;
+
+        public int PatchResolution;
 
         public float PatchScale;
 
@@ -47,6 +51,7 @@ namespace TiledTerrainDemo.CDLOD
                 {
                     LeafNodeSize = DefaultLeafNodeSize,
                     LevelCount = DefaultLevelCount,
+                    PatchResolution = DefaultPatchResolution,
                     PatchScale = DefaultPatchScale,
                     HeightScale = DefaultHeightScale,
                     HeightMapWidth = DefaultHeightMapWidth,
@@ -76,6 +81,14 @@ namespace TiledTerrainDemo.CDLOD
                 var topNodeSize = LeafNodeSize;
                 for (int i = 1; i < LevelCount; i++) topNodeSize *= 2;
                 return topNodeSize;
+            }
+        }
+
+        public int PatchGridSize
+        {
+            get
+            {
+                return LeafNodeSize * PatchResolution;
             }
         }
     }

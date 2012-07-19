@@ -12,8 +12,6 @@ namespace TiledTerrainDemo.CDLOD
 {
     public sealed class TerrainRenderer
     {
-        public const int DefaultPatchResolution = 2;
-
         Settings settings;
 
         PatchInstanceVertex[] instances = new PatchInstanceVertex[Selection.MaxSelectedNodeCount];
@@ -86,7 +84,7 @@ namespace TiledTerrainDemo.CDLOD
 
             // TODO: I want to change a patch resolution at runtime.
             // patchGridSize = leafNodeSize * patchResolution;
-            patchMesh = new PatchMesh(GraphicsDevice, settings.LeafNodeSize * DefaultPatchResolution);
+            patchMesh = new PatchMesh(GraphicsDevice, settings.PatchGridSize);
 
             sourceEffect = Content.Load<Effect>("TerrainEffect");
             effect = new TerrainEffect(sourceEffect);
