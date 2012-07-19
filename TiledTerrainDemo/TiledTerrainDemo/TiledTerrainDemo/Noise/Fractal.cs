@@ -33,7 +33,7 @@ namespace TiledTerrainDemo.Noise
         public NoiseDelegate Noise { get; set; }
 
         /// <summary>
-        /// Hurst を取得または設定します。
+        /// H (Hurst).
         /// </summary>
         public float Hurst
         {
@@ -47,9 +47,6 @@ namespace TiledTerrainDemo.Noise
             }
         }
 
-        /// <summary>
-        /// Frequency を取得または設定します。
-        /// </summary>
         public float Frequency
         {
             get { return frequency; }
@@ -62,10 +59,6 @@ namespace TiledTerrainDemo.Noise
             }
         }
 
-        /// <summary>
-        /// 各 octave における frequency の増加の度合いを取得または設定します。
-        /// 各 octave の frequency は、1 つ前の octave の frequency に lacunarity を掛けた値です。
-        /// </summary>
         public float Lacunarity
         {
             get { return lacunarity; }
@@ -78,9 +71,6 @@ namespace TiledTerrainDemo.Noise
             }
         }
 
-        /// <summary>
-        /// Octave 数を取得または設定します。
-        /// </summary>
         public int OctaveCount
         {
             get { return octaveCount; }
