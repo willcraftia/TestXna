@@ -30,21 +30,21 @@ namespace TiledTerrainDemo
         float noiseSampleY = 0;
         //float noiseSampleWidth = 12;
         //float noiseSampleHeight = 12;
-        float noiseSampleWidth = 4;
-        float noiseSampleHeight = 4;
+        float noiseSampleWidth = 2;
+        float noiseSampleHeight = 2;
 
         // CDLOD settings for debug.
         int levelCount = Settings.DefaultLevelCount;
         //int leafNodeSize = Settings.DefaultLeafNodeSize;
         int leafNodeSize = Settings.DefaultLeafNodeSize * 2 * 2;
         //float patchScale = Settings.DefaultPatchScale;
-        float patchScale = Settings.DefaultPatchScale * 2 * 2;
-        float heightScale = Settings.DefaultHeightScale;
+        float patchScale = Settings.DefaultPatchScale * 2 * 2 * 2;
+        float heightScale = Settings.DefaultHeightScale * 2;
         //float heightScale = Settings.DefaultHeightScale * 0.5f;
 
         // View settings for debug.
         float farPlaneDistance = 150000;
-        float moveVelocity = 100;
+        float moveVelocity = 1000;
         float dashFactor = 2;
 
         GraphicsDeviceManager graphics;
@@ -167,7 +167,7 @@ namespace TiledTerrainDemo
             partitionManager = new PartitionManager(partitionFactory.Create);
             partitionManager.PartitionWidth = settings.PatchScale * (heightMapWidth - 1);
             partitionManager.PartitionHeight = settings.PatchScale * (heightMapHeight - 1);
-            partitionManager.ActivationRange = partitionManager.PartitionHeight * 2;
+            partitionManager.ActivationRange = partitionManager.PartitionWidth * 2;
             partitionManager.DeactivationRange = partitionManager.ActivationRange * 1.5f;
             partitionManager.EyePosition = view.Position;
 

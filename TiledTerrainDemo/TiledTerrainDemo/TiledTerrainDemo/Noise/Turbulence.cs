@@ -14,9 +14,9 @@ namespace TiledTerrainDemo.Noise
 
         public const int DefaultRoughness = 3;
 
-        PerlinNoise perlinNoiseX = new PerlinNoise();
-        PerlinNoise perlinNoiseY = new PerlinNoise();
-        PerlinNoise perlinNoiseZ = new PerlinNoise();
+        SimplexNoise noiseX = new SimplexNoise();
+        SimplexNoise noiseY = new SimplexNoise();
+        SimplexNoise noiseZ = new SimplexNoise();
 
         PerlinFractal distortX = new PerlinFractal();
         PerlinFractal distortY = new PerlinFractal();
@@ -64,20 +64,20 @@ namespace TiledTerrainDemo.Noise
 
         public int Seed
         {
-            get { return perlinNoiseX.Seed; }
+            get { return noiseX.Seed; }
             set
             {
-                perlinNoiseX.Seed = value;
-                perlinNoiseY.Seed = value + 1;
-                perlinNoiseZ.Seed = value + 2;
+                noiseX.Seed = value;
+                noiseY.Seed = value + 1;
+                noiseZ.Seed = value + 2;
             }
         }
 
         public Turbulence()
         {
-            distortX.Noise = perlinNoiseX.GetValue;
-            distortY.Noise = perlinNoiseY.GetValue;
-            distortZ.Noise = perlinNoiseZ.GetValue;
+            distortX.Noise = noiseX.GetValue;
+            distortY.Noise = noiseY.GetValue;
+            distortZ.Noise = noiseZ.GetValue;
 
             distortX.Frequency = frequency;
             distortY.Frequency = frequency;
@@ -87,8 +87,8 @@ namespace TiledTerrainDemo.Noise
             distortY.OctaveCount = roughness;
             distortZ.OctaveCount = roughness;
 
-            perlinNoiseY.Seed = perlinNoiseX.Seed + 1;
-            perlinNoiseZ.Seed = perlinNoiseX.Seed + 2;
+            noiseY.Seed = noiseX.Seed + 1;
+            noiseZ.Seed = noiseX.Seed + 2;
         }
 
         public float GetValue(float x, float y, float z)

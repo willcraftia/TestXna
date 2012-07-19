@@ -20,6 +20,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
         PerlinNoise perlinNoise = new PerlinNoise();
         ImprovedPerlinNoise improvedPerlinNoise = new ImprovedPerlinNoise();
+        SimplexNoise simplexNoise = new SimplexNoise();
 
         PerlinFractal perlinFractal = new PerlinFractal();
         SumFractal sumFractal = new SumFractal();
@@ -79,9 +80,11 @@ namespace TiledTerrainDemo.DemoLandscape
 
             perlinNoise.Seed = noiseSeed;
             improvedPerlinNoise.Seed = noiseSeed;
+            simplexNoise.Seed = noiseSeed;
 
             //var noise = perlinNoise;
-            var noise = improvedPerlinNoise;
+            //var noise = improvedPerlinNoise;
+            var noise = simplexNoise;
 
             sumFractal.Noise = noise.GetValue;
             multifractal.Noise = noise.GetValue;
@@ -92,7 +95,7 @@ namespace TiledTerrainDemo.DemoLandscape
             billow.Noise = noise.GetValue;
 
             scaleBias.Noise = billow.GetValue;
-            scaleBias.Scale = 0.125f;
+            scaleBias.Scale = 0.225f;
             scaleBias.Bias = -0.75f;
             //scaleBias.Bias = 0.5f;
 
@@ -119,6 +122,7 @@ namespace TiledTerrainDemo.DemoLandscape
             TerrainRenderer.InitializeMorphConsts(visibleRanges);
 
             var heightColors = new HeightColorCollection();
+            // default settings.
             heightColors.AddColor(-1.0000f, new Vector4(0,       0,       0.5f,    1));
             heightColors.AddColor(-0.2500f, new Vector4(0,       0,       1,       1));
             heightColors.AddColor( 0.0000f, new Vector4(0,       0.5f,    1,       1));
@@ -127,6 +131,12 @@ namespace TiledTerrainDemo.DemoLandscape
             heightColors.AddColor( 0.3750f, new Vector4(0.8784f, 0.8784f, 0,       1));
             heightColors.AddColor( 0.7500f, new Vector4(0.5f,    0.5f,    0.5f,    1));
             heightColors.AddColor( 1.0000f, new Vector4(1,       1,       1,       1));
+
+            //heightColors.AddColor(-0.0000f, new Vector4(0.1254f, 0.6274f, 0,       1));
+            //heightColors.AddColor( 0.3750f, new Vector4(0.8784f, 0.8784f, 0,       1));
+            //heightColors.AddColor( 0.7500f, new Vector4(0.5f,    0.5f,    0.5f,    1));
+            //heightColors.AddColor( 1.0000f, new Vector4(1,       1,       1,       1));
+            
             TerrainRenderer.InitializeHeightColors(heightColors);
 
             Selection = new Selection(settings, visibleRanges);

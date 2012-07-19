@@ -170,6 +170,7 @@
     <Compile Include="Noise\RidgedMultifractal.cs" />
     <Compile Include="Noise\ScaleBias.cs" />
     <Compile Include="Noise\Select.cs" />
+    <Compile Include="Noise\SimplexNoise.cs" />
     <Compile Include="Noise\SinFractal.cs" />
     <Compile Include="Noise\SumFractal.cs" />
     <Compile Include="Noise\Turbulence.cs" />

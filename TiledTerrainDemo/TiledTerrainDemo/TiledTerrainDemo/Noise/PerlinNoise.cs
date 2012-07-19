@@ -8,8 +8,7 @@ using Microsoft.Xna.Framework;
 namespace TiledTerrainDemo.Noise
 {
     /// <summary>
-    /// Perlin Noise を生成するクラスです。
-    /// このクラスが生成するノイズは、オリジナルの Perlin Noise に基づきます。
+    /// The class generates Perlin noise.
     /// </summary>
     public sealed class PerlinNoise
     {
@@ -33,18 +32,12 @@ namespace TiledTerrainDemo.Noise
 
         bool initialized;
 
-        /// <summary>
-        /// 乱数のシードを取得または設定します。
-        /// </summary>
         public int Seed
         {
             get { return seed; }
             set { seed = value; }
         }
 
-        /// <summary>
-        /// Seed プロパティに基いて乱数を初期化します。
-        /// </summary>
         public void Reseed()
         {
             random = new Random(seed);
@@ -53,90 +46,6 @@ namespace TiledTerrainDemo.Noise
             initialized = true;
         }
 
-        /// <summary>
-        /// 1 次元ノイズを生成します。
-        /// </summary>
-        /// <param name="x"></param>
-        /// <returns></returns>
-        public float GetValue(float x)
-        {
-            if (!initialized) Reseed();
-
-            var t = x + largePower2;
-            var gridPointL = ((int) t) & modMask;
-            var gridPointR = (gridPointL + 1) & modMask;
-            var distanceFromL = t - (int) t;
-            var distanceFromR = distanceFromL - 1;
-
-            var sx = NoiseHelper.CubicSCurve(distanceFromL);
-
-            var u = distanceFromL * gradients1[permutation[gridPointL]];
-            var v = distanceFromR * gradients1[permutation[gridPointR]];
-
-            return MathHelper.Lerp(u, v, sx);
-        }
-
-        /// <summary>
-        /// 2 次元ノイズを生成します。
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <returns></returns>
-        public float GetValue(float x, float y)
-        {
-            if (!initialized) Reseed();
-
-            float t;
-
-            t = x + largePower2;
-            var gridPointL = ((int) t) & modMask;
-            var gridPointR = (gridPointL + 1) & modMask;
-            var distanceFromL = t - (int) t;
-            var distanceFromR = distanceFromL - 1;
-
-            t = y + largePower2;
-            var gridPointD = ((int) t) & modMask;
-            var gridPointU = (gridPointD + 1) & modMask;
-            var distanceFromD = t - (int) t;
-            var distanceFromU = distanceFromD - 1;
-
-            var indexL = permutation[gridPointL];
-            var indexR = permutation[gridPointR];
-
-            var indexLD = permutation[indexL + gridPointD];
-            var indexRD = permutation[indexR + gridPointD];
-            var indexLU = permutation[indexL + gridPointU];
-            var indexRU = permutation[indexR + gridPointU];
-
-            var sx = NoiseHelper.CubicSCurve(distanceFromL);
-            var sy = NoiseHelper.CubicSCurve(distanceFromD);
-
-            Vector2 q;
-            float u;
-            float v;
-
-            q = gradients2[indexLD];
-            u = Vector2.Dot(new Vector2(distanceFromL, distanceFromD), q);
-            q = gradients2[indexRD];
-            v = Vector2.Dot(new Vector2(distanceFromR, distanceFromD), q);
-            float a = MathHelper.Lerp(u, v, sx);
-
-            q = gradients2[indexLU];
-            u = Vector2.Dot(new Vector2(distanceFromL, distanceFromU), q);
-            q = gradients2[indexRU];
-            v = Vector2.Dot(new Vector2(distanceFromR, distanceFromU), q);
-            float b = MathHelper.Lerp(u, v, sx);
-
-            return MathHelper.Lerp(a, b, sy);
-        }
-
-        /// <summary>
-        /// 3 次元ノイズを生成します。
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        /// <returns></returns>
         public float GetValue(float x, float y, float z)
         {
             if (!initialized) Reseed();
@@ -212,19 +121,12 @@ namespace TiledTerrainDemo.Noise
             return MathHelper.Lerp(c, d, sz);
         }
 
-        /// <summary>
-        /// Gradient を生成します。
-        /// </summary>
-        /// <returns></returns>
         float GenerateGradientValue()
         {
-            // [-1, 1] の乱数。
+            // a random value [-1, 1].
             return (float) ((random.Next() % (wrapIndex + wrapIndex)) - wrapIndex) / wrapIndex;
         }
 
-        /// <summary>
-        /// 乱数テーブルを初期化します。
-        /// </summary>
         void InitializeLookupTables()
         {
             for (int i = 0; i < wrapIndex; i++)
@@ -242,7 +144,7 @@ namespace TiledTerrainDemo.Noise
                 gradients3[i] = value3d;
             }
 
-            // permutation をシャッフル。
+            // Shuffle.
             for (int i = 0; i < wrapIndex; i++)
             {
                 var j = random.Next() & modMask;
@@ -251,7 +153,7 @@ namespace TiledTerrainDemo.Noise
                 permutation[j] = tmp;
             }
 
-            // 配列の残り半分に値を複製。
+            // Clone.
             for (int i = 0; i < wrapIndex + 2; i++)
             {
                 var index = wrapIndex + i;

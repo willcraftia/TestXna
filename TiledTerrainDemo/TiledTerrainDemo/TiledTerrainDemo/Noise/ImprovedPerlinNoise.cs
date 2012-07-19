@@ -8,7 +8,9 @@ using Microsoft.Xna.Framework;
 namespace TiledTerrainDemo.Noise
 {
     /// <summary>
-    /// Improved Perlin Noise を生成するクラスです。
+    /// The class generates improved Perlin noise.
+    ///
+    /// http://mrl.nyu.edu/~perlin/noise/
     /// </summary>
     public sealed class ImprovedPerlinNoise
     {
@@ -24,18 +26,12 @@ namespace TiledTerrainDemo.Noise
 
         bool initialized;
 
-        /// <summary>
-        /// 乱数のシードを取得または設定します。
-        /// </summary>
         public int Seed
         {
             get { return seed; }
             set { seed = value; }
         }
 
-        /// <summary>
-        /// Seed プロパティに基いて乱数を初期化します。
-        /// </summary>
         public void Reseed()
         {
             random = new Random(seed);
@@ -44,38 +40,30 @@ namespace TiledTerrainDemo.Noise
             initialized = true;
         }
 
-        /// <summary>
-        /// 3 次元ノイズを生成します。
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        /// <returns></returns>
         public float GetValue(float x, float y, float z)
         {
             if (!initialized) Reseed();
 
-            // 後続の計算で使用する floor の事前計算。
             float fx = (float) Math.Floor(x);
             float fy = (float) Math.Floor(y);
             float fz = (float) Math.Floor(z);
 
-            // キューブの座標。
+            // Find unit cube that contains point.
             int cx = (int) fx & modMask;
             int cy = (int) fy & modMask;
             int cz = (int) fz & modMask;
 
-            // キューブ内での x,y,z の相対座標。
+            // Find relative x, y, z of point in cube.
             var rx = x - fx;
             var ry = y - fy;
             var rz = z - fz;
 
-            // x,y,z についてのフェード カーブの値。
+            // complute fade curves for each of x, y, z.
             var u = CalculateFadeCurve(rx);
             var v = CalculateFadeCurve(ry);
             var w = CalculateFadeCurve(rz);
 
-            // キューブの 8 点に対するハッシュ値を決定するための下地。
+            // Hash coordinates of the 8 cube corners.
             var a = permutation[cx] + cy;
             var aa = permutation[a] + cz;
             var ab = permutation[a + 1] + cz;
@@ -83,7 +71,7 @@ namespace TiledTerrainDemo.Noise
             var ba = permutation[b] + cz;
             var bb = permutation[b + 1] + cz;
 
-            // キューブの 8 点に対する gradient。
+            // Gradients of the 8 cube corners.
             var g0 = CalculateGradient(permutation[aa], rx, ry, rz);
             var g1 = CalculateGradient(permutation[ba], rx - 1, ry, rz);
             var g2 = CalculateGradient(permutation[ab], rx, ry - 1, rz);
@@ -93,7 +81,7 @@ namespace TiledTerrainDemo.Noise
             var g6 = CalculateGradient(permutation[ab + 1], rx, ry - 1, rz - 1);
             var g7 = CalculateGradient(permutation[bb + 1], rx - 1, ry - 1, rz - 1);
 
-            // 補間。
+            // Lerp.
             var l0 = MathHelper.Lerp(g0, g1, u);
             var l1 = MathHelper.Lerp(g2, g3, u);
             var l2 = MathHelper.Lerp(g4, g5, u);
@@ -103,35 +91,20 @@ namespace TiledTerrainDemo.Noise
             return MathHelper.Lerp(l4, l5, w);
         }
 
-        /// <summary>
-        /// フェード カーブに基づいた値を算出します。
-        /// </summary>
-        /// <param name="t"></param>
-        /// <returns></returns>
         float CalculateFadeCurve(float t)
         {
             return t * t * t * (t * (t * 6 - 15) + 10);
         }
 
-        /// <summary>
-        /// Gradient を算出します。
-        /// </summary>
-        /// <param name="hash"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        /// <returns></returns>
         float CalculateGradient(int hash, float x, float y, float z)
         {
+            // convert LO 4 bits of hash code into 12 gradient directions.
             int h = hash & 15;
             float u = h < 8 ? x : y;
             float v = h < 4 ? y : h == 12 || h == 14 ? x : z;
             return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
         }
 
-        /// <summary>
-        /// 乱数テーブルを初期化します。
-        /// </summary>
         void InitializePermutationTables()
         {
             for (int i = 0; i < wrapIndex; i++)
@@ -139,7 +112,7 @@ namespace TiledTerrainDemo.Noise
                 permutation[i] = i;
             }
 
-            // permutation をシャッフル。
+            // Shuffle.
             for (int i = 0; i < wrapIndex; i++)
             {
                 var j = random.Next() & modMask;
@@ -148,7 +121,7 @@ namespace TiledTerrainDemo.Noise
                 permutation[j] = tmp;
             }
 
-            // 配列の残り半分に値を複製。
+            // Clone.
             for (int i = 0; i < wrapIndex; i++)
             {
                 permutation[wrapIndex + i] = permutation[i];
