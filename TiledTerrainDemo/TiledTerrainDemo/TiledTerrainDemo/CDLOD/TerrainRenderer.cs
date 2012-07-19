@@ -90,8 +90,10 @@ namespace TiledTerrainDemo.CDLOD
 
             sourceEffect = Content.Load<Effect>("TerrainEffect");
             effect = new TerrainEffect(sourceEffect);
-            effect.PatchGridSize = patchMesh.GridSize;
             effect.LevelCount = settings.LevelCount;
+            effect.PatchGridSize = patchMesh.GridSize;
+            effect.TerrainScale = settings.TerrainScale;
+            effect.SetHeightMapSize(settings.HeightMapWidth, settings.HeightMapHeight, settings.HeightMapOverlapSize);
 
             lightDirection = new Vector3(0, -1, -1);
             lightDirection.Normalize();
@@ -135,7 +137,6 @@ namespace TiledTerrainDemo.CDLOD
             // Prepare effect parameters.
             // per a selection (a terrain).
             effect.TerrainOffset = selection.TerrainOffset;
-            effect.TerrainScale = selection.TerrainScale;
             effect.HeightMap = selection.HeightMapTexture;
             effect.View = selection.View;
             effect.Projection = selection.Projection;

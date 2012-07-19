@@ -24,16 +24,13 @@ float3 TerrainScale;
 float LevelCount;
 float2 MorphConsts[MAX_LEVEL_COUNT];
 
-// x = (textureWidth - 1.0f) / textureWidth
-// y = (textureHeight - 1.0f) / textureHeight
-float2 SamplerWorldToTextureScale;
-
 float2 HeightMapSize;
 float2 TwoHeightMapSize;
 // x = 1 / textureWidth
 // y = 1 / textureHeight
 float2 HeightMapTexelSize;
 float2 TwoHeightMapTexelSize;
+float HeightMapOverlapSize;
 
 // [g_gridDim.y] on the original code.
 float HalfPatchGridSize;
@@ -104,15 +101,12 @@ struct VS_OUTPUT
 float2 CalculateGlobalUV(float4 vertex)
 {
     float2 globalUV = (vertex.xz - TerrainOffset.xz) / TerrainScale.xz;
-/*    globalUV *= SamplerWorldToTextureScale;
-    globalUV += HeightMapTexelSize * 0.5;*/
 
-//    float2 actualTextureSize = HeightMapSize - 2;
-//    float2 actualTexelSize = 1 / actualTextureSize;
-
-    float2 worldToTexel = (HeightMapSize - 1) * HeightMapTexelSize;
-    globalUV *= worldToTexel;
-//    globalUV += HeightMapTexelSize;
+// HeightMapTexelSize * 0.5 分ずらすなら、SampleHeightMap() でも同様にする。
+    float2 actualSize = HeightMapSize - 2 * HeightMapOverlapSize;
+    float2 worldToTexCoord = (actualSize - 1) * HeightMapTexelSize;
+    globalUV *= worldToTexCoord;
+    globalUV += HeightMapTexelSize * HeightMapOverlapSize/* + HeightMapTexelSize * 0.5*/;
 
     return globalUV;
 }
@@ -143,6 +137,7 @@ float SampleHeightMap(float2 uv)
 
     return lerp( tA, tB, f.y );*/
 
+// 正しく動くが繋ぎ目あり。
     uv = uv.xy * HeightMapSize;
     float2 uvf = floor( uv.xy );
     float2 f = uv - uvf;
@@ -157,43 +152,16 @@ float SampleHeightMap(float2 uv)
     float tB = lerp( t01, t11, f.x );
 
     return lerp( tA, tB, f.y );
-
-    // The following codes are a simple bilinear interporation but low accuracy.
-/*    float tl = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y, 0, 0 ) ).x;
-    float tr = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y, 0, 0 ) ).x;
-    float bl = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
-    float br = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
-    float2 f = frac(uv.xy * HeightMapSize);
-    float tA = lerp(tl, tr, f.x);
-    float tB = lerp(bl, br, f.x);
-    return lerp(tA, tB, f.y);*/
 }
 
 float4 CalculateNormal(float2 texCoord)
 {
     // From http://graphics.ethz.ch/teaching/gamelab11/course_material/lecture06/XNA_Shaders_Terrain.pdf
-/*    float n = SampleHeightMap(texCoord + float2(0, -HeightMapTexelSize.x));
+// マージンをとらない場合は [0, 1] の範囲を超えてしまい繋ぎ目の法線がおかしくなる。
+    float n = SampleHeightMap(texCoord + float2(0, -HeightMapTexelSize.x));
     float s = SampleHeightMap(texCoord + float2(0,  HeightMapTexelSize.x));
     float e = SampleHeightMap(texCoord + float2(-HeightMapTexelSize.y, 0));
     float w = SampleHeightMap(texCoord + float2( HeightMapTexelSize.y, 0));
-
-    float3 sn = float3(0, (s - n) * TerrainScale.y, -TwoHeightMapTexelSize.y);
-    float3 ew = float3(-TwoHeightMapTexelSize.x, (e - w) * TerrainScale.y, 0);
-    sn *= TwoHeightMapSize.y;
-    ew *= TwoHeightMapSize.x;
-    sn = normalize(sn);
-    ew = normalize(ew);
-
-    float4 normal = float4(normalize(cross(sn, ew)), 1);
-    normal.x = -normal.x;
-
-    return normal;*/
-
-// TODO: really?
-    float n = SampleHeightMap(texCoord + float2(0, 0));
-    float s = SampleHeightMap(texCoord + float2(0, HeightMapTexelSize.x));
-    float e = SampleHeightMap(texCoord + float2(0, 0));
-    float w = SampleHeightMap(texCoord + float2(HeightMapTexelSize.y, 0));
 
     float3 sn = float3(0, (s - n) * TerrainScale.y, -TwoHeightMapTexelSize.y);
     float3 ew = float3(-TwoHeightMapTexelSize.x, (e - w) * TerrainScale.y, 0);

@@ -46,8 +46,9 @@ namespace TiledTerrainDemo.DemoLandscape
             if (TiledNoiseMap == null)
                 throw new InvalidOperationException("TiledNoiseMap is null.");
 
-            Texture = new Texture2D(GraphicsDevice, TiledNoiseMap.Width, TiledNoiseMap.Height, false, SurfaceFormat.Single);
-            Texture.SetData(TiledNoiseMap.RawValues);
+            //Texture = new Texture2D(GraphicsDevice, TiledNoiseMap.Width, TiledNoiseMap.Height, false, SurfaceFormat.Single);
+            Texture = new Texture2D(GraphicsDevice, TiledNoiseMap.ActualWidth, TiledNoiseMap.ActualHeight, false, SurfaceFormat.Single);
+            Texture.SetData(TiledNoiseMap.Values);
         }
 
         public float GetHeight(int x, int y)

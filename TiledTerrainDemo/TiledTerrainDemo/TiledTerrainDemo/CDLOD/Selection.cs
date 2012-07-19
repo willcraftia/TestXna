@@ -48,9 +48,9 @@ namespace TiledTerrainDemo.CDLOD
             {
                 return new Vector3
                 {
-                    X = (HeightMapTexture.Width - 1) * settings.PatchScale,
+                    X = (settings.HeightMapWidth - 1) * settings.PatchScale,
                     Y = settings.HeightScale,
-                    Z = (HeightMapTexture.Height - 1) * settings.PatchScale
+                    Z = (settings.HeightMapHeight - 1) * settings.PatchScale
                 };
             }
         }

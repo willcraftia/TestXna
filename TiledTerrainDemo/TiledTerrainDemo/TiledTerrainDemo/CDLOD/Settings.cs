@@ -1,6 +1,7 @@
 ﻿#region Using
 
 using System;
+using Microsoft.Xna.Framework;
 
 #endregion
 
@@ -22,6 +23,8 @@ namespace TiledTerrainDemo.CDLOD
 
         public const int DefaultHeightMapHeight = 256 + 1;
 
+        public const int DefaultHeightMapOverlapSize = 1;
+
         public int LeafNodeSize;
 
         public int LevelCount;
@@ -34,6 +37,8 @@ namespace TiledTerrainDemo.CDLOD
 
         public int HeightMapHeight;
 
+        public int HeightMapOverlapSize;
+
         public static Settings Default
         {
             get
@@ -45,8 +50,32 @@ namespace TiledTerrainDemo.CDLOD
                     PatchScale = DefaultPatchScale,
                     HeightScale = DefaultHeightScale,
                     HeightMapWidth = DefaultHeightMapWidth,
-                    HeightMapHeight = DefaultHeightMapHeight
+                    HeightMapHeight = DefaultHeightMapHeight,
+                    HeightMapOverlapSize = DefaultHeightMapOverlapSize
                 };
+            }
+        }
+
+        public Vector3 TerrainScale
+        {
+            get
+            {
+                return new Vector3
+                {
+                    X = (HeightMapWidth - 1) * PatchScale,
+                    Y = HeightScale,
+                    Z = (HeightMapHeight - 1) * PatchScale
+                };
+            }
+        }
+
+        public int TopNodeSize
+        {
+            get
+            {
+                var topNodeSize = LeafNodeSize;
+                for (int i = 1; i < LevelCount; i++) topNodeSize *= 2;
+                return topNodeSize;
             }
         }
     }

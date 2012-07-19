@@ -10,7 +10,7 @@ namespace TiledTerrainDemo.CDLOD
 {
     public sealed class TerrainEffect : IEffectMatrices
     {
-        const int definedMaxLevelCount = 15;
+        public const int DefinedMaxLevelCount = 15;
 
         EffectParameter view;
 
@@ -32,8 +32,6 @@ namespace TiledTerrainDemo.CDLOD
 
         EffectParameter morphConsts;
 
-        EffectParameter samplerWorldToTextureScale;
-
         EffectParameter heightMapSize;
 
         EffectParameter twoHeightMapSize;
@@ -41,6 +39,8 @@ namespace TiledTerrainDemo.CDLOD
         EffectParameter heightMapTexelSize;
 
         EffectParameter twoHeightMapTexelSize;
+
+        EffectParameter heightMapOverlapSize;
 
         EffectParameter halfPatchGridSize;
 
@@ -121,44 +121,14 @@ namespace TiledTerrainDemo.CDLOD
 
         public Vector2[] MorphConsts
         {
-            get { return morphConsts.GetValueVector2Array(definedMaxLevelCount); }
+            get { return morphConsts.GetValueVector2Array(DefinedMaxLevelCount); }
             set { morphConsts.SetValue(value); }
         }
 
         public Texture2D HeightMap
         {
             get { return heightMap.GetValueTexture2D(); }
-            set
-            {
-                heightMap.SetValue(value);
-
-                if (value != null)
-                {
-                    // heightMapSize
-                    // twoHeightMapSize
-                    var size = new Vector2(value.Width, value.Height);
-                    heightMapSize.SetValue(size);
-                    twoHeightMapSize.SetValue(2 * size);
-
-                    // heightMapTexelSize
-                    // twoHeightMapTexelSize
-                    var texelSize = new Vector2
-                    {
-                        X = 1 / size.X,
-                        Y = 1 / size.Y
-                    };
-                    heightMapTexelSize.SetValue(texelSize);
-                    twoHeightMapTexelSize.SetValue(2 * texelSize);
-
-                    // samplerWorldToTextureScale
-                    var worldToTextureScale = new Vector2
-                    {
-                        X = (size.X - 1) * texelSize.X,
-                        Y = (size.Y - 1) * texelSize.Y
-                    };
-                    samplerWorldToTextureScale.SetValue(worldToTextureScale);
-                }
-            }
+            set { heightMap.SetValue(value); }
         }
 
         public float PatchGridSize
@@ -206,6 +176,35 @@ namespace TiledTerrainDemo.CDLOD
             CacheEffectTequniques();
         }
 
+        public void GetHeightMapSize(out int width, out int height, out int overlap)
+        {
+            var size = heightMapSize.GetValueVector2();
+            width = (int) size.X;
+            height = (int) size.Y;
+            overlap = (int) heightMapOverlapSize.GetValueSingle();
+        }
+
+        public void SetHeightMapSize(int width, int height, int overlap)
+        {
+            // heightMapSize
+            var size = new Vector2(width + 2 * overlap, height + 2 * overlap);
+            heightMapSize.SetValue(size);
+            // 2 * heightMapSize
+            twoHeightMapSize.SetValue(2 * size);
+
+            // texelSize
+            var texelSize = new Vector2
+            {
+                X = 1 / size.X,
+                Y = 1 / size.Y
+            };
+            heightMapTexelSize.SetValue(texelSize);
+            // 2 * texelSize
+            twoHeightMapTexelSize.SetValue(2 * texelSize);
+
+            heightMapOverlapSize.SetValue(overlap);
+        }
+
         /// <summary>
         /// Cache effect parameter accessors.
         /// </summary>
@@ -225,11 +224,11 @@ namespace TiledTerrainDemo.CDLOD
             levelCount = BackingEffect.Parameters["LevelCount"];
             morphConsts = BackingEffect.Parameters["MorphConsts"];
 
-            samplerWorldToTextureScale = BackingEffect.Parameters["SamplerWorldToTextureScale"];
             heightMapSize = BackingEffect.Parameters["HeightMapSize"];
             twoHeightMapSize = BackingEffect.Parameters["TwoHeightMapSize"];
             heightMapTexelSize = BackingEffect.Parameters["HeightMapTexelSize"];
             twoHeightMapTexelSize = BackingEffect.Parameters["TwoHeightMapTexelSize"];
+            heightMapOverlapSize = BackingEffect.Parameters["HeightMapOverlapSize"];
 
             halfPatchGridSize = BackingEffect.Parameters["HalfPatchGridSize"];
             twoOverPatchGridSize = BackingEffect.Parameters["TwoOverPatchGridSize"];

@@ -14,6 +14,8 @@ namespace TiledTerrainDemo.DemoLandscape
     {
         DemoPartitionContext context;
 
+        Settings settings;
+
         TiledNoiseMap tiledNoiseMap = new TiledNoiseMap();
 
         DemoHeightMapSource heightMap;
@@ -26,9 +28,12 @@ namespace TiledTerrainDemo.DemoLandscape
 
             this.context = context;
 
-            tiledNoiseMap.Width = context.HeightMapWidth;
-            tiledNoiseMap.Height = context.HeightMapHeight;
-            tiledNoiseMap.GetValue2 = context.GetNoiseValue;
+            settings = context.Settings;
+
+            tiledNoiseMap.Width = settings.HeightMapWidth;
+            tiledNoiseMap.Height = settings.HeightMapHeight;
+            tiledNoiseMap.OverlapSize = settings.HeightMapOverlapSize;
+            tiledNoiseMap.Noise = context.Noise;
 
             heightMap = new DemoHeightMapSource(context.GraphicsDevice);
             heightMap.TiledNoiseMap = tiledNoiseMap;
@@ -46,6 +51,7 @@ namespace TiledTerrainDemo.DemoLandscape
                 context.NoiseWidth,
                 context.NoiseHeight);
             tiledNoiseMap.Build();
+            //tiledNoiseMap.Erode(16 / (float) context.HeightMapWidth, 10);
 
             // Build the height map.
             heightMap.Build();
@@ -62,8 +68,8 @@ namespace TiledTerrainDemo.DemoLandscape
         public override void Draw(GameTime gameTime)
         {
             var terrainOffset = new Vector3(X, 0, Y);
-            terrainOffset.X *= (context.HeightMapWidth - 1);
-            terrainOffset.Z *= (context.HeightMapHeight - 1);
+            terrainOffset.X *= (settings.HeightMapWidth - 1);
+            terrainOffset.Z *= (settings.HeightMapHeight - 1);
             terrainOffset *= context.Settings.PatchScale;
 
             context.Selection.TerrainOffset = terrainOffset;

@@ -7,17 +7,19 @@ using System;
 namespace TiledTerrainDemo.Noise
 {
     /// <summary>
-    /// The class manages 2-dimensional noise values as 1-dimensional array.
+    /// The class manages 2-dimensional noise values.
     /// </summary>
     public sealed class NoiseMap
     {
-        public delegate float DelegateGetValue2(float x, float y);
+        public const int DefaultWidth = 256 + 1;
 
-        DelegateGetValue2 getValue2;
+        public const int DefaultHeight = 256 + 1;
 
-        int width = 256 + 1;
+        NoiseDelegate noise;
 
-        int height = 256 + 1;
+        int width = DefaultWidth;
+
+        int height = DefaultHeight;
 
         float boundX;
 
@@ -27,15 +29,12 @@ namespace TiledTerrainDemo.Noise
 
         float boundHeight;
 
-        float[] heights;
+        float[] values;
 
-        /// <summary>
-        /// Gets/sets a method generating 2-dimensional noise values.
-        /// </summary>
-        public DelegateGetValue2 GetValue2
+        public NoiseDelegate Noise
         {
-            get { return getValue2; }
-            set { getValue2 = value; }
+            get { return noise; }
+            set { noise = value; }
         }
 
         public int Width
@@ -52,7 +51,19 @@ namespace TiledTerrainDemo.Noise
 
         public float[] Values
         {
-            get { return heights; }
+            get { return values; }
+        }
+
+        public float this[int x, int y]
+        {
+            get
+            {
+                return values[x + y * width];
+            }
+            set
+            {
+                values[x + y * width] = value;
+            }
         }
 
         public void SetBounds(float x, float y, float w, float h)
@@ -69,8 +80,8 @@ namespace TiledTerrainDemo.Noise
         public void Build()
         {
             var length = width * height;
-            if (heights == null || heights.Length != length)
-                heights = new float[length];
+            if (values == null || values.Length != length)
+                values = new float[length];
 
             var deltaX = boundWidth * (1 / (float) width);
             var deltaY = boundHeight * (1 / (float) height);
@@ -82,7 +93,7 @@ namespace TiledTerrainDemo.Noise
                 for (int j = 0; j < width; j++)
                 {
                     var index = j + i * width;
-                    heights[index] = GetValue2(x, y);
+                    values[index] = Noise(x, 0, y);
                     x += deltaX;
                 }
                 y += deltaY;

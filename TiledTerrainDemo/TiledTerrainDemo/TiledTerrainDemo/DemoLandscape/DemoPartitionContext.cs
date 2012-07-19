@@ -40,10 +40,6 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public ContentManager Content { get; private set; }
 
-        public int HeightMapWidth { get; private set; }
-
-        public int HeightMapHeight { get; private set; }
-
         public float NoiseMinX { get; private set; }
 
         public float NoiseMinY { get; private set; }
@@ -70,21 +66,16 @@ namespace TiledTerrainDemo.DemoLandscape
         #endregion
 
         public DemoPartitionContext(
-            GraphicsDevice graphicsDevice, ContentManager content,
-            int heightMapWidth, int heightMapHeight,
-            float noiseMinX, float noiseMinY, float noiseWidth, float noiseHeight,
-            Settings settings)
+            GraphicsDevice graphicsDevice, ContentManager content, Settings settings,
+            float noiseMinX, float noiseMinY, float noiseWidth, float noiseHeight)
         {
             GraphicsDevice = graphicsDevice;
             Content = content;
-            HeightMapWidth = heightMapWidth;
-            HeightMapHeight = heightMapHeight;
+            this.settings = settings;
             NoiseMinX = noiseMinX;
             NoiseMinY = noiseMinY;
             NoiseWidth = noiseWidth;
             NoiseHeight = noiseHeight;
-
-            this.settings = settings;
 
             perlinNoise.Seed = noiseSeed;
             improvedPerlinNoise.Seed = noiseSeed;
@@ -130,22 +121,22 @@ namespace TiledTerrainDemo.DemoLandscape
             Selection = new Selection(settings, visibleRanges);
         }
 
-        public float GetNoiseValue(float x, float y)
+        public float Noise(float x, float y, float z)
         {
-            //return sumFractal.GetValue(x, 0, y);
+            //return sumFractal.GetValue(x, y, z);
             // take down.
-            //return multifractal.GetValue(x, 0, y) - 1;
+            //return multifractal.GetValue(x, y, z) - 1;
             // take down.
-            //return heterofractal.GetValue(x, 0, y) - 1;
+            //return heterofractal.GetValue(x, y, z) - 1;
             // take down.
-            //return hybridMultifractal.GetValue(x, 0, y) - 1;
+            //return hybridMultifractal.GetValue(x, y, z) - 1;
             // take down.
-            //return ridgedMultifractal.GetValue(x, 0, y) - 1;
-            //return sinFractal.GetValue(x, 0, y);
-            //return billow.GetValue(x, 0, y);
-            //return scaleBias.GetValue(x, 0, y);
-            //return select.GetValue(x, 0, y);
-            return turbulence.GetValue(x, 0, y);
+            //return ridgedMultifractal.GetValue(x, y, z) - 1;
+            //return sinFractal.GetValue(x, y, z);
+            //return billow.GetValue(x, y, z);
+            //return scaleBias.GetValue(x, y, z);
+            //return select.GetValue(x, y, z);
+            return turbulence.GetValue(x, y, z);
         }
     }
 }

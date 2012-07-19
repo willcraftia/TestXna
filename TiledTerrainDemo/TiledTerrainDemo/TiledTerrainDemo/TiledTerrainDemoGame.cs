@@ -23,6 +23,7 @@ namespace TiledTerrainDemo
     {
         int heightMapWidth = 256 * 2 + 1;
         int heightMapHeight = 256 * 2 + 1;
+        int heightMapOverlapSize = 1;
         //int heightMapWidth = 256 * 4 + 1;
         //int heightMapHeight = 256 * 4 + 1;
         float noiseSampleX = 0;
@@ -155,11 +156,11 @@ namespace TiledTerrainDemo
             settings.HeightScale = heightScale;
             settings.HeightMapWidth = heightMapWidth;
             settings.HeightMapHeight = heightMapHeight;
+            settings.HeightMapOverlapSize = heightMapOverlapSize;
 
             partitionContext = new DemoPartitionContext(
-                GraphicsDevice, Content,
-                heightMapWidth, heightMapHeight,
-                noiseSampleX, noiseSampleY, noiseSampleWidth, noiseSampleHeight, settings);
+                GraphicsDevice, Content, settings,
+                noiseSampleX, noiseSampleY, noiseSampleWidth, noiseSampleHeight);
 
             partitionFactory = new DemoPartitionFactory(partitionContext);
 

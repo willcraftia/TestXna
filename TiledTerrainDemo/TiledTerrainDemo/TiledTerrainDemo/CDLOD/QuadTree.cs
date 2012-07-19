@@ -18,9 +18,7 @@ namespace TiledTerrainDemo.CDLOD
 
         public QuadTree(Settings settings)
         {
-            topNodeSize = settings.LeafNodeSize;
-            for (int i = 1; i < settings.LevelCount; i++)
-                topNodeSize *= 2;
+            topNodeSize = settings.TopNodeSize;
 
             topNodeCountX = (int) Math.Ceiling((settings.HeightMapWidth - 1) / (float) topNodeSize);
             topNodeCountY = (int) Math.Ceiling((settings.HeightMapHeight - 1) / (float) topNodeSize);
