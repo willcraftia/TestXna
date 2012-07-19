@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C# Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoiseMeasuring", "NoiseMeasuring\NoiseMeasuring.csproj", "{E8EE0CE6-9BDA-4C97-A386-0569417778AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FloorMeasuring", "..\FloorMeasuring\FloorMeasuring\FloorMeasuring.csproj", "{9E69F365-CDE9-429E-A30C-928C53038475}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FloorMeasuring", "FloorMeasuring\FloorMeasuring.csproj", "{7255E554-61AC-496D-9DFB-20E4D4879194}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +15,10 @@ Global
 		{E8EE0CE6-9BDA-4C97-A386-0569417778AD}.Debug|x86.Build.0 = Debug|x86
 		{E8EE0CE6-9BDA-4C97-A386-0569417778AD}.Release|x86.ActiveCfg = Release|x86
 		{E8EE0CE6-9BDA-4C97-A386-0569417778AD}.Release|x86.Build.0 = Release|x86
-		{9E69F365-CDE9-429E-A30C-928C53038475}.Debug|x86.ActiveCfg = Debug|x86
-		{9E69F365-CDE9-429E-A30C-928C53038475}.Debug|x86.Build.0 = Debug|x86
-		{9E69F365-CDE9-429E-A30C-928C53038475}.Release|x86.ActiveCfg = Release|x86
-		{9E69F365-CDE9-429E-A30C-928C53038475}.Release|x86.Build.0 = Release|x86
+		{7255E554-61AC-496D-9DFB-20E4D4879194}.Debug|x86.ActiveCfg = Debug|x86
+		{7255E554-61AC-496D-9DFB-20E4D4879194}.Debug|x86.Build.0 = Debug|x86
+		{7255E554-61AC-496D-9DFB-20E4D4879194}.Release|x86.ActiveCfg = Release|x86
+		{7255E554-61AC-496D-9DFB-20E4D4879194}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
