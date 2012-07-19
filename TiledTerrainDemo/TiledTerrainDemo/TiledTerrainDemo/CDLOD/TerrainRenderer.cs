@@ -93,7 +93,7 @@ namespace TiledTerrainDemo.CDLOD
             effect.LevelCount = settings.LevelCount;
             effect.PatchGridSize = patchMesh.GridSize;
             effect.TerrainScale = settings.TerrainScale;
-            effect.SetHeightMapSize(settings.HeightMapWidth, settings.HeightMapHeight, settings.HeightMapOverlapSize);
+            effect.SetHeightMapInfo(settings.HeightMapWidth, settings.HeightMapHeight, settings.HeightMapOverlapSize);
 
             lightDirection = new Vector3(0, -1, -1);
             lightDirection.Normalize();

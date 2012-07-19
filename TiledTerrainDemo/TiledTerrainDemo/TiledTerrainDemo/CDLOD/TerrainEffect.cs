@@ -125,6 +125,16 @@ namespace TiledTerrainDemo.CDLOD
             set { morphConsts.SetValue(value); }
         }
 
+        public Vector2 HeightMapSize
+        {
+            get { return heightMapSize.GetValueVector2(); }
+        }
+
+        public float HeightMapOverlapSize
+        {
+            get { return heightMapOverlapSize.GetValueSingle(); }
+        }
+
         public Texture2D HeightMap
         {
             get { return heightMap.GetValueTexture2D(); }
@@ -176,18 +186,10 @@ namespace TiledTerrainDemo.CDLOD
             CacheEffectTequniques();
         }
 
-        public void GetHeightMapSize(out int width, out int height, out int overlap)
-        {
-            var size = heightMapSize.GetValueVector2();
-            width = (int) size.X;
-            height = (int) size.Y;
-            overlap = (int) heightMapOverlapSize.GetValueSingle();
-        }
-
-        public void SetHeightMapSize(int width, int height, int overlap)
+        public void SetHeightMapInfo(float width, float height, float overlapSize)
         {
             // heightMapSize
-            var size = new Vector2(width + 2 * overlap, height + 2 * overlap);
+            var size = new Vector2(width + 2 * overlapSize, height + 2 * overlapSize);
             heightMapSize.SetValue(size);
             // 2 * heightMapSize
             twoHeightMapSize.SetValue(2 * size);
@@ -202,7 +204,8 @@ namespace TiledTerrainDemo.CDLOD
             // 2 * texelSize
             twoHeightMapTexelSize.SetValue(2 * texelSize);
 
-            heightMapOverlapSize.SetValue(overlap);
+            // overlapSize
+            heightMapOverlapSize.SetValue(overlapSize);
         }
 
         /// <summary>

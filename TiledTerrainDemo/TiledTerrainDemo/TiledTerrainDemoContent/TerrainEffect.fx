@@ -106,7 +106,7 @@ float2 CalculateGlobalUV(float4 vertex)
     float2 actualSize = HeightMapSize - 2 * HeightMapOverlapSize;
     float2 worldToTexCoord = (actualSize - 1) * HeightMapTexelSize;
     globalUV *= worldToTexCoord;
-    globalUV += HeightMapTexelSize * HeightMapOverlapSize/* + HeightMapTexelSize * 0.5*/;
+    globalUV += HeightMapTexelSize * HeightMapOverlapSize + HeightMapTexelSize * 0.5;
 
     return globalUV;
 }
@@ -122,7 +122,7 @@ float2 MorphVertex(float4 position, float2 vertex, float4 quadScale, float morph
 float SampleHeightMap(float2 uv)
 {
     // A manual bilinear interpolation.
-/*    uv = uv.xy * HeightMapSize - float2(0.5, 0.5);
+    uv = uv.xy * HeightMapSize - float2(0.5, 0.5);
     float2 uvf = floor( uv.xy );
     float2 f = uv - uvf;
     uv = (uvf + float2(0.5, 0.5)) * HeightMapTexelSize;
@@ -135,10 +135,10 @@ float SampleHeightMap(float2 uv)
     float t11 = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
     float tB = lerp( t01, t11, f.x );
 
-    return lerp( tA, tB, f.y );*/
+    return lerp( tA, tB, f.y );
 
 // ê≥ÇµÇ≠ìÆÇ≠Ç™åqÇ¨ñ⁄Ç†ÇËÅB
-    uv = uv.xy * HeightMapSize;
+/*    uv = uv.xy * HeightMapSize;
     float2 uvf = floor( uv.xy );
     float2 f = uv - uvf;
     uv = uvf * HeightMapTexelSize;
@@ -151,7 +151,7 @@ float SampleHeightMap(float2 uv)
     float t11 = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
     float tB = lerp( t01, t11, f.x );
 
-    return lerp( tA, tB, f.y );
+    return lerp( tA, tB, f.y );*/
 }
 
 float4 CalculateNormal(float2 texCoord)
