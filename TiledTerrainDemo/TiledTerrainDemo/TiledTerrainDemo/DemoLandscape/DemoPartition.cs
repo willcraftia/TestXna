@@ -51,7 +51,7 @@ namespace TiledTerrainDemo.DemoLandscape
                 context.NoiseWidth,
                 context.NoiseHeight);
             tiledNoiseMap.Build();
-            //tiledNoiseMap.Erode(16 / (float) context.HeightMapWidth, 10);
+            //tiledNoiseMap.Erode(16 / (float) context.Settings.HeightMapWidth, 10);
 
             // Build the height map.
             heightMap.Build();

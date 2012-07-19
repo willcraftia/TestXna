@@ -266,7 +266,7 @@ float4 HeightColorPS(VS_OUTPUT input) : COLOR0
 {
     float4 color = float4(0, 0, 0, 1);
 
-    float weight;
+/*    float weight;
     float4 range;
 
     // The height color blending.
@@ -285,6 +285,32 @@ float4 HeightColorPS(VS_OUTPUT input) : COLOR0
     range = (Heights[HEIGHT_INDEX_COUNT - 1] - Heights[HEIGHT_INDEX_COUNT - 2]) * HEIGHT_COLOR_BLEND_RATIO;
     weight = saturate(1 - abs(input.Height - Heights[HEIGHT_INDEX_COUNT - 1]) / range);
     color.rgb += HeightColors[HEIGHT_INDEX_COUNT - 1] * weight;
+*/
+
+    float h = input.Height;
+
+    int index;
+    for (index = 0; index < HEIGHT_INDEX_COUNT; index++)
+    {
+        if (h < Heights[index]) break;
+    }
+
+    int index0 = clamp(index - 1, 0, HEIGHT_INDEX_COUNT - 1);
+    int index1 = clamp(index    , 0, HEIGHT_INDEX_COUNT - 1);
+
+    if (index0 == index1)
+    {
+        color = HeightColors[index1];
+    }
+    else
+    {
+        float amount = (h - Heights[index0]) / (Heights[index1] - Heights[index0]);
+        float4 color0 = HeightColors[index0];
+        float4 color1 = HeightColors[index1];
+        color.r = lerp(color0.r, color1.r, amount);
+        color.g = lerp(color0.g, color1.g, amount);
+        color.b = lerp(color0.b, color1.b, amount);
+    }
 
     if (LightEnabled)
     {
