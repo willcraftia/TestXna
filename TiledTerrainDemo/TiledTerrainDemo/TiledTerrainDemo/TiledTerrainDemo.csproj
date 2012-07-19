@@ -109,7 +109,7 @@
   <ItemGroup>
     <Compile Include="Cameras\FreeView.cs" />
     <Compile Include="Cameras\FreeViewInput.cs" />
-    <Compile Include="CDLOD\BoundingBoxDrawer.cs" />
+    <Compile Include="DemoLandscape\BoundingBoxDrawer.cs" />
     <Compile Include="CDLOD\DefaultHeightMapSource.cs" />
     <Compile Include="CDLOD\DefaultVisibleRanges.cs" />
     <Compile Include="CDLOD\Helper.cs" />
@@ -125,8 +125,10 @@
     <Compile Include="CDLOD\Selection.cs" />
     <Compile Include="CDLOD\Settings.cs" />
     <Compile Include="CDLOD\Terrain.cs" />
-    <Compile Include="CDLOD\TerrainEffect.cs" />
+    <Compile Include="DemoLandscape\HeightColor.cs" />
+    <Compile Include="DemoLandscape\TerrainEffect.cs" />
     <Compile Include="CDLOD\TerrainRenderer.cs" />
+    <Compile Include="DemoLandscape\DemoTerrainRenderer.cs" />
     <Compile Include="CDLOD\VertexPosition.cs" />
     <Compile Include="DemoLandscape\DemoHeightMapSource.cs" />
     <Compile Include="DemoLandscape\DemoPartitionContext.cs" />
@@ -155,6 +157,7 @@
     <Compile Include="Landscape\Pool.cs" />
     <Compile Include="Noise\Billow.cs" />
     <Compile Include="Noise\Fractal.cs" />
+    <Compile Include="DemoLandscape\HeightColorCollection.cs" />
     <Compile Include="Noise\Heterofractal.cs" />
     <Compile Include="Noise\HybridMultifractal.cs" />
     <Compile Include="Noise\ImprovedPerlinNoise.cs" />

@@ -6,11 +6,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 #endregion
 
-namespace TiledTerrainDemo.CDLOD
+namespace TiledTerrainDemo.DemoLandscape
 {
     public sealed class TerrainEffect : IEffectMatrices
     {
         public const int DefinedMaxLevelCount = 15;
+
+        public const int DefinedMaxColorCount = 8;
 
         EffectParameter view;
 
@@ -47,6 +49,12 @@ namespace TiledTerrainDemo.CDLOD
         EffectParameter twoOverPatchGridSize;
 
         EffectParameter heightMap;
+
+        EffectParameter heightColorCount;
+
+        EffectParameter heightColors;
+
+        EffectParameter heightColorPositions;
 
         EffectParameter lightEnabled;
 
@@ -153,6 +161,24 @@ namespace TiledTerrainDemo.CDLOD
             }
         }
 
+        public float HeightColorCount
+        {
+            get { return heightColorCount.GetValueSingle(); }
+            set { heightColorCount.SetValue(value); }
+        }
+
+        public Vector4[] HeightColors
+        {
+            get { return heightColors.GetValueVector4Array(DefinedMaxColorCount); }
+            set { heightColors.SetValue(value); }
+        }
+
+        public float[] HeightColorPositions
+        {
+            get { return heightColorPositions.GetValueSingleArray(DefinedMaxColorCount); }
+            set { heightColorPositions.SetValue(value); }
+        }
+
         public bool LightEnabled
         {
             get { return lightEnabled.GetValueBoolean(); }
@@ -164,12 +190,6 @@ namespace TiledTerrainDemo.CDLOD
         public EffectTechnique HeightColorTequnique { get; private set; }
 
         public EffectTechnique WireframeTequnique { get; private set; }
-
-        public EffectTechnique CurrentTechnique
-        {
-            get { return BackingEffect.CurrentTechnique; }
-            set { BackingEffect.CurrentTechnique = value; }
-        }
 
         /// <summary>
         /// If not share a backing effect, clone it before specifing to this constructor.
@@ -238,6 +258,9 @@ namespace TiledTerrainDemo.CDLOD
 
             heightMap = BackingEffect.Parameters["HeightMap"];
 
+            heightColorCount = BackingEffect.Parameters["HeightColorCount"];
+            heightColors = BackingEffect.Parameters["HeightColors"];
+            heightColorPositions = BackingEffect.Parameters["HeightColorPositions"];
             lightEnabled = BackingEffect.Parameters["LightEnabled"];
         }
 

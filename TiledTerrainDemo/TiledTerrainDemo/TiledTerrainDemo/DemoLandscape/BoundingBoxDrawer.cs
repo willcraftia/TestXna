@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 #endregion
 
-namespace TiledTerrainDemo.CDLOD
+namespace TiledTerrainDemo.DemoLandscape
 {
     public sealed class BoundingBoxDrawer
     {

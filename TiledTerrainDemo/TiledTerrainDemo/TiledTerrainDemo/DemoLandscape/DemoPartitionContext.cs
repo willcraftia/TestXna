@@ -53,7 +53,7 @@ namespace TiledTerrainDemo.DemoLandscape
             get { return settings; }
         }
 
-        public TerrainRenderer TerrainRenderer { get; private set; }
+        public DemoTerrainRenderer TerrainRenderer { get; private set; }
 
         public Selection Selection { get; private set; }
 
@@ -115,8 +115,19 @@ namespace TiledTerrainDemo.DemoLandscape
             visibleRanges = new DefaultVisibleRanges(settings);
             visibleRanges.Initialize();
 
-            TerrainRenderer = new TerrainRenderer(GraphicsDevice, Content, settings);
+            TerrainRenderer = new DemoTerrainRenderer(GraphicsDevice, Content, settings);
             TerrainRenderer.InitializeMorphConsts(visibleRanges);
+
+            var heightColors = new HeightColorCollection();
+            heightColors.AddColor(-1.0000f, new Vector4(0,       0,       0.5f,    1));
+            heightColors.AddColor(-0.2500f, new Vector4(0,       0,       1,       1));
+            heightColors.AddColor( 0.0000f, new Vector4(0,       0.5f,    1,       1));
+            heightColors.AddColor( 0.0625f, new Vector4(0.9411f, 0.9411f, 0.2509f, 1));
+            heightColors.AddColor( 0.1250f, new Vector4(0.1254f, 0.6274f, 0,       1));
+            heightColors.AddColor( 0.3750f, new Vector4(0.8784f, 0.8784f, 0,       1));
+            heightColors.AddColor( 0.7500f, new Vector4(0.5f,    0.5f,    0.5f,    1));
+            heightColors.AddColor( 1.0000f, new Vector4(1,       1,       1,       1));
+            TerrainRenderer.InitializeHeightColors(heightColors);
 
             Selection = new Selection(settings, visibleRanges);
         }
