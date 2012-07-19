@@ -56,9 +56,10 @@ namespace NoiseMeasuring
             float xs = x + s;
             float ys = y + s;
             float zs = z + s;
-            int i = Floor(xs);
-            int j = Floor(ys);
-            int k = Floor(zs);
+            // NOTE: (int)Math.Floor(v) is a lot faster than fastfloor(x) in the original code.
+            int i = (int) Math.Floor(xs);
+            int j = (int) Math.Floor(ys);
+            int k = (int) Math.Floor(zs);
 
             float t = (float) (i + j + k) * G3;
             // Unskew the cell origin back to (x,y,z) space
