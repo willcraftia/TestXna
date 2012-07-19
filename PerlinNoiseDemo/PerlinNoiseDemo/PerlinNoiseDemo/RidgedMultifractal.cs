@@ -9,9 +9,15 @@ namespace PerlinNoiseDemo
 {
     public sealed class RidgedMultifractal : Fractal
     {
-        float offset = 1;
+        public const float MusgraveHurst = 1;
 
-        float gain = 2;
+        public const float MusgraveOffset = 1;
+
+        public const float MusgraveGain = 2;
+
+        float offset = MusgraveOffset;
+
+        float gain = MusgraveGain;
 
         public float Offset
         {

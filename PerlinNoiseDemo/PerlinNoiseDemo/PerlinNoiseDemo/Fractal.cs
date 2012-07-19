@@ -14,17 +14,25 @@ namespace PerlinNoiseDemo
 
         public delegate float DelegateNoise3(float x, float y, float z);
 
-        protected const int maxOctaveCount = 30;
+        public const int MaxOctaveCount = 30;
 
-        protected float hurst = 0.9f;
+        public const float DefaultHurst = 0.9f;
 
-        protected float frequency = 1;
+        public const float DefaultFrequency = 1;
 
-        protected float lacunarity = 2;
+        public const float DefaultLacunarity = 2;
 
-        protected float[] spectralWeights = new float[maxOctaveCount];
+        public const int DefaultOctaveCount = 6;
 
-        protected int octaveCount = 6;
+        protected float hurst = DefaultHurst;
+
+        protected float frequency = DefaultFrequency;
+
+        protected float lacunarity = DefaultLacunarity;
+
+        protected int octaveCount = DefaultOctaveCount;
+
+        protected float[] spectralWeights = new float[MaxOctaveCount];
 
         DelegateNoise1 noise1;
 
@@ -134,7 +142,7 @@ namespace PerlinNoiseDemo
         protected void InitializeSpectralWeights()
         {
             float f = frequency;
-            for (int i = 0; i < maxOctaveCount; i++)
+            for (int i = 0; i < MaxOctaveCount; i++)
             {
                 spectralWeights[i] = (float) Math.Pow(f, -hurst);
                 f *= lacunarity;

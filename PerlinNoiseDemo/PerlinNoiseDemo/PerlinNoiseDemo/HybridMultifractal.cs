@@ -8,9 +8,11 @@ namespace PerlinNoiseDemo
 {
     public sealed class HybridMultifractal : Fractal
     {
-        float offset = 0;
+        public const float MusgraveHurst = 0.25f;
 
-        float gain = 1;
+        public const float MusgraveOffset = 0.7f;
+
+        float offset = MusgraveOffset;
 
         public float Offset
         {
@@ -18,10 +20,9 @@ namespace PerlinNoiseDemo
             set { offset = value; }
         }
 
-        public float Gain
+        public HybridMultifractal()
         {
-            get { return gain; }
-            set { gain = value; }
+            Hurst = MusgraveHurst;
         }
 
         protected override float GetValueOverride(float x, float y, float z)
@@ -39,7 +40,7 @@ namespace PerlinNoiseDemo
                 signal *= weight;
                 value += signal;
 
-                weight *= gain * signal;
+                weight *= signal;
                 if (1 < weight) weight = 1;
 
                 x *= lacunarity;
