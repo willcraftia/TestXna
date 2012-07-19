@@ -11,7 +11,7 @@ namespace NoiseMeasuring
     {
         static void Main(string[] args)
         {
-            const int loopCount = 512 * 512 * 6 * 3;
+            const int loopCount = 512 * 512 * 6 * 6;
             var stopwatch = new Stopwatch();
 
             var perlin = new PerlinNoise();
