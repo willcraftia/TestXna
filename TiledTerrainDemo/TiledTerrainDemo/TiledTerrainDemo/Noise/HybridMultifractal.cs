@@ -14,19 +14,11 @@ namespace TiledTerrainDemo.Noise
 
         float offset = MusgraveOffset;
 
-        //float gain = 1;
-
         public float Offset
         {
             get { return offset; }
             set { offset = value; }
         }
-
-        //public float Gain
-        //{
-        //    get { return gain; }
-        //    set { gain = value; }
-        //}
 
         public HybridMultifractal()
         {
@@ -48,7 +40,7 @@ namespace TiledTerrainDemo.Noise
                 signal *= weight;
                 value += signal;
 
-                weight *= /*gain * */signal;
+                weight *= signal;
                 if (1 < weight) weight = 1;
 
                 x *= lacunarity;
