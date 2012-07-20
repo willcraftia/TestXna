@@ -56,10 +56,9 @@ namespace TiledTerrainDemo.Noise
             float xs = x + s;
             float ys = y + s;
             float zs = z + s;
-            // NOTE: (int)Math.Floor(v) is a lot faster than fastfloor(x) in the original code.
-            int i = (int) Math.Floor(xs);
-            int j = (int) Math.Floor(ys);
-            int k = (int) Math.Floor(zs);
+            int i = NoiseHelper.Floor(xs);
+            int j = NoiseHelper.Floor(ys);
+            int k = NoiseHelper.Floor(zs);
 
             float t = (float) (i + j + k) * G3;
             // Unskew the cell origin back to (x,y,z) space
