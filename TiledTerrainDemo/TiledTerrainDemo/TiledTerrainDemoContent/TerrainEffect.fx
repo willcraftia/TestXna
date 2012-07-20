@@ -254,8 +254,9 @@ float4 HeightColorPS(VS_OUTPUT input) : COLOR0
         if (h < HeightColorPositions[index]) break;
     }
 
-    int index0 = clamp(index - 1, 0, HeightColorCount - 1);
-    int index1 = clamp(index    , 0, HeightColorCount - 1);
+    int maxIndex = HeightColorCount - 1;
+    int index0 = clamp(index - 1, 0, maxIndex);
+    int index1 = clamp(index    , 0, maxIndex);
 
     if (index0 == index1)
     {
