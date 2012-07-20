@@ -27,7 +27,6 @@ namespace TiledTerrainDemo.DemoLandscape
 
         PerlinFractal perlinFractal = new PerlinFractal();
         SumFractal sumFractal = new SumFractal();
-        Turbulence turbulence = new Turbulence();
         Multifractal multifractal = new Multifractal();
         Heterofractal heterofractal = new Heterofractal();
         HybridMultifractal hybridMultifractal = new HybridMultifractal();
@@ -36,8 +35,17 @@ namespace TiledTerrainDemo.DemoLandscape
         Billow billow = new Billow();
         Voronoi voronoi = new Voronoi();
 
-        ScaleBias scaleBias = new ScaleBias();
-        Select select = new Select();
+        #region Noise combination test
+
+        RidgedMultifractal mountainTerrain = new RidgedMultifractal();
+        Billow baseFlatTerrain = new Billow();
+        ScaleBias flatTerrain = new ScaleBias();
+        Select terrainSelector = new Select();
+        PerlinFractal terrainType = new PerlinFractal();
+        Turbulence perturbTerrain = new Turbulence();
+        ScaleBias finalTerrain = new ScaleBias();
+
+        #endregion
 
         DefaultVisibleRanges visibleRanges;
 
@@ -89,13 +97,13 @@ namespace TiledTerrainDemo.DemoLandscape
             simplexNoise.Seed = noiseSeed;
             simplexNoise.Reseed();
             voronoi.Seed = noiseSeed;
-            //voronoi.Reseed();
 
             //var noise = perlinNoise;
             var noise = improvedPerlinNoise;
             //var noise = simplexNoise;
             //var noise = voronoi;
 
+            perlinFractal.Noise = noise.GetValue;
             sumFractal.Noise = noise.GetValue;
             multifractal.Noise = noise.GetValue;
             heterofractal.Noise = noise.GetValue;
@@ -104,26 +112,30 @@ namespace TiledTerrainDemo.DemoLandscape
             sinFractal.Noise = noise.GetValue;
             billow.Noise = noise.GetValue;
 
-            scaleBias.Noise = billow.GetValue;
-            scaleBias.Scale = 0.225f;
-            scaleBias.Bias = -0.75f;
-            //scaleBias.Bias = 0.5f;
+            #region Noise combination test
 
-            perlinFractal.Noise = noise.GetValue;
-            perlinFractal.Frequency = 0.5f;
-            perlinFractal.Persistence = 0.25f;
+            var testBaseNoise = improvedPerlinNoise;
 
-            select.ControllerNoise = perlinFractal.GetValue;
-            //select.Noise0 = ridgedMultifractal.GetValue;
-            select.Noise0 = (x, y, z) => { return ridgedMultifractal.GetValue(x, y, z) * 1.25f - 1; };
-            select.Noise1 = scaleBias.GetValue;
-            select.LowerBound = 0;
-            select.UpperBound = 1000;
-            select.EdgeFalloff = 0.125f;
+            mountainTerrain.Noise = testBaseNoise.GetValue;
+            baseFlatTerrain.Noise = testBaseNoise.GetValue;
+            baseFlatTerrain.Frequency = 2.0f;
+            flatTerrain.Noise = baseFlatTerrain.GetValue;
+            flatTerrain.Scale = 0.525f;
+            flatTerrain.Bias = -0.75f;
+            terrainType.Noise = testBaseNoise.GetValue;
+            terrainSelector.ControllerNoise = terrainType.GetValue;
+            terrainSelector.Noise0 = (x, y, z) => { return mountainTerrain.GetValue(x, y, z) * 1.25f - 1; };
+            terrainSelector.Noise1 = flatTerrain.GetValue;
+            terrainSelector.LowerBound = 0;
+            terrainSelector.UpperBound = 1000;
+            terrainSelector.EdgeFalloff = 0.125f;
+            perturbTerrain.Noise = terrainSelector.GetValue;
+            perturbTerrain.Frequency = 4;
+            perturbTerrain.Power = 0.125f;
+            finalTerrain.Noise = perturbTerrain.GetValue;
+            finalTerrain.Bias = 0.8f;
 
-            turbulence.Noise = select.GetValue;
-            turbulence.Frequency = 4;
-            turbulence.Power = 0.125f;
+            #endregion
 
             visibleRanges = new DefaultVisibleRanges(settings);
             visibleRanges.FinestNodeSize = finestNodeSize;
@@ -134,20 +146,15 @@ namespace TiledTerrainDemo.DemoLandscape
 
             var heightColors = new HeightColorCollection();
             // default settings.
-            heightColors.AddColor(-1.0000f, new Vector4(0,       0,       0.5f,    1));
-            heightColors.AddColor(-0.2500f, new Vector4(0,       0,       1,       1));
-            heightColors.AddColor( 0.0000f, new Vector4(0,       0.5f,    1,       1));
-            heightColors.AddColor( 0.0625f, new Vector4(0.9411f, 0.9411f, 0.2509f, 1));
-            heightColors.AddColor( 0.1250f, new Vector4(0.1254f, 0.6274f, 0,       1));
-            heightColors.AddColor( 0.3750f, new Vector4(0.8784f, 0.8784f, 0,       1));
-            heightColors.AddColor( 0.7500f, new Vector4(0.5f,    0.5f,    0.5f,    1));
-            heightColors.AddColor( 1.0000f, new Vector4(1,       1,       1,       1));
+            heightColors.AddColor(-1.0000f, new Color(  0,   0, 128, 255));
+            heightColors.AddColor(-0.2500f, new Color(  0,   0, 255, 255));
+            heightColors.AddColor( 0.0000f, new Color(  0, 128, 255, 255));
+            heightColors.AddColor( 0.0625f, new Color(240, 240,  64, 255));
+            heightColors.AddColor( 0.1250f, new Color( 32, 160,   0, 255));
+            heightColors.AddColor( 0.3750f, new Color(224, 224,   0, 255));
+            heightColors.AddColor( 0.7500f, new Color(128, 128, 128, 255));
+            heightColors.AddColor( 1.0000f, new Color(255, 255, 255, 255));
 
-            //heightColors.AddColor(-0.0000f, new Vector4(0.1254f, 0.6274f, 0,       1));
-            //heightColors.AddColor( 0.3750f, new Vector4(0.8784f, 0.8784f, 0,       1));
-            //heightColors.AddColor( 0.7500f, new Vector4(0.5f,    0.5f,    0.5f,    1));
-            //heightColors.AddColor( 1.0000f, new Vector4(1,       1,       1,       1));
-            
             TerrainRenderer.InitializeHeightColors(heightColors);
 
             Selection = new Selection(settings, visibleRanges);
@@ -158,7 +165,7 @@ namespace TiledTerrainDemo.DemoLandscape
             //return improvedPerlinNoise.GetValue(x, y, z);
             //return simplexNoise.GetValue(x, y, z);
             //return voronoi.GetValue(x, y, z);
-            //return sumFractal.GetValue(x, y, z);
+            return sumFractal.GetValue(x, y, z) * 2.5f;
             // take down.
             //return multifractal.GetValue(x, y, z) - 1;
             // take down.
@@ -169,10 +176,9 @@ namespace TiledTerrainDemo.DemoLandscape
             //return ridgedMultifractal.GetValue(x, y, z) - 1;
             //return sinFractal.GetValue(x, y, z);
             //return billow.GetValue(x, y, z);
-            //return scaleBias.GetValue(x, y, z);
-            //return select.GetValue(x, y, z);
-            return turbulence.GetValue(x, y, z);
-            //return MathHelper.Clamp(turbulence.GetValue(x, y, z), -1, 1);
+
+            // Noise combination test.
+            //return finalTerrain.GetValue(x, y, z);
         }
     }
 }
