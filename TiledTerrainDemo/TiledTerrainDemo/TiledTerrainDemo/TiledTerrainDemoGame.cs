@@ -167,10 +167,12 @@ namespace TiledTerrainDemo
 
             partitionFactory = new DemoPartitionFactory(partitionContext);
 
+            var terrainScale = settings.TerrainScale;
+
             partitionManager = new PartitionManager(partitionFactory.Create);
-            partitionManager.PartitionWidth = settings.PatchScale * (heightMapWidth - 1);
-            partitionManager.PartitionHeight = settings.PatchScale * (heightMapHeight - 1);
-            partitionManager.ActivationRange = partitionManager.PartitionWidth * 2;
+            partitionManager.PartitionWidth = terrainScale.X;
+            partitionManager.PartitionHeight = terrainScale.Z;
+            partitionManager.ActivationRange = partitionManager.PartitionWidth * 3;
             partitionManager.DeactivationRange = partitionManager.ActivationRange * 1.5f;
             partitionManager.EyePosition = view.Position;
 
@@ -289,7 +291,12 @@ namespace TiledTerrainDemo
             stringBuilder.Append("Quads: ");
             stringBuilder.AppendNumber(quadCount).AppendLine();
             stringBuilder.Append("Partitions: ");
-            stringBuilder.AppendNumber(partitionCount).AppendLine();
+            stringBuilder.AppendNumber(partitionCount).Append(", ");
+            stringBuilder.Append("Waiting: ");
+            stringBuilder.AppendNumber(partitionManager.WaitLoadPartitionCount).AppendLine();
+            stringBuilder.Append("Free thread: ");
+            stringBuilder.AppendNumber(partitionManager.FreePartitionLoadingThreadCount).Append("/");
+            stringBuilder.AppendNumber(partitionManager.PartitionLoadingThreadCount).AppendLine();
             stringBuilder.Append("Move velocity: ");
             stringBuilder.AppendNumber(viewInput.MoveVelocity);
         }

@@ -11,6 +11,23 @@ namespace TiledTerrainDemo.Landscape
 {
     public sealed class PartitionLoadQueue
     {
+        #region PartitionInfo
+
+        struct PartitionInfo : IComparable<PartitionInfo>
+        {
+            public Partition Partition;
+
+            public float EyeDistanceSquared;
+
+            public int CompareTo(PartitionInfo other)
+            {
+                // Descending order.
+                return -EyeDistanceSquared.CompareTo(other.EyeDistanceSquared);
+            }
+        }
+
+        #endregion
+
         #region PartitionInThread
 
         class PartitionInThread
@@ -20,20 +37,27 @@ namespace TiledTerrainDemo.Landscape
 
         #endregion
 
-        /// <summary>
-        /// 利用できる Thread の上限。
-        /// </summary>
-        public const int MaxThreadCount = 1;
+        public const int MaxThreadCount = 4;
 
         PartitionLoadResultCallback loadResultCallback;
 
-        Queue<Partition> queue = new Queue<Partition>();
+        List<PartitionInfo> requestQueue = new List<PartitionInfo>();
 
         Queue<PartitionInThread> freeThreads;
 
         Queue<Partition> resultQueue = new Queue<Partition>();
 
         public int ThreadCount { get; private set;}
+
+        public int RequestQueueCount
+        {
+            get { return requestQueue.Count; }
+        }
+
+        public int FreeThreadCount
+        {
+            get { lock (freeThreads) return freeThreads.Count; }
+        }
 
         public PartitionLoadQueue(PartitionLoadResultCallback loadResultCallback)
             : this(loadResultCallback, MaxThreadCount)
@@ -55,55 +79,71 @@ namespace TiledTerrainDemo.Landscape
 
         public void Enqueue(Partition partition)
         {
-            queue.Enqueue(partition);
+            requestQueue.Add(new PartitionInfo { Partition = partition });
         }
 
-        public void Update()
+        public void Update(Vector3 eyePosition)
         {
-            ProcessQueue();
+            ProcessQueue(ref eyePosition);
             ProcessResult();
         }
 
-        Partition Dequeue()
-        {
-            while (queue.Count != 0)
-            {
-                var item = queue.Dequeue();
-                if (item.LoadState == PartitionLoadState.WaitLoad)
-                    return item;
-            }
-
-            return null;
-        }
-
-        void ProcessQueue()
+        void ProcessQueue(ref Vector3 eyePosition)
         {
             // process one partition per update.
 
             // Pre-check
-            if (queue.Count == 0) return;
+            if (requestQueue.Count == 0) return;
 
-            Partition partition = null;
+            // Check a state on each partitions in queue.
+            int index = 0;
+            while (index < requestQueue.Count)
+            {
+                if (requestQueue[index].Partition.LoadState != PartitionLoadState.WaitLoad)
+                {
+                    // Remove a canceled partition from queue.
+                    requestQueue.RemoveAt(index);
+                }
+                else
+                {
+                    // Calculate the eye distance of this partition.
+                    var p = requestQueue[index].Partition;
+                    var eyeDistanceSquared = p.CalculateEyeDistanceSquared(ref eyePosition);
+
+                    requestQueue[index] = new PartitionInfo
+                    {
+                        Partition = p,
+                        EyeDistanceSquared = eyeDistanceSquared
+                    };
+
+                    // Next.
+                    index++;
+                }
+            }
+
+            // Re-check
+            if (requestQueue.Count == 0) return;
+
+            // Sort in descending order.
+            requestQueue.Sort();
+
             PartitionInThread freeThread;
             lock (freeThreads)
             {
                 // No free thread exists.
                 if (freeThreads.Count == 0) return;
 
-                // Try to get a partition that should be loaded.
-                partition = Dequeue();
-
-                // No loadable partition exists.
-                if (partition == null) return;
-
                 // Get a free thread.
                 freeThread = freeThreads.Dequeue();
             }
 
-            // assign the partition into the free thread.
-            freeThread.Partition = partition;
+            // Dequeue a partition and assign it into the free thread.
+            int lastIndex = requestQueue.Count - 1;
+            freeThread.Partition = requestQueue[lastIndex].Partition;
+            requestQueue.RemoveAt(lastIndex);
+            
             // mark.
-            partition.LoadState = PartitionLoadState.Loading;
+            freeThread.Partition.LoadState = PartitionLoadState.Loading;
 
             // assign a real thread.
             ThreadPool.QueueUserWorkItem(WaitCallback, freeThread);

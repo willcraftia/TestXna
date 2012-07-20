@@ -149,7 +149,6 @@
     <Compile Include="Framework\View.cs" />
     <Compile Include="DemoLandscape\DemoPartition.cs" />
     <Compile Include="Landscape\Partition.cs" />
-    <Compile Include="Landscape\PartitionFactory.cs" />
     <Compile Include="Landscape\PartitionLoadResultCallback.cs" />
     <Compile Include="Landscape\PartitionLoadQueue.cs" />
     <Compile Include="Landscape\PartitionManager.cs" />

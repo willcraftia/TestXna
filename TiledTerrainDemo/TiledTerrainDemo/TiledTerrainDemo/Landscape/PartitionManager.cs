@@ -10,27 +10,9 @@ namespace TiledTerrainDemo.Landscape
 {
     public sealed class PartitionManager
     {
-        #region LoadingPartition
-
-        struct LoadingPartition : IComparable<LoadingPartition>
-        {
-            public Partition Partition;
-
-            public float EyeDistanceSquared;
-
-            public int CompareTo(LoadingPartition other)
-            {
-                return EyeDistanceSquared.CompareTo(other.EyeDistanceSquared);
-            }
-        }
-
-        #endregion
-
         Pool<Partition> partitionPool;
 
         List<Partition> partitions = new List<Partition>();
-
-        List<LoadingPartition> loadingPartitions = new List<LoadingPartition>();
 
         PartitionLoadQueue loadQueue;
 
@@ -42,10 +24,6 @@ namespace TiledTerrainDemo.Landscape
 
         float inversePartitionHeight;
 
-        float halfPartitionWidth;
-
-        float halfPartitionHeight;
-
         Vector3 eyePosition;
 
         public float PartitionWidth
@@ -55,7 +33,6 @@ namespace TiledTerrainDemo.Landscape
             {
                 partitionWidth = value;
                 inversePartitionWidth = 1 / value;
-                halfPartitionWidth = partitionWidth * 0.5f;
             }
         }
 
@@ -66,7 +43,6 @@ namespace TiledTerrainDemo.Landscape
             {
                 partitionHeight = value;
                 inversePartitionHeight = 1 / value;
-                halfPartitionHeight = partitionHeight * 0.5f;
             }
         }
 
@@ -80,6 +56,21 @@ namespace TiledTerrainDemo.Landscape
             set { eyePosition = value; }
         }
 
+        public int WaitLoadPartitionCount
+        {
+            get { return loadQueue.RequestQueueCount; }
+        }
+
+        public int PartitionLoadingThreadCount
+        {
+            get { return loadQueue.ThreadCount; }
+        }
+
+        public int FreePartitionLoadingThreadCount
+        {
+            get { return loadQueue.FreeThreadCount; }
+        }
+
         public PartitionManager(Func<Partition> creationFunction)
         {
             if (creationFunction == null) throw new ArgumentNullException("creationFunction");
@@ -91,7 +82,7 @@ namespace TiledTerrainDemo.Landscape
         public void Update(GameTime gameTime)
         {
             // update the queue.
-            loadQueue.Update();
+            loadQueue.Update(eyePosition);
 
             // select partitions.
             SelectPartitions();
@@ -123,9 +114,13 @@ namespace TiledTerrainDemo.Landscape
                     switch (partition.LoadState)
                     {
                         case PartitionLoadState.Loaded:
+                            partition.UnloadContent();
+                            partitions.RemoveAt(index);
+                            partition.LoadState = PartitionLoadState.None;
+                            partitionPool.Return(partition);
+                            break;
                         case PartitionLoadState.WaitLoad:
                             partitions.RemoveAt(index);
-                            partition.UnloadContent();
                             partition.LoadState = PartitionLoadState.None;
                             partitionPool.Return(partition);
                             break;
@@ -135,7 +130,6 @@ namespace TiledTerrainDemo.Landscape
                             break;
                         default:
                             throw new InvalidOperationException("The unexpected state of the partition.");
-                            //break;
                     }
                 }
                 else
@@ -166,49 +160,15 @@ namespace TiledTerrainDemo.Landscape
                     // A new partition.
                     var partition = partitionPool.Borrow();
                     partition.LoadState = PartitionLoadState.WaitLoad;
-                    partition.X = x;
-                    partition.Y = y;
+                    partition.Initialize(x, y, partitionWidth, partitionHeight);
 
-                    //partitions.Add(partition);
+                    // Add.
+                    partitions.Add(partition);
 
-                    //// load.
-                    //loadQueue.Enqueue(partition);
-
-                    var loadingPartition = new LoadingPartition
-                    {
-                        Partition = partition,
-                        EyeDistanceSquared = CalculateEyeDistance(partition)
-                    };
-                    loadingPartitions.Add(loadingPartition);
+                    // Load async.
+                    loadQueue.Enqueue(partition);
                 }
             }
-
-            // Sort by EyeDistanceSquared.
-            loadingPartitions.Sort();
-
-            // Request to load partitions.
-            foreach (var loadingPartition in loadingPartitions)
-            {
-                partitions.Add(loadingPartition.Partition);
-                loadQueue.Enqueue(loadingPartition.Partition);
-            }
-
-            loadingPartitions.Clear();
-        }
-
-        float CalculateEyeDistance(Partition partition)
-        {
-            var partitionCenter = new Vector3
-            {
-                X = partition.X * partitionWidth + halfPartitionWidth,
-                Y = 0,
-                Z = partition.Y * partitionHeight + halfPartitionHeight
-            };
-
-            float result;
-            Vector3.DistanceSquared(ref eyePosition, ref partitionCenter, out result);
-            
-            return result;
         }
 
         void CalculateBounds(float range, out Rectangle rectangle)
