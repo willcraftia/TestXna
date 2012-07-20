@@ -44,7 +44,7 @@ float HeightColorPositions[MAX_HEIGHT_COLOR_COUNT];
 bool LightEnabled;
 
 texture HeightMap;
-sampler HeightMapSampler : register(vs, s0) = sampler_state
+sampler HeightMapSampler /*: register(vs, s0)*/ = sampler_state
 {
     Texture = <HeightMap>;
     AddressU = Clamp;
@@ -77,20 +77,38 @@ struct VS_OUTPUT
 //-----------------------------------------------------------------------------
 float2 CalculateGlobalUV(float4 vertex)
 {
-    float2 globalUV = (vertex.xz - TerrainOffset.xz) / TerrainScale.xz;
+/*  REFERENCE:
 
+    float2 globalUV = (vertex.xz - TerrainOffset.xz) / TerrainScale.xz;
     float2 actualSize = HeightMapSize - 2 * HeightMapOverlapSize;
     float2 worldToTexCoord = (actualSize - 1) * HeightMapTexelSize;
     globalUV *= worldToTexCoord;
-    globalUV += HeightMapTexelSize * HeightMapOverlapSize + HeightMapTexelSize * 0.5;
+    globalUV += (HeightMapOverlapSize + 0.5) * HeightMapTexelSize;
+
+    hence:
+*/
+
+    float2 globalUV = (vertex.xz - TerrainOffset.xz) / TerrainScale.xz;
+    float2 overlapTexelSize = HeightMapOverlapSize * HeightMapTexelSize;
+
+    // REFERENCE:
+    //    float2 actualSize = HeightMapSize - 2 * HeightMapOverlapSize;
+    //    float2 worldToTexCoord = (actualSize - 1) * HeightMapTexelSize;
+    // hence
+    float2 worldToTexCoord = 1 - 2 * overlapTexelSize - HeightMapTexelSize;
+    globalUV *= worldToTexCoord;
+
+    // REFERENCE:
+    //    globalUV += HeightMapTexelSize * HeightMapOverlapSize + HeightMapTexelSize * 0.5;
+    globalUV += overlapTexelSize + 0.5 * HeightMapTexelSize;
 
     return globalUV;
 }
 
 float2 MorphVertex(float4 position, float2 vertex, float4 quadScale, float morphLerpK)
 {
-    float2 fracPart = frac(position.xz * float2(HalfPatchGridSize, HalfPatchGridSize));
-    fracPart *= float2(TwoOverPatchGridSize, TwoOverPatchGridSize);
+    float2 fracPart = frac(position.xz * HalfPatchGridSize);
+    fracPart *= TwoOverPatchGridSize;
     fracPart *= quadScale.xz;
     return vertex - fracPart * morphLerpK;
 }
@@ -98,10 +116,10 @@ float2 MorphVertex(float4 position, float2 vertex, float4 quadScale, float morph
 float SampleHeightMap(float2 uv)
 {
     // A manual bilinear interpolation.
-    uv = uv.xy * HeightMapSize - float2(0.5, 0.5);
+    uv = uv.xy * HeightMapSize - 0.5;
     float2 uvf = floor( uv.xy );
     float2 f = uv - uvf;
-    uv = (uvf + float2(0.5, 0.5)) * HeightMapTexelSize;
+    uv = (uvf + 0.5) * HeightMapTexelSize;
 
     float t00 = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y, 0, 0 ) ).x;
     float t10 = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y, 0, 0 ) ).x;
@@ -112,6 +130,9 @@ float SampleHeightMap(float2 uv)
     float tB = lerp( t01, t11, f.x );
 
     return lerp( tA, tB, f.y );
+
+// test
+//    return tex2Dlod( HeightMapSampler, float4( uv.x, uv.y, 0, 0 ) ).x;
 }
 
 float4 CalculateNormal(float2 texCoord)
