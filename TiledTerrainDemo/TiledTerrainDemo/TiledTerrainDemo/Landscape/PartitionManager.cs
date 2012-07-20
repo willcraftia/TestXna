@@ -10,9 +10,27 @@ namespace TiledTerrainDemo.Landscape
 {
     public sealed class PartitionManager
     {
+        #region LoadingPartition
+
+        struct LoadingPartition : IComparable<LoadingPartition>
+        {
+            public Partition Partition;
+
+            public float EyeDistanceSquared;
+
+            public int CompareTo(LoadingPartition other)
+            {
+                return EyeDistanceSquared.CompareTo(other.EyeDistanceSquared);
+            }
+        }
+
+        #endregion
+
         Pool<Partition> partitionPool;
 
         List<Partition> partitions = new List<Partition>();
+
+        List<LoadingPartition> loadingPartitions = new List<LoadingPartition>();
 
         PartitionLoadQueue loadQueue;
 
@@ -24,6 +42,10 @@ namespace TiledTerrainDemo.Landscape
 
         float inversePartitionHeight;
 
+        float halfPartitionWidth;
+
+        float halfPartitionHeight;
+
         Vector3 eyePosition;
 
         public float PartitionWidth
@@ -33,6 +55,7 @@ namespace TiledTerrainDemo.Landscape
             {
                 partitionWidth = value;
                 inversePartitionWidth = 1 / value;
+                halfPartitionWidth = partitionWidth * 0.5f;
             }
         }
 
@@ -43,6 +66,7 @@ namespace TiledTerrainDemo.Landscape
             {
                 partitionHeight = value;
                 inversePartitionHeight = 1 / value;
+                halfPartitionHeight = partitionHeight * 0.5f;
             }
         }
 
@@ -107,9 +131,11 @@ namespace TiledTerrainDemo.Landscape
                             break;
                         case PartitionLoadState.Loading:
                             // This partition will be released after loaded.
+                            index++;
                             break;
                         default:
-                            break;
+                            throw new InvalidOperationException("The unexpected state of the partition.");
+                            //break;
                     }
                 }
                 else
@@ -142,12 +168,47 @@ namespace TiledTerrainDemo.Landscape
                     partition.LoadState = PartitionLoadState.WaitLoad;
                     partition.X = x;
                     partition.Y = y;
-                    partitions.Add(partition);
 
-                    // load.
-                    loadQueue.Enqueue(partition);
+                    //partitions.Add(partition);
+
+                    //// load.
+                    //loadQueue.Enqueue(partition);
+
+                    var loadingPartition = new LoadingPartition
+                    {
+                        Partition = partition,
+                        EyeDistanceSquared = CalculateEyeDistance(partition)
+                    };
+                    loadingPartitions.Add(loadingPartition);
                 }
             }
+
+            // Sort by EyeDistanceSquared.
+            loadingPartitions.Sort();
+
+            // Request to load partitions.
+            foreach (var loadingPartition in loadingPartitions)
+            {
+                partitions.Add(loadingPartition.Partition);
+                loadQueue.Enqueue(loadingPartition.Partition);
+            }
+
+            loadingPartitions.Clear();
+        }
+
+        float CalculateEyeDistance(Partition partition)
+        {
+            var partitionCenter = new Vector3
+            {
+                X = partition.X * partitionWidth + halfPartitionWidth,
+                Y = 0,
+                Z = partition.Y * partitionHeight + halfPartitionHeight
+            };
+
+            float result;
+            Vector3.DistanceSquared(ref eyePosition, ref partitionCenter, out result);
+            
+            return result;
         }
 
         void CalculateBounds(float range, out Rectangle rectangle)

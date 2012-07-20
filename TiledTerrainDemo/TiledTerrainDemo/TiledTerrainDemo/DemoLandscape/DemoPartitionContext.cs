@@ -90,8 +90,8 @@ namespace TiledTerrainDemo.DemoLandscape
 
             //var noise = perlinNoise;
             //var noise = improvedPerlinNoise;
-            //var noise = simplexNoise;
-            var noise = voronoi;
+            var noise = simplexNoise;
+            //var noise = voronoi;
 
             sumFractal.Noise = noise.GetValue;
             multifractal.Noise = noise.GetValue;
@@ -153,7 +153,7 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             //return improvedPerlinNoise.GetValue(x, y, z);
             //return simplexNoise.GetValue(x, y, z);
-            return voronoi.GetValue(x, y, z);
+            //return voronoi.GetValue(x, y, z);
             //return sumFractal.GetValue(x, y, z);
             // take down.
             //return multifractal.GetValue(x, y, z) - 1;
@@ -167,7 +167,7 @@ namespace TiledTerrainDemo.DemoLandscape
             //return billow.GetValue(x, y, z);
             //return scaleBias.GetValue(x, y, z);
             //return select.GetValue(x, y, z);
-            //return turbulence.GetValue(x, y, z);
+            return turbulence.GetValue(x, y, z);
         }
     }
 }

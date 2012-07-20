@@ -23,7 +23,7 @@ namespace TiledTerrainDemo.Landscape
         /// <summary>
         /// 利用できる Thread の上限。
         /// </summary>
-        public const int MaxThreadCount = 4;
+        public const int MaxThreadCount = 10;
 
         PartitionLoadResultCallback loadResultCallback;
 
@@ -64,35 +64,37 @@ namespace TiledTerrainDemo.Landscape
             ProcessResult();
         }
 
-        void ProcessQueue()
+        Partition Dequeue()
         {
-            // process one partition per update.
-
-            Partition partition = null;
             while (queue.Count != 0)
             {
                 var item = queue.Dequeue();
                 if (item.LoadState == PartitionLoadState.WaitLoad)
-                {
-                    // load a partition with WaitLoad state.
-                    partition = item;
-                    break;
-                }
+                    return item;
             }
 
-            // No partition that should be loaded exists.
-            if (partition == null) return;
+            return null;
+        }
 
+        void ProcessQueue()
+        {
+            // process one partition per update.
+
+            // Pre-check
+            if (queue.Count == 0) return;
+
+            Partition partition = null;
             PartitionInThread freeThread;
             lock (freeThreads)
             {
                 // No free thread exists.
-                if (freeThreads.Count == 0)
-                {
-                    // enqueue again.
-                    queue.Enqueue(partition);
-                    return;
-                }
+                if (freeThreads.Count == 0) return;
+
+                // Try to get a partition that should be loaded.
+                partition = Dequeue();
+
+                // No loadable partition exists.
+                if (partition == null) return;
 
                 // Get a free thread.
                 freeThread = freeThreads.Dequeue();
