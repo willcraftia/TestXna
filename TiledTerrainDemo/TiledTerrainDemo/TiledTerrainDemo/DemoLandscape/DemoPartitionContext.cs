@@ -80,13 +80,18 @@ namespace TiledTerrainDemo.DemoLandscape
             NoiseHeight = noiseHeight;
 
             perlinNoise.Seed = noiseSeed;
+            perlinNoise.Reseed();
             improvedPerlinNoise.Seed = noiseSeed;
+            improvedPerlinNoise.Reseed();
             simplexNoise.Seed = noiseSeed;
+            simplexNoise.Reseed();
+            voronoi.Seed = noiseSeed;
+            voronoi.Reseed();
 
             //var noise = perlinNoise;
             //var noise = improvedPerlinNoise;
-            var noise = simplexNoise;
-            //var noise = voronoi;
+            //var noise = simplexNoise;
+            var noise = voronoi;
 
             sumFractal.Noise = noise.GetValue;
             multifractal.Noise = noise.GetValue;
@@ -148,6 +153,7 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             //return improvedPerlinNoise.GetValue(x, y, z);
             //return simplexNoise.GetValue(x, y, z);
+            //return voronoi.GetValue(x, y, z);
             return sumFractal.GetValue(x, y, z);
             // take down.
             //return multifractal.GetValue(x, y, z) - 1;
