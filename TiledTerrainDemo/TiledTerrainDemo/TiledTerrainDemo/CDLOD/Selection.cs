@@ -10,7 +10,7 @@ namespace TiledTerrainDemo.CDLOD
 {
     public sealed class Selection
     {
-        public const int MaxSelectedNodeCount = 4000;
+        public const int MaxSelectedNodeCount = 1000;
 
         public Vector3 TerrainOffset;
 

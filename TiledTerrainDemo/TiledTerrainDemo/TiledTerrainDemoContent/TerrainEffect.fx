@@ -44,7 +44,7 @@ float HeightColorPositions[MAX_HEIGHT_COLOR_COUNT];
 bool LightEnabled;
 
 texture HeightMap;
-sampler HeightMapSampler = sampler_state
+sampler HeightMapSampler : register(vs, s0) = sampler_state
 {
     Texture = <HeightMap>;
     AddressU = Clamp;

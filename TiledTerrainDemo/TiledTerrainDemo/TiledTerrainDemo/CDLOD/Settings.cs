@@ -21,9 +21,9 @@ namespace TiledTerrainDemo.CDLOD
 
         public const float DefaultHeightScale = 255;
 
-        public const int DefaultHeightMapWidth = 256 + 1;
+        public const int DefaultHeightMapWidth = 512 + 1;
 
-        public const int DefaultHeightMapHeight = 256 + 1;
+        public const int DefaultHeightMapHeight = 512 + 1;
 
         public const int DefaultHeightMapOverlapSize = 1;
 

@@ -35,8 +35,10 @@ namespace TiledTerrainDemo
 
         // CDLOD settings for debug.
         int levelCount = Settings.DefaultLevelCount;
-        //int leafNodeSize = Settings.DefaultLeafNodeSize;
-        int leafNodeSize = Settings.DefaultLeafNodeSize * 2 * 2;
+        int leafNodeSize = Settings.DefaultLeafNodeSize;
+        //int leafNodeSize = Settings.DefaultLeafNodeSize * 2;
+        //int patchResolution = Settings.DefaultPatchResolution;
+        int patchResolution = Settings.DefaultPatchResolution * 2;
         //float patchScale = Settings.DefaultPatchScale;
         float patchScale = Settings.DefaultPatchScale * 2 * 2 * 2;
         float heightScale = Settings.DefaultHeightScale * 2;
@@ -152,6 +154,7 @@ namespace TiledTerrainDemo
         {
             settings.LevelCount = levelCount;
             settings.LeafNodeSize = leafNodeSize;
+            settings.PatchResolution = patchResolution;
             settings.PatchScale = patchScale;
             settings.HeightScale = heightScale;
             settings.HeightMapWidth = heightMapWidth;
@@ -229,6 +232,10 @@ namespace TiledTerrainDemo
 
             lastKeyboardState = keyboardState;
 
+            view.Update();
+            projection.Update();
+
+            partitionManager.EyePosition = view.Position;
             partitionManager.Update(gameTime);
 
             base.Update(gameTime);
@@ -236,11 +243,10 @@ namespace TiledTerrainDemo
 
         protected override void Draw(GameTime gameTime)
         {
-            view.Update();
-            projection.Update();
-
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            //GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1, 0);
             GraphicsDevice.RasterizerState = defaultRasterizerState;
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
             partitionContext.Selection.View = view.Matrix;
             partitionContext.Selection.Projection = projection.Matrix;
@@ -253,7 +259,6 @@ namespace TiledTerrainDemo
 
             #endregion
 
-            partitionManager.EyePosition = view.Position;
             partitionManager.Draw(gameTime);
 
             #region Debug
@@ -272,16 +277,19 @@ namespace TiledTerrainDemo
             stringBuilder.AppendNumber(graphics.PreferredBackBufferWidth).Append('x').Append(graphics.PreferredBackBufferHeight).AppendLine();
             stringBuilder.Append("Height map: ");
             stringBuilder.AppendNumber(heightMapWidth).Append('x').Append(heightMapHeight).AppendLine();
-            stringBuilder.Append("Quads: ");
-            stringBuilder.AppendNumber(quadCount).AppendLine();
-            stringBuilder.Append("Partitions: ");
-            stringBuilder.AppendNumber(partitionCount).AppendLine();
             stringBuilder.Append("Level count: ");
             stringBuilder.AppendNumber(settings.LevelCount).Append(", ");
             stringBuilder.Append("Leaf node size: ");
             stringBuilder.AppendNumber(settings.LeafNodeSize).AppendLine();
+            stringBuilder.Append("Top node size: ");
+            stringBuilder.AppendNumber(settings.TopNodeSize).AppendLine();
             stringBuilder.Append("Far plane distance: ");
             stringBuilder.AppendNumber(farPlaneDistance).AppendLine();
+            stringBuilder.AppendLine();
+            stringBuilder.Append("Quads: ");
+            stringBuilder.AppendNumber(quadCount).AppendLine();
+            stringBuilder.Append("Partitions: ");
+            stringBuilder.AppendNumber(partitionCount).AppendLine();
             stringBuilder.Append("Move velocity: ");
             stringBuilder.AppendNumber(viewInput.MoveVelocity);
         }

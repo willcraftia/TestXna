@@ -60,11 +60,6 @@ namespace TiledTerrainDemo.DemoLandscape
             terrain.Build();
         }
 
-        public override void UnloadContent()
-        {
-            heightMap.Dispose();
-        }
-
         public override void Draw(GameTime gameTime)
         {
             var terrainOffset = new Vector3(X, 0, Y);
@@ -85,6 +80,16 @@ namespace TiledTerrainDemo.DemoLandscape
             #endregion
 
             context.TerrainRenderer.Draw(gameTime, context.Selection);
+        }
+
+        protected override void DisposeOverride(bool disposing)
+        {
+            if (disposing)
+            {
+                heightMap.Dispose();
+            }
+
+            base.DisposeOverride(disposing);
         }
     }
 }

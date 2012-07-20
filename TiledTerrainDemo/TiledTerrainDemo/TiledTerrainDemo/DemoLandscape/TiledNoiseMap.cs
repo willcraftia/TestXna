@@ -9,7 +9,7 @@ namespace TiledTerrainDemo.DemoLandscape
 {
     public sealed class TiledNoiseMap
     {
-        public const int DefaultOverlapSize = 1;
+        public const int DefaultOverlapSize = 0;
 
         NoiseMap backingNoiseMap = new NoiseMap();
 
@@ -56,7 +56,12 @@ namespace TiledTerrainDemo.DemoLandscape
         public int OverlapSize
         {
             get { return overlapSize; }
-            set { overlapSize = value; }
+            set
+            {
+                overlapSize = value;
+                backingNoiseMap.Width = width + 2 * overlapSize;
+                backingNoiseMap.Height = height + 2 * overlapSize;
+            }
         }
 
         // ActualWidth = Width + 2 * OverlapSize

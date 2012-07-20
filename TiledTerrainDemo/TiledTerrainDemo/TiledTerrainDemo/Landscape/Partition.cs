@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace TiledTerrainDemo.Landscape
 {
-    public abstract class Partition
+    public abstract class Partition : IDisposable
     {
         public int X { get; set; }
 
@@ -16,10 +16,39 @@ namespace TiledTerrainDemo.Landscape
         // Don't set a value into this property in subclasses.
         public PartitionLoadState LoadState { get; set; }
 
-        public abstract void LoadContent();
+        public virtual void LoadContent() { }
 
-        public abstract void UnloadContent();
+        public virtual void UnloadContent() { }
 
-        public abstract void Draw(GameTime gameTime);
+        public virtual void Draw(GameTime gameTime) { }
+
+        protected virtual void DisposeOverride(bool disposing) { }
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        bool disposed;
+
+        ~Partition()
+        {
+            Dispose(false);
+        }
+
+        void Dispose(bool disposing)
+        {
+            if (disposed) return;
+
+            UnloadContent();
+            DisposeOverride(disposing);
+
+            disposed = true;
+        }
+
+        #endregion
     }
 }

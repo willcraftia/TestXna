@@ -18,6 +18,9 @@ namespace TiledTerrainDemo.DemoLandscape
         // noise parameters for debug.
         int noiseSeed = 300;
 
+        // visible ranges.
+        int finestNodeSize = 5;
+
         PerlinNoise perlinNoise = new PerlinNoise();
         ImprovedPerlinNoise improvedPerlinNoise = new ImprovedPerlinNoise();
         SimplexNoise simplexNoise = new SimplexNoise();
@@ -89,8 +92,8 @@ namespace TiledTerrainDemo.DemoLandscape
             //voronoi.Reseed();
 
             //var noise = perlinNoise;
-            //var noise = improvedPerlinNoise;
-            var noise = simplexNoise;
+            var noise = improvedPerlinNoise;
+            //var noise = simplexNoise;
             //var noise = voronoi;
 
             sumFractal.Noise = noise.GetValue;
@@ -123,6 +126,7 @@ namespace TiledTerrainDemo.DemoLandscape
             turbulence.Power = 0.125f;
 
             visibleRanges = new DefaultVisibleRanges(settings);
+            visibleRanges.FinestNodeSize = finestNodeSize;
             visibleRanges.Initialize();
 
             TerrainRenderer = new DemoTerrainRenderer(GraphicsDevice, Content, settings);
@@ -168,6 +172,7 @@ namespace TiledTerrainDemo.DemoLandscape
             //return scaleBias.GetValue(x, y, z);
             //return select.GetValue(x, y, z);
             return turbulence.GetValue(x, y, z);
+            //return MathHelper.Clamp(turbulence.GetValue(x, y, z), -1, 1);
         }
     }
 }
