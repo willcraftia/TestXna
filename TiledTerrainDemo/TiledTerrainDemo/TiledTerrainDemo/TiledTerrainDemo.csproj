@@ -176,6 +176,7 @@
     <Compile Include="Noise\SinFractal.cs" />
     <Compile Include="Noise\SumFractal.cs" />
     <Compile Include="Noise\Turbulence.cs" />
+    <Compile Include="Noise\SimpleVoronoi.cs" />
     <Compile Include="Noise\Voronoi.cs" />
     <Compile Include="Noise\VoronoiType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

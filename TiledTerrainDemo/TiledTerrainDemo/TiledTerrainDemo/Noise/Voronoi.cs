@@ -1,7 +1,6 @@
 ﻿#region Using
 
 using System;
-using Microsoft.Xna.Framework;
 
 #endregion
 
@@ -9,35 +8,17 @@ namespace TiledTerrainDemo.Noise
 {
     public sealed class Voronoi
     {
-        #region Result
+        public const float DefaultDisplacement = 1;
 
-        struct Result
-        {
-            public float Distance0;
-            public float Distance1;
-            public float Distance2;
-            public float Distance3;
-        }
-
-        #endregion
-
-        const int wrapIndex = 256;
-
-        const int modMask = 255;
+        public const float DefaultFrequency = 1;
 
         int seed = Environment.TickCount;
 
-        Random random;
+        float displacement = DefaultDisplacement;
 
-        int[] permutation = new int[wrapIndex * 2];
+        float frequency = DefaultFrequency;
 
-        float[] coordinates = new float[wrapIndex * 3];
-
-        VoronoiType voronoiType = VoronoiType.First;
-
-        MetricsDelegate metrics = Mertics.Real;
-
-        bool initialized;
+        bool distanceEnabled;
 
         public int Seed
         {
@@ -45,157 +26,99 @@ namespace TiledTerrainDemo.Noise
             set { seed = value; }
         }
 
-        public void Reseed()
+        public float Displacement
         {
-            random = new Random(seed);
-            Initialize();
-
-            initialized = true;
+            get { return displacement; }
+            set { displacement = value; }
         }
 
-        public VoronoiType VoronoiType
+        public float Frequency
         {
-            get { return voronoiType; }
-            set { voronoiType = value; }
+            get { return frequency; }
+            set { frequency = value; }
         }
 
-        public MetricsDelegate Metrics
+        public bool DistanceEnabled
         {
-            get { return metrics; }
-            set { metrics = value; }
+            get { return distanceEnabled; }
+            set { distanceEnabled = value; }
         }
 
         public float GetValue(float x, float y, float z)
         {
-            return GetValue(x, y, z, voronoiType);
-        }
-
-        float GetValue(float x, float y, float z, VoronoiType type)
-        {
-            Result result;
-
-            switch (type)
-            {
-                case VoronoiType.First:
-                    Calculate(x, y, z, out result);
-                    return result.Distance0;
-                case VoronoiType.Second:
-                    Calculate(x, y, z, out result);
-                    return result.Distance1;
-                case VoronoiType.Third:
-                    Calculate(x, y, z, out result);
-                    return result.Distance2;
-                case VoronoiType.Fourth:
-                    Calculate(x, y, z, out result);
-                    return result.Distance3;
-                case VoronoiType.Difference21:
-                    Calculate(x, y, z, out result);
-                    return result.Distance1 - result.Distance0;
-                case VoronoiType.Difference32:
-                    Calculate(x, y, z, out result);
-                    return result.Distance2 - result.Distance1;
-                case VoronoiType.Crackle:
-                    {
-                        var d = 10 * GetValue(x, y, z, VoronoiType.Difference21);
-                        return (1 < d) ? 1 : d;
-                    }
-            }
-
-            throw new InvalidOperationException("An unknown VoronoiType is specified.");
-        }
-
-        void Calculate(float x, float y, float z, out Result result)
-        {
-            if (!initialized) Reseed();
-
-            result = new Result
-            {
-                Distance0 = 1e10f,
-                Distance1 = 1e10f,
-                Distance2 = 1e10f,
-                Distance3 = 1e10f
-            };
+            x *= frequency;
+            y *= frequency;
+            z *= frequency;
 
             int xi = NoiseHelper.Floor(x);
             int yi = NoiseHelper.Floor(y);
             int zi = NoiseHelper.Floor(z);
 
-            for (int xx = xi - 1; xx <= xi + 1; xx++)
-            {
-                for (int yy = yi - 1; yy <= yi + 1; yy++)
-                {
-                    for (int zz = zi - 1; zz <= zi + 1; zz++)
-                    {
-                        int ci = CoordIndex(xx, yy, zz);
-                        
-                        var p0 = coordinates[ci];
-                        var p1 = coordinates[ci + 1];
-                        var p2 = coordinates[ci + 2];
+            float minD = float.MaxValue;
+            float xc = 0;
+            float yc = 0;
+            float zc = 0;
 
-                        var xd = x - (p0 + xx);
-                        var yd = y - (p1 + yy);
-                        var zd = z - (p2 + zz);
-                        
-                        var d = metrics(xd, yd, zd);
-                        
-                        if (d < result.Distance0)
+            // Inside each unit cube, there is a seed point at a random position.
+            // Go through each of the nearby cubes until we find a cube with a seed point
+            // that is closest to the specified position.
+            for (int zz = zi - 2; zz <= zi + 2; zz++)
+            {
+                for (int yy = yi - 2; yy <= yi + 2; yy++)
+                {
+                    for (int xx = xi - 2; xx <= xi + 2; xx++)
+                    {
+                        // Calculate the position and distance to the seed point
+                        // inside of this unit cube.
+                        float xp = xx + GetValueNoise(xx, yy, zz, seed);
+                        float yp = yy + GetValueNoise(xx, yy, zz, seed + 1);
+                        float zp = zz + GetValueNoise(xx, yy, zz, seed + 2);
+                        float xd = xp - x;
+                        float yd = yp - y;
+                        float zd = zp - z;
+                        float d = xd * xd + yd * yd + zd * zd;
+
+                        if (d < minD)
                         {
-                            result.Distance3 = result.Distance2;
-                            result.Distance2 = result.Distance1;
-                            result.Distance1 = result.Distance0;
-                            result.Distance0 = d;
-                        }
-                        else if (d < result.Distance1)
-                        {
-                            result.Distance3 = result.Distance2;
-                            result.Distance2 = result.Distance1;
-                            result.Distance1 = d;
-                        }
-                        else if (d < result.Distance2)
-                        {
-                            result.Distance3 = result.Distance2;
-                            result.Distance2 = d;
-                        }
-                        else if (d < result.Distance3)
-                        {
-                            result.Distance3 = d;
+                            minD = d;
+                            xc = xp;
+                            yc = yp;
+                            zc = zp;
                         }
                     }
                 }
             }
+
+            float value = 0;
+            if (distanceEnabled)
+                value = (float) (Math.Sqrt(minD) * Math.Sqrt(3) - 1.0f);
+
+            int xci = NoiseHelper.Floor(xc);
+            int yci = NoiseHelper.Floor(yc);
+            int zci = NoiseHelper.Floor(zc);
+            return value + displacement * GetValueNoise(xci, yci, zci, 0);
         }
 
-        int CoordIndex(int x, int y, int z)
+        float GetValueNoise(int x, int y, int z, int seed)
         {
-            return 3 * permutation[(permutation[(permutation[z & modMask] + y) & modMask] + x) & modMask];
+            // 1073741824 = 1000000000000000000000000000000 (bit)
+            return 1.0f - ((float) GetIntValueNoise(x, y, z, seed)) / 1073741824.0f;
         }
 
-        void Initialize()
+        int GetIntValueNoise(int x, int y, int z, int seed)
         {
-            for (int i = 0; i < wrapIndex; i++)
-            {
-                permutation[i] = i;
-            }
+            // define primes.
+            const int primX = 1619;
+            const int primY = 31337;
+            const int primZ = 6971;
+            const int primSeed = 1013;
 
-            for (int i = 0; i < coordinates.Length; i++)
-            {
-                coordinates[i] = (float) random.NextDouble();
-            }
+            int n = (primX * x + primY * y + primZ * z + primSeed * seed);
 
-            // Shuffle.
-            for (int i = 0; i < wrapIndex; i++)
-            {
-                var j = random.Next() & modMask;
-                var tmp = permutation[i];
-                permutation[i] = permutation[j];
-                permutation[j] = tmp;
-            }
-
-            // Clone.
-            for (int i = 0; i < wrapIndex; i++)
-            {
-                permutation[wrapIndex + i] = permutation[i];
-            }
+            n = (n << 13) ^ n;
+            // 60493, 19990303, 1376312589 are primes.
+            // 0x7fffffff = 2147483647 (decimal) = 1111111111111111111111111111111 (bit).
+            return (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
         }
     }
 }
