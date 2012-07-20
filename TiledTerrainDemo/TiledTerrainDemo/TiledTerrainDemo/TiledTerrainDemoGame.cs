@@ -46,6 +46,7 @@ namespace TiledTerrainDemo
 
         // View settings for debug.
         float farPlaneDistance = 150000;
+        //float farPlaneDistance = 10000;
         float moveVelocity = 1000;
         float dashFactor = 2;
 
@@ -86,7 +87,7 @@ namespace TiledTerrainDemo
 
         Vector2 informationTextFontSize;
 
-        bool helpVisible;
+        bool helpVisible = true;
 
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -278,11 +279,17 @@ namespace TiledTerrainDemo
             stringBuilder.Append("Screen: ");
             stringBuilder.AppendNumber(graphics.PreferredBackBufferWidth).Append('x').Append(graphics.PreferredBackBufferHeight).AppendLine();
             stringBuilder.Append("Height map: ");
-            stringBuilder.AppendNumber(heightMapWidth).Append('x').Append(heightMapHeight).AppendLine();
+            stringBuilder.AppendNumber(heightMapWidth).Append('x').Append(heightMapHeight).Append(" ");
+            stringBuilder.Append("(overlap ");
+            stringBuilder.AppendNumber(settings.HeightMapOverlapSize).Append(")").AppendLine();
             stringBuilder.Append("Level count: ");
             stringBuilder.AppendNumber(settings.LevelCount).Append(", ");
             stringBuilder.Append("Leaf node size: ");
             stringBuilder.AppendNumber(settings.LeafNodeSize).AppendLine();
+            stringBuilder.Append("Patch resolution: ");
+            stringBuilder.AppendNumber(settings.PatchResolution).Append(", ");
+            stringBuilder.Append("Patch Scale: ");
+            stringBuilder.AppendNumber(settings.PatchScale).AppendLine();
             stringBuilder.Append("Top node size: ");
             stringBuilder.AppendNumber(settings.TopNodeSize).AppendLine();
             stringBuilder.Append("Far plane distance: ");
