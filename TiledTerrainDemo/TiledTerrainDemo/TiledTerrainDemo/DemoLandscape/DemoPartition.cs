@@ -42,24 +42,6 @@ namespace TiledTerrainDemo.DemoLandscape
             terrain.HeightMap = heightMap;
         }
 
-        public override void LoadContent()
-        {
-            // Build noise values with the noise bounds for this partition.
-            tiledNoiseMap.SetBounds(
-                context.NoiseMinX + X * context.NoiseWidth,
-                context.NoiseMinY + Y * context.NoiseHeight,
-                context.NoiseWidth,
-                context.NoiseHeight);
-            tiledNoiseMap.Build();
-            //tiledNoiseMap.Erode(16 / (float) context.Settings.HeightMapWidth, 10);
-
-            // Build the height map.
-            heightMap.Build();
-
-            // Build the terrain.
-            terrain.Build();
-        }
-
         public override void Draw(GameTime gameTime)
         {
             var terrainOffset = new Vector3(X, 0, Y);
@@ -80,6 +62,26 @@ namespace TiledTerrainDemo.DemoLandscape
             #endregion
 
             context.TerrainRenderer.Draw(gameTime, context.Selection);
+        }
+
+        protected override void LoadContentOverride()
+        {
+            // Build noise values with the noise bounds for this partition.
+            tiledNoiseMap.SetBounds(
+                context.NoiseMinX + X * context.NoiseWidth,
+                context.NoiseMinY + Y * context.NoiseHeight,
+                context.NoiseWidth,
+                context.NoiseHeight);
+            tiledNoiseMap.Build();
+            //tiledNoiseMap.Erode(16 / (float) context.Settings.HeightMapWidth, 10);
+
+            // Build the height map.
+            heightMap.Build();
+
+            // Build the terrain.
+            terrain.Build();
+
+            base.LoadContentOverride();
         }
 
         protected override void DisposeOverride(bool disposing)

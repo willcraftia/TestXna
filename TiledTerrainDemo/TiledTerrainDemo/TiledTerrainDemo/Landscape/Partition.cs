@@ -1,6 +1,7 @@
 ﻿#region Using
 
 using System;
+using System.Threading;
 using Microsoft.Xna.Framework;
 
 #endregion
@@ -22,6 +23,8 @@ namespace TiledTerrainDemo.Landscape
         float halfHeight;
 
         Vector2 position;
+
+        ManualResetEvent loadCompletedEvent = new ManualResetEvent(true);
 
         public int X
         {
@@ -80,11 +83,27 @@ namespace TiledTerrainDemo.Landscape
             return result;
         }
 
-        public virtual void LoadContent() { }
+        public void LoadContent()
+        {
+            loadCompletedEvent.Reset();
 
-        public virtual void UnloadContent() { }
+            LoadContentOverride();
 
-        public virtual void Draw(GameTime gameTime) { }
+            loadCompletedEvent.Set();
+        }
+
+        public void UnloadContent()
+        {
+            loadCompletedEvent.WaitOne();
+
+            UnloadContentOverride();
+        }
+
+        public abstract void Draw(GameTime gameTime);
+
+        protected virtual void LoadContentOverride() { }
+
+        protected virtual void UnloadContentOverride() { }
 
         protected virtual void DisposeOverride(bool disposing) { }
 
@@ -106,6 +125,8 @@ namespace TiledTerrainDemo.Landscape
         void Dispose(bool disposing)
         {
             if (disposed) return;
+
+            loadCompletedEvent.WaitOne();
 
             UnloadContent();
             DisposeOverride(disposing);
