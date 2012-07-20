@@ -44,9 +44,9 @@ namespace NoiseMeasuring
         {
             if (!initialized) Reseed();
 
-            float fx = (float) Math.Floor(x);
-            float fy = (float) Math.Floor(y);
-            float fz = (float) Math.Floor(z);
+            int fx = NoiseHelper.Floor(x);
+            int fy = NoiseHelper.Floor(y);
+            int fz = NoiseHelper.Floor(z);
 
             // Find unit cube that contains point.
             int cx = (int) fx & modMask;

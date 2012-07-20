@@ -4,15 +4,10 @@ using System;
 
 #endregion
 
-namespace NoiseMeasuring
+namespace FloorMeasuring
 {
-    public static class NoiseHelper
+    public sealed class DemoHelper
     {
-        public static float CubicSCurve(float value)
-        {
-            return value * value * (3 - 2 * value);
-        }
-
         public static int Floor(float v)
         {
             // Faster than using (int) Math.Floor(x).

@@ -35,7 +35,7 @@ namespace FloorMeasuring
             stopwatch.Start();
             for (int i = 0; i < loopCount; i++)
             {
-                var v = CustomFloor(0d);
+                var v = DemoHelper.Floor(0f);
             }
             stopwatch.Stop();
 
