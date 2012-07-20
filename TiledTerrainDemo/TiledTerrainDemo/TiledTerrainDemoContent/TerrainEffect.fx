@@ -18,6 +18,7 @@ float3 DiffuseLightColor;
 
 float3 TerrainOffset;
 float3 TerrainScale;
+float3 InverseTerrainScale;
 
 float LevelCount;
 float2 MorphConsts[MAX_LEVEL_COUNT];
@@ -88,7 +89,7 @@ float2 CalculateGlobalUV(float4 vertex)
     hence:
 */
 
-    float2 globalUV = (vertex.xz - TerrainOffset.xz) / TerrainScale.xz;
+    float2 globalUV = (vertex.xz - TerrainOffset.xz) * InverseTerrainScale.xz;
     float2 overlapTexelSize = HeightMapOverlapSize * HeightMapTexelSize;
 
     // REFERENCE:

@@ -30,6 +30,8 @@ namespace TiledTerrainDemo.DemoLandscape
 
         EffectParameter terrainScale;
 
+        EffectParameter inverseTerrainScale;
+
         EffectParameter levelCount;
 
         EffectParameter morphConsts;
@@ -118,7 +120,18 @@ namespace TiledTerrainDemo.DemoLandscape
         public Vector3 TerrainScale
         {
             get { return terrainScale.GetValueVector3(); }
-            set { terrainScale.SetValue(value); }
+            set
+            {
+                terrainScale.SetValue(value);
+
+                var inverse = new Vector3
+                {
+                    X = 1 / value.X,
+                    Y = 1 / value.Y,
+                    Z = 1 / value.Z
+                };
+                inverseTerrainScale.SetValue(inverse);
+            }
         }
 
         public float LevelCount
@@ -243,6 +256,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
             terrainOffset = BackingEffect.Parameters["TerrainOffset"];
             terrainScale = BackingEffect.Parameters["TerrainScale"];
+            inverseTerrainScale = BackingEffect.Parameters["InverseTerrainScale"];
 
             levelCount = BackingEffect.Parameters["LevelCount"];
             morphConsts = BackingEffect.Parameters["MorphConsts"];
