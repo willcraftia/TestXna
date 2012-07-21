@@ -17,6 +17,8 @@ float3 LightDirection;
 float3 DiffuseLightColor;
 
 float3 TerrainOffset;
+// eye position in terrain space.
+float3 TerrainEyePosition;
 float3 TerrainScale;
 float3 InverseTerrainScale;
 
@@ -181,26 +183,30 @@ VS_OUTPUT VS(
     vertex.y *= TerrainScale.y;
 
     // the distance between the world vertex and the eye position.
-    float eyeDistance = distance(vertex.xyz + TerrainOffset, EyePosition);
+    // REFERENCE:
+    //    float eyeDistance = distance(vertex.xyz + TerrainOffset, EyePosition);
+    // therefore:
+    float eyeDistance = distance(vertex.xyz, TerrainEyePosition);
     float morphLerpK = 1 - saturate(MorphConsts[level].x - eyeDistance * MorphConsts[level].y);
 
     // morph xz.
     vertex.xz = MorphVertex(input.Position, vertex.xz, quadScale, morphLerpK);
 
-    // get a height with morphed xz.
+    // get the height value on morphed xz.
     float2 globalUV = CalculateGlobalUV(vertex);
     float h = SampleHeightMap(globalUV);
     vertex.y = h;
     vertex.y *= TerrainScale.y;
+    vertex.w = 1;
+    // calculate the eye direction in terrain space.
+    output.EyeDirection = normalize(TerrainEyePosition - vertex.xyz);
+
     // to world vertex
     vertex.xyz += TerrainOffset;
-    vertex.w = 1;
 
     float4x4 viewProjection = mul(View, Projection);
     output.Position = mul(vertex, viewProjection);
     output.TexCoord = globalUV;
-    output.EyeDirection = normalize(EyePosition - vertex.xyz);
-
     output.Normal = CalculateNormal(globalUV);
 
     // (debug) to decide a height color.

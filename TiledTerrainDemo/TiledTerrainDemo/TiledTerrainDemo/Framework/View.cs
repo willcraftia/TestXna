@@ -21,5 +21,19 @@ namespace TiledTerrainDemo.Framework
         /// Matrix プロパティを更新します。
         /// </summary>
         public abstract void Update();
+
+        public static void GetEyePosition(ref Matrix view, out Vector3 result)
+        {
+            Matrix inverse;
+            Matrix.Invert(ref view, out inverse);
+            result = inverse.Translation;
+        }
+
+        public static Vector3 GetEyePosition(Matrix view)
+        {
+            Vector3 result;
+            GetEyePosition(ref view, out result);
+            return result;
+        }
     }
 }

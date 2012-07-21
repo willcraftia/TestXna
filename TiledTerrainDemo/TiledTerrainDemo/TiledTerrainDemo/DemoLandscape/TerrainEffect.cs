@@ -28,6 +28,8 @@ namespace TiledTerrainDemo.DemoLandscape
 
         EffectParameter terrainOffset;
 
+        EffectParameter terrainEyePosition;
+
         EffectParameter terrainScale;
 
         EffectParameter inverseTerrainScale;
@@ -60,7 +62,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
         EffectParameter lightEnabled;
 
-        float patchGridSize;
+        float patchGridSizeValue;
 
         public Effect BackingEffect { get; private set; }
 
@@ -75,15 +77,7 @@ namespace TiledTerrainDemo.DemoLandscape
         public Matrix View
         {
             get { return view.GetValueMatrix(); }
-            set
-            {
-                view.SetValue(value);
-
-                // eyePosition.
-                Matrix inverse;
-                Matrix.Invert(ref value, out inverse);
-                eyePosition.SetValue(inverse.Translation);
-            }
+            set { view.SetValue(value); }
         }
 
         // I/F
@@ -91,6 +85,12 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             get { return projection.GetValueMatrix(); }
             set { projection.SetValue(value); }
+        }
+
+        public Vector3 EyePosition
+        {
+            get { return eyePosition.GetValueVector3(); }
+            set { eyePosition.SetValue(value); }
         }
 
         public Vector3 AmbientLightColor
@@ -115,6 +115,12 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             get { return terrainOffset.GetValueVector3(); }
             set { terrainOffset.SetValue(value); }
+        }
+
+        public Vector3 TerrainEyePosition
+        {
+            get { return terrainEyePosition.GetValueVector3(); }
+            set { terrainEyePosition.SetValue(value); }
         }
 
         public Vector3 TerrainScale
@@ -164,13 +170,13 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public float PatchGridSize
         {
-            get { return patchGridSize; }
+            get { return patchGridSizeValue; }
             set
             {
-                patchGridSize = value;
+                patchGridSizeValue = value;
 
-                halfPatchGridSize.SetValue(patchGridSize * 0.5f);
-                twoOverPatchGridSize.SetValue(2 / patchGridSize);
+                halfPatchGridSize.SetValue(patchGridSizeValue * 0.5f);
+                twoOverPatchGridSize.SetValue(2 / patchGridSizeValue);
             }
         }
 
@@ -255,6 +261,7 @@ namespace TiledTerrainDemo.DemoLandscape
             diffuseLightColor = BackingEffect.Parameters["DiffuseLightColor"];
 
             terrainOffset = BackingEffect.Parameters["TerrainOffset"];
+            terrainEyePosition = BackingEffect.Parameters["TerrainEyePosition"];
             terrainScale = BackingEffect.Parameters["TerrainScale"];
             inverseTerrainScale = BackingEffect.Parameters["InverseTerrainScale"];
 

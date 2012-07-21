@@ -4,6 +4,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using TiledTerrainDemo.Framework;
 using TiledTerrainDemo.Framework.Graphics;
 using TiledTerrainDemo.CDLOD;
 
@@ -120,12 +121,17 @@ namespace TiledTerrainDemo.DemoLandscape
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
             // Prepare effect parameters.
-            
+
+            Vector3 eyePosition;
+            View.GetEyePosition(ref selection.View, out eyePosition);
+
             // per a selection (a terrain).
             effect.TerrainOffset = selection.TerrainOffset;
             effect.HeightMap = selection.HeightMapTexture;
             effect.View = selection.View;
             effect.Projection = selection.Projection;
+            effect.EyePosition = eyePosition;
+            effect.TerrainEyePosition = eyePosition - selection.TerrainOffset;
 
             // render settings.
             effect.AmbientLightColor = ambientLightColor;
