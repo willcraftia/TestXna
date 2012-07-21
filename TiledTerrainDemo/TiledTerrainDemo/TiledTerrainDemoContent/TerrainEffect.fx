@@ -12,9 +12,15 @@
 float4x4 Projection;
 float3 EyePosition;
 
+bool LightEnabled;
 float3 AmbientLightColor;
 float3 LightDirection;
 float3 DiffuseLightColor;
+
+float FogEnabled;
+float FogStart;
+float FogEnd;
+float3 FogColor;
 
 //float3 TerrainOffset;
 // eye position in terrain space.
@@ -44,9 +50,6 @@ float HeightColorCount = MAX_HEIGHT_COLOR_COUNT;
 float4 HeightColors[MAX_HEIGHT_COLOR_COUNT];
 float HeightColorPositions[MAX_HEIGHT_COLOR_COUNT];
 
-// (debug) to turn on/off a light.
-bool LightEnabled;
-
 texture HeightMap;
 sampler HeightMapSampler  = sampler_state
 {
@@ -72,8 +75,9 @@ struct VS_OUTPUT
     float4 Normal : NORMAL0;
     float2 TexCoord : TEXCOORD0;
     float3 EyeDirection : TEXCOORD1;
+    float FogFactor : TEXCOORD2;
     // (debug) to color by a height.
-    float Height : TEXCOORD2;
+    float Height : TEXCOORD3;
 };
 
 //=============================================================================
@@ -158,6 +162,11 @@ float4 CalculateNormal(float2 texCoord)
     return normal;
 }
 
+float CalculateFogFactor(float d)
+{
+    return clamp((d - FogStart) / (FogEnd - FogStart), 0, 1) * FogEnabled;
+}
+
 //=============================================================================
 // Vertex shader
 //-----------------------------------------------------------------------------
@@ -209,6 +218,8 @@ VS_OUTPUT VS(
     output.TexCoord = globalUV;
     output.Normal = CalculateNormal(globalUV);
 
+    output.FogFactor = CalculateFogFactor(eyeDistance);
+
     // (debug) to decide a height color.
     output.Height = h;
 
@@ -245,6 +256,8 @@ float4 WhiteSolidPS(VS_OUTPUT input) : COLOR0
         float3 light = CalculateLight(E, N);
         color.rgb *= light;
     }
+
+    color.rgb = lerp(color.rgb, FogColor, input.FogFactor);
 
     return color;
 }
@@ -287,6 +300,8 @@ float4 HeightColorPS(VS_OUTPUT input) : COLOR0
         float3 light = CalculateLight(E, N);
         color.rgb *= light;
     }
+
+    color.rgb = lerp(color.rgb, FogColor, input.FogFactor);
 
     return color;
 }

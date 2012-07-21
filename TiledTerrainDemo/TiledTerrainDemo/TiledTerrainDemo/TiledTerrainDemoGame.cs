@@ -51,8 +51,13 @@ namespace TiledTerrainDemo
         //float farPlaneDistance = 150000;
         //float farPlaneDistance = 10000;
         float farPlaneDistance = 200000;
+        float fogStart = 10000;
+        float fogEnd = 30000;
+        //Vector3 fogColor = Vector3.One;
+        Vector3 fogColor = Color.CornflowerBlue.ToVector3();
         float moveVelocity = 1000;
         float dashFactor = 2;
+        Vector4 backgroundColor = Color.CornflowerBlue.ToVector4();
 
         GraphicsDeviceManager graphics;
 
@@ -83,6 +88,7 @@ namespace TiledTerrainDemo
             "[F4] Height color\r\n" +
             "[F5] Wireframe\r\n" +
             "[F6] Light\r\n" +
+            "[F7] Fog\r\n" +
             "[w][s][a][d][q][z] Movement\r\n" +
             "[Mouse] Camera orientation\r\n" +
             "[PageUp][PageDown] Move velocity";
@@ -171,6 +177,10 @@ namespace TiledTerrainDemo
                 GraphicsDevice, Content, settings,
                 noiseSampleX, noiseSampleY, noiseSampleWidth, noiseSampleHeight);
             partitionContext.FinestNodeSize = finestNodeSize;
+            partitionContext.TerrainRenderer.FogEnabled = true;
+            partitionContext.TerrainRenderer.FogStart = fogStart;
+            partitionContext.TerrainRenderer.FogEnd = fogEnd;
+            partitionContext.TerrainRenderer.FogColor = fogColor;
 
             partitionFactory = new DemoPartitionFactory(partitionContext);
 
@@ -238,6 +248,9 @@ namespace TiledTerrainDemo
             if (keyboardState.IsKeyUp(Keys.F6) && lastKeyboardState.IsKeyDown(Keys.F6))
                 partitionContext.TerrainRenderer.LightEnabled = !partitionContext.TerrainRenderer.LightEnabled;
 
+            if (keyboardState.IsKeyUp(Keys.F7) && lastKeyboardState.IsKeyDown(Keys.F7))
+                partitionContext.TerrainRenderer.FogEnabled = !partitionContext.TerrainRenderer.FogEnabled;
+
             #endregion
 
             lastKeyboardState = keyboardState;
@@ -253,7 +266,7 @@ namespace TiledTerrainDemo
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1, 0);
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, backgroundColor, 1, 0);
             GraphicsDevice.RasterizerState = defaultRasterizerState;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 

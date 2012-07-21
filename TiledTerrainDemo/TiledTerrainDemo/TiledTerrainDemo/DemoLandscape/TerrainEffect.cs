@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TiledTerrainDemo.DemoLandscape
 {
-    public sealed class TerrainEffect
+    public sealed class TerrainEffect : IEffectFog
     {
         public const int DefinedMaxLevelCount = 15;
 
@@ -18,11 +18,21 @@ namespace TiledTerrainDemo.DemoLandscape
 
         EffectParameter eyePosition;
 
+        EffectParameter lightEnabled;
+
         EffectParameter ambientLightColor;
 
         EffectParameter lightDirection;
 
         EffectParameter diffuseLightColor;
+
+        EffectParameter fogEnabled;
+
+        EffectParameter fogStart;
+
+        EffectParameter fogEnd;
+        
+        EffectParameter fogColor;
 
         EffectParameter terrainEyePosition;
 
@@ -58,8 +68,6 @@ namespace TiledTerrainDemo.DemoLandscape
 
         EffectParameter heightColorPositions;
 
-        EffectParameter lightEnabled;
-
         float patchGridSizeValue;
 
         public Effect BackingEffect { get; private set; }
@@ -74,6 +82,12 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             get { return eyePosition.GetValueVector3(); }
             set { eyePosition.SetValue(value); }
+        }
+
+        public bool LightEnabled
+        {
+            get { return lightEnabled.GetValueBoolean(); }
+            set { lightEnabled.SetValue(value); }
         }
 
         public Vector3 AmbientLightColor
@@ -92,6 +106,34 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             get { return diffuseLightColor.GetValueVector3(); }
             set { diffuseLightColor.SetValue(value); }
+        }
+
+        // I/F
+        public bool FogEnabled
+        {
+            get { return fogEnabled.GetValueSingle() != 0; }
+            set { fogEnabled.SetValue(value ? 1 : 0); }
+        }
+
+        // I/F
+        public float FogStart
+        {
+            get { return fogStart.GetValueSingle(); }
+            set { fogStart.SetValue(value); }
+        }
+
+        // I/F
+        public float FogEnd
+        {
+            get { return fogEnd.GetValueSingle(); }
+            set { fogEnd.SetValue(value); }
+        }
+
+        // I/F
+        public Vector3 FogColor
+        {
+            get { return fogColor.GetValueVector3(); }
+            set { fogColor.SetValue(value); }
         }
 
         public Vector3 TerrainEyePosition
@@ -181,12 +223,6 @@ namespace TiledTerrainDemo.DemoLandscape
             set { heightColorPositions.SetValue(value); }
         }
 
-        public bool LightEnabled
-        {
-            get { return lightEnabled.GetValueBoolean(); }
-            set { lightEnabled.SetValue(value); }
-        }
-
         public EffectTechnique WhiteSolidTequnique { get; private set; }
 
         public EffectTechnique HeightColorTequnique { get; private set; }
@@ -238,9 +274,15 @@ namespace TiledTerrainDemo.DemoLandscape
             projection = BackingEffect.Parameters["Projection"];
             eyePosition = BackingEffect.Parameters["EyePosition"];
 
+            lightEnabled = BackingEffect.Parameters["LightEnabled"];
             ambientLightColor = BackingEffect.Parameters["AmbientLightColor"];
             lightDirection = BackingEffect.Parameters["LightDirection"];
             diffuseLightColor = BackingEffect.Parameters["DiffuseLightColor"];
+
+            fogEnabled = BackingEffect.Parameters["FogEnabled"];
+            fogStart = BackingEffect.Parameters["FogStart"];
+            fogEnd = BackingEffect.Parameters["FogEnd"];
+            fogColor = BackingEffect.Parameters["FogColor"];
 
             terrainEyePosition = BackingEffect.Parameters["TerrainEyePosition"];
             terrainView = BackingEffect.Parameters["TerrainView"];
@@ -264,7 +306,6 @@ namespace TiledTerrainDemo.DemoLandscape
             heightColorCount = BackingEffect.Parameters["HeightColorCount"];
             heightColors = BackingEffect.Parameters["HeightColors"];
             heightColorPositions = BackingEffect.Parameters["HeightColorPositions"];
-            lightEnabled = BackingEffect.Parameters["LightEnabled"];
         }
 
         /// <summary>

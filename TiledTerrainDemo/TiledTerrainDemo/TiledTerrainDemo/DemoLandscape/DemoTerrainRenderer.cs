@@ -28,6 +28,8 @@ namespace TiledTerrainDemo.DemoLandscape
 
         Vector3 diffuseLightColor = Vector3.One;
 
+        Vector3 fogColor = Vector3.One;
+
         BoundingBoxDrawer boundingBoxDrawer;
 
         BasicEffect debugEffect;
@@ -51,6 +53,18 @@ namespace TiledTerrainDemo.DemoLandscape
         public Settings Settings
         {
             get { return settings; }
+        }
+
+        public bool FogEnabled { get; set; }
+
+        public float FogStart { get; set; }
+
+        public float FogEnd { get; set; }
+
+        public Vector3 FogColor
+        {
+            get { return fogColor; }
+            set { fogColor = value; }
         }
 
         public bool WhiteSolidVisible { get; set; }
@@ -144,6 +158,10 @@ namespace TiledTerrainDemo.DemoLandscape
             effect.LightDirection = lightDirection;
             effect.DiffuseLightColor = diffuseLightColor;
             effect.LightEnabled = LightEnabled;
+            effect.FogEnabled = FogEnabled;
+            effect.FogStart = FogStart;
+            effect.FogEnd = FogEnd;
+            effect.FogColor = fogColor;
 
             // WhiteSolid tequnique
             if (WhiteSolidVisible)
