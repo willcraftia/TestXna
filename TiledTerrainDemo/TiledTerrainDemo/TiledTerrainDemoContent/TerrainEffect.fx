@@ -8,7 +8,7 @@
 //=============================================================================
 // Variables
 //-----------------------------------------------------------------------------
-float4x4 View;
+//float4x4 View;
 float4x4 Projection;
 float3 EyePosition;
 
@@ -16,9 +16,10 @@ float3 AmbientLightColor;
 float3 LightDirection;
 float3 DiffuseLightColor;
 
-float3 TerrainOffset;
+//float3 TerrainOffset;
 // eye position in terrain space.
 float3 TerrainEyePosition;
+float4x4 TerrainView;
 float3 TerrainScale;
 float3 InverseTerrainScale;
 
@@ -198,13 +199,12 @@ VS_OUTPUT VS(
     vertex.y = h;
     vertex.y *= TerrainScale.y;
     vertex.w = 1;
+
     // calculate the eye direction in terrain space.
     output.EyeDirection = normalize(TerrainEyePosition - vertex.xyz);
 
-    // to world vertex
-    vertex.xyz += TerrainOffset;
-
-    float4x4 viewProjection = mul(View, Projection);
+    // Calculate the final position with view matrix in terrain space.
+    float4x4 viewProjection = mul(TerrainView, Projection);
     output.Position = mul(vertex, viewProjection);
     output.TexCoord = globalUV;
     output.Normal = CalculateNormal(globalUV);

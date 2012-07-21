@@ -8,13 +8,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TiledTerrainDemo.DemoLandscape
 {
-    public sealed class TerrainEffect : IEffectMatrices
+    public sealed class TerrainEffect
     {
         public const int DefinedMaxLevelCount = 15;
 
         public const int DefinedMaxColorCount = 8;
-
-        EffectParameter view;
 
         EffectParameter projection;
 
@@ -26,9 +24,9 @@ namespace TiledTerrainDemo.DemoLandscape
 
         EffectParameter diffuseLightColor;
 
-        EffectParameter terrainOffset;
-
         EffectParameter terrainEyePosition;
+
+        EffectParameter terrainView;
 
         EffectParameter terrainScale;
 
@@ -66,21 +64,6 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public Effect BackingEffect { get; private set; }
 
-        // I/F
-        public Matrix World
-        {
-            get { throw new NotSupportedException("This effect never use a world matrix."); }
-            set { throw new NotSupportedException("This effect never use a world matrix."); }
-        }
-
-        // I/F
-        public Matrix View
-        {
-            get { return view.GetValueMatrix(); }
-            set { view.SetValue(value); }
-        }
-
-        // I/F
         public Matrix Projection
         {
             get { return projection.GetValueMatrix(); }
@@ -111,16 +94,16 @@ namespace TiledTerrainDemo.DemoLandscape
             set { diffuseLightColor.SetValue(value); }
         }
 
-        public Vector3 TerrainOffset
-        {
-            get { return terrainOffset.GetValueVector3(); }
-            set { terrainOffset.SetValue(value); }
-        }
-
         public Vector3 TerrainEyePosition
         {
             get { return terrainEyePosition.GetValueVector3(); }
             set { terrainEyePosition.SetValue(value); }
+        }
+
+        public Matrix TerrainView
+        {
+            get { return terrainView.GetValueMatrix(); }
+            set { terrainView.SetValue(value); }
         }
 
         public Vector3 TerrainScale
@@ -252,7 +235,6 @@ namespace TiledTerrainDemo.DemoLandscape
         /// </summary>
         void CacheEffectParameters()
         {
-            view = BackingEffect.Parameters["View"];
             projection = BackingEffect.Parameters["Projection"];
             eyePosition = BackingEffect.Parameters["EyePosition"];
 
@@ -260,8 +242,8 @@ namespace TiledTerrainDemo.DemoLandscape
             lightDirection = BackingEffect.Parameters["LightDirection"];
             diffuseLightColor = BackingEffect.Parameters["DiffuseLightColor"];
 
-            terrainOffset = BackingEffect.Parameters["TerrainOffset"];
             terrainEyePosition = BackingEffect.Parameters["TerrainEyePosition"];
+            terrainView = BackingEffect.Parameters["TerrainView"];
             terrainScale = BackingEffect.Parameters["TerrainScale"];
             inverseTerrainScale = BackingEffect.Parameters["InverseTerrainScale"];
 

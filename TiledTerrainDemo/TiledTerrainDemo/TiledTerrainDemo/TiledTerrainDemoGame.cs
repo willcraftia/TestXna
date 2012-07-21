@@ -131,7 +131,7 @@ namespace TiledTerrainDemo
             viewInput.DashFactor = dashFactor;
 
             //view.Position = new Vector3(50, 30, 50);
-            view.Position = new Vector3(-150000.0f, 30, 50);
+            view.Position = new Vector3(-150000.0f, 30, -150000.0f);
             view.Yaw(MathHelper.PiOver4 * 5);
             view.Update();
 

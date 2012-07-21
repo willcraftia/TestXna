@@ -63,8 +63,6 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public bool LightEnabled { get; set; }
 
-        public float WireframeGap { get; set; }
-
         public DemoTerrainRenderer(GraphicsDevice graphicsDevice, ContentManager content, Settings settings)
         {
             GraphicsDevice = graphicsDevice;
@@ -90,8 +88,6 @@ namespace TiledTerrainDemo.DemoLandscape
 
             HeightColorVisible = true;
             LightEnabled = true;
-
-            WireframeGap = 0.01f;
         }
 
         // Invoke this method if the state of a IVisibleRanges instance is changed.
@@ -122,16 +118,26 @@ namespace TiledTerrainDemo.DemoLandscape
 
             // Prepare effect parameters.
 
+            // Get the eye position in world space.
             Vector3 eyePosition;
             View.GetEyePosition(ref selection.View, out eyePosition);
 
+            // Calcualte the eye position in terrain space.
+            Vector3 terrainEyePosition = eyePosition - selection.TerrainOffset;
+
+            // Calculate the view matrix in terrain space.
+            Matrix inverseView;
+            Matrix.Invert(ref selection.View, out inverseView);
+            inverseView.Translation = terrainEyePosition;
+            Matrix terrainView;
+            Matrix.Invert(ref inverseView, out terrainView);
+
             // per a selection (a terrain).
-            effect.TerrainOffset = selection.TerrainOffset;
             effect.HeightMap = selection.HeightMapTexture;
-            effect.View = selection.View;
             effect.Projection = selection.Projection;
             effect.EyePosition = eyePosition;
-            effect.TerrainEyePosition = eyePosition - selection.TerrainOffset;
+            effect.TerrainEyePosition = terrainEyePosition;
+            effect.TerrainView = terrainView;
 
             // render settings.
             effect.AmbientLightColor = ambientLightColor;
@@ -156,14 +162,8 @@ namespace TiledTerrainDemo.DemoLandscape
             // Wireframe tequnique
             if (WireframeVisible)
             {
-                var wireframeTerrainOffset = selection.TerrainOffset;
-                wireframeTerrainOffset.Y += WireframeGap;
-                effect.TerrainOffset = wireframeTerrainOffset;
-
                 sourceEffect.CurrentTechnique = effect.WireframeTequnique;
                 renderer.Draw(gameTime, sourceEffect, selection);
-                
-                effect.TerrainOffset = selection.TerrainOffset;
             }
 
             if (NodeBoundingBoxVisible)
