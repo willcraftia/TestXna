@@ -103,7 +103,7 @@ struct VS_OUTPUT
 //-----------------------------------------------------------------------------
 float2 CalculateGlobalUV(float4 vertex)
 {
-    float2 globalUV = (vertex.xz - TerrainOffset.xz) / TerrainScale.xz;
+    float2 globalUV = vertex.xz / TerrainScale.xz;
     globalUV *= SamplerWorldToTextureScale;
     globalUV += HeightMapTexelSize * 0.5;
     return globalUV;
@@ -134,15 +134,6 @@ float SampleHeightMap(float2 uv)
     float tB = lerp( t01, t11, f.x );
 
     return lerp( tA, tB, f.y );
-    // The following codes are a simple bilinear interporation but low accuracy.
-/*    float tl = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y, 0, 0 ) ).x;
-    float tr = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y, 0, 0 ) ).x;
-    float bl = tex2Dlod( HeightMapSampler, float4( uv.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
-    float br = tex2Dlod( HeightMapSampler, float4( uv.x + HeightMapTexelSize.x, uv.y + HeightMapTexelSize.y, 0, 0 ) ).x;
-    float2 f = frac(uv.xy * HeightMapSize);
-    float tA = lerp(tl, tr, f.x);
-    float tB = lerp(bl, br, f.x);
-    return lerp(tA, tB, f.y);*/
 }
 
 float4 CalculateNormal(float2 texCoord)
@@ -185,13 +176,14 @@ VS_OUTPUT VS(
     float4 quadScale = float4(instanceParam0.z, 0, instanceParam0.z, 0);
     int level = floor(instanceParam0.w);
 
+    // patch relative vertex.
     float4 vertex = input.Position * quadScale + quadOffset;
     float2 preGlobalUV = CalculateGlobalUV(vertex);
     vertex.y = SampleHeightMap(preGlobalUV);
     vertex.y *= TerrainScale.y;
-    vertex.y += TerrainOffset.y;
 
-    float eyeDistance = distance(vertex.xyz, EyePosition);
+    // the distance between the world vertex and the eye position.
+    float eyeDistance = distance(vertex.xyz + TerrainOffset, EyePosition);
     float morphLerpK = 1 - saturate(MorphConsts[level].x - eyeDistance * MorphConsts[level].y);
 
     // morph xz.
@@ -202,7 +194,8 @@ VS_OUTPUT VS(
     float h = SampleHeightMap(globalUV);
     vertex.y = h;
     vertex.y *= TerrainScale.y;
-    vertex.y += TerrainOffset.y;
+    // to world vertex
+    vertex.xyz += TerrainOffset;
     vertex.w = 1;
 
     float4x4 viewProjection = mul(View, Projection);

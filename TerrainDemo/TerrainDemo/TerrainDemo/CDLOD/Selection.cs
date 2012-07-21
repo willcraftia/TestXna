@@ -109,8 +109,8 @@ namespace TerrainDemo.CDLOD
         public void GetPatchInstanceVertex(int index, out PatchInstanceVertex instance)
         {
             instance = new PatchInstanceVertex();
-            instance.Offset.X = selectedNodes[index].X * settings.PatchScale + TerrainOffset.X;
-            instance.Offset.Y = selectedNodes[index].Y * settings.PatchScale + TerrainOffset.Z;
+            instance.Offset.X = selectedNodes[index].X * settings.PatchScale;
+            instance.Offset.Y = selectedNodes[index].Y * settings.PatchScale;
             instance.Scale = selectedNodes[index].Size * settings.PatchScale;
             instance.Level = selectedNodes[index].Level;
         }

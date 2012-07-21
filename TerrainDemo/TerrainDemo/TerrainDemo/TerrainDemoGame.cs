@@ -25,11 +25,11 @@ namespace TerrainDemo
         // A map can not be over 4096x4096 in HiDef profile.
         //int noiseMapWidth = 256 * 1 + 1;
         //int noiseMapHeight = 256 * 1 + 1;
-        //int noiseMapWidth = 256 * 8 + 1;
-        //int noiseMapHeight = 256 * 8 + 1;
+        int noiseMapWidth = 256 * 8 + 1;
+        int noiseMapHeight = 256 * 8 + 1;
         // for recording settings
-        int noiseMapWidth = 256 * 16;
-        int noiseMapHeight = 256 * 16;
+        //int noiseMapWidth = 256 * 16;
+        //int noiseMapHeight = 256 * 16;
         float noiseSampleX = 0;
         float noiseSampleY = 0;
         float noiseSampleWidth = 12;
@@ -249,6 +249,9 @@ namespace TerrainDemo
         {
             view.Update();
             projection.Update();
+
+            // debug offset
+            selection.TerrainOffset = new Vector3(100, 0, 100);
 
             // prepare selection's state.
             selection.View = view.Matrix;
