@@ -45,7 +45,7 @@ float HeightColorPositions[MAX_HEIGHT_COLOR_COUNT];
 bool LightEnabled;
 
 texture HeightMap;
-sampler HeightMapSampler /*: register(vs, s0)*/ = sampler_state
+sampler HeightMapSampler  = sampler_state
 {
     Texture = <HeightMap>;
     AddressU = Clamp;
@@ -80,27 +80,28 @@ float2 CalculateGlobalUV(float4 vertex)
 {
 /*  REFERENCE:
 
-    float2 globalUV = (vertex.xz - TerrainOffset.xz) / TerrainScale.xz;
+    float2 globalUV = vertex.xz / TerrainScale.xz;
     float2 actualSize = HeightMapSize - 2 * HeightMapOverlapSize;
     float2 worldToTexCoord = (actualSize - 1) * HeightMapTexelSize;
     globalUV *= worldToTexCoord;
     globalUV += (HeightMapOverlapSize + 0.5) * HeightMapTexelSize;
 
-    hence:
+    therefore:
 */
 
-    float2 globalUV = (vertex.xz - TerrainOffset.xz) * InverseTerrainScale.xz;
+    float2 globalUV = vertex.xz * InverseTerrainScale.xz;
     float2 overlapTexelSize = HeightMapOverlapSize * HeightMapTexelSize;
 
     // REFERENCE:
     //    float2 actualSize = HeightMapSize - 2 * HeightMapOverlapSize;
     //    float2 worldToTexCoord = (actualSize - 1) * HeightMapTexelSize;
-    // hence
+    // therefore:
     float2 worldToTexCoord = 1 - 2 * overlapTexelSize - HeightMapTexelSize;
     globalUV *= worldToTexCoord;
 
     // REFERENCE:
     //    globalUV += HeightMapTexelSize * HeightMapOverlapSize + HeightMapTexelSize * 0.5;
+    // therefore:
     globalUV += overlapTexelSize + 0.5 * HeightMapTexelSize;
 
     return globalUV;
@@ -131,9 +132,6 @@ float SampleHeightMap(float2 uv)
     float tB = lerp( t01, t11, f.x );
 
     return lerp( tA, tB, f.y );
-
-// test
-//    return tex2Dlod( HeightMapSampler, float4( uv.x, uv.y, 0, 0 ) ).x;
 }
 
 float4 CalculateNormal(float2 texCoord)
@@ -176,13 +174,14 @@ VS_OUTPUT VS(
     float4 quadScale = float4(instanceParam0.z, 0, instanceParam0.z, 0);
     int level = floor(instanceParam0.w);
 
+    // patch relative vertex.
     float4 vertex = input.Position * quadScale + quadOffset;
     float2 preGlobalUV = CalculateGlobalUV(vertex);
     vertex.y = SampleHeightMap(preGlobalUV);
     vertex.y *= TerrainScale.y;
-    vertex.y += TerrainOffset.y;
 
-    float eyeDistance = distance(vertex.xyz, EyePosition);
+    // the distance between the world vertex and the eye position.
+    float eyeDistance = distance(vertex.xyz + TerrainOffset, EyePosition);
     float morphLerpK = 1 - saturate(MorphConsts[level].x - eyeDistance * MorphConsts[level].y);
 
     // morph xz.
@@ -193,7 +192,8 @@ VS_OUTPUT VS(
     float h = SampleHeightMap(globalUV);
     vertex.y = h;
     vertex.y *= TerrainScale.y;
-    vertex.y += TerrainOffset.y;
+    // to world vertex
+    vertex.xyz += TerrainOffset;
     vertex.w = 1;
 
     float4x4 viewProjection = mul(View, Projection);
