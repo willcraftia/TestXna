@@ -26,11 +26,13 @@ namespace TiledTerrainDemo.Landscape
 
         ManualResetEvent loadCompletedEvent = new ManualResetEvent(true);
 
+        // The x position in partition space.
         public int X
         {
             get { return x; }
         }
 
+        // The y position in partition space.
         public int Y
         {
             get { return y; }
@@ -46,6 +48,7 @@ namespace TiledTerrainDemo.Landscape
             get { return height; }
         }
 
+        // The position in world space.
         public Vector2 Position
         {
             get { return position; }

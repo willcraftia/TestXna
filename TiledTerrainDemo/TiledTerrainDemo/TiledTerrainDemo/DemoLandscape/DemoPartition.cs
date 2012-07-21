@@ -23,6 +23,8 @@ namespace TiledTerrainDemo.DemoLandscape
 
         Terrain terrain;
 
+        //Vector3 terrainOffset;
+
         bool heightMapTextureDirty;
 
         Texture2D heightMapTexture;
@@ -51,12 +53,8 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             RefreshHeightMapTexture();
 
-            var terrainOffset = new Vector3(X, 0, Y);
-            terrainOffset.X *= (settings.HeightMapWidth - 1);
-            terrainOffset.Z *= (settings.HeightMapHeight - 1);
-            terrainOffset *= context.Settings.PatchScale;
-
-            context.Selection.TerrainOffset = terrainOffset;
+            var partitionPosition = Position;
+            context.Selection.TerrainOffset = new Vector3(partitionPosition.X, 0, partitionPosition.Y);
 
             // select.
             terrain.Select(context.Selection);
@@ -114,9 +112,6 @@ namespace TiledTerrainDemo.DemoLandscape
 
                 heightMapTexture = new Texture2D(context.GraphicsDevice, w, h, false, SurfaceFormat.Single);
             }
-
-            //if (heightMapTexture != null) heightMapTexture.Dispose();
-            //heightMapTexture = new Texture2D(context.GraphicsDevice, w, h, false, SurfaceFormat.Single);
 
             heightMapTexture.SetData(tiledNoiseMap.Values);
 

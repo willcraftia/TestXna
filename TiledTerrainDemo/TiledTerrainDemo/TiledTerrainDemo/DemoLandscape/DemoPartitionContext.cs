@@ -21,6 +21,8 @@ namespace TiledTerrainDemo.DemoLandscape
         // visible ranges.
         int finestNodeSize = 5;
 
+        #region Noise and fractal test
+
         PerlinNoise perlinNoise = new PerlinNoise();
         ImprovedPerlinNoise improvedPerlinNoise = new ImprovedPerlinNoise();
         SimplexNoise simplexNoise = new SimplexNoise();
@@ -34,6 +36,8 @@ namespace TiledTerrainDemo.DemoLandscape
         SinFractal sinFractal = new SinFractal();
         Billow billow = new Billow();
         Voronoi voronoi = new Voronoi();
+
+        #endregion
 
         #region Noise combination test
 
@@ -90,6 +94,8 @@ namespace TiledTerrainDemo.DemoLandscape
             NoiseWidth = noiseWidth;
             NoiseHeight = noiseHeight;
 
+            #region Noise and fractal test
+
             perlinNoise.Seed = noiseSeed;
             perlinNoise.Reseed();
             improvedPerlinNoise.Seed = noiseSeed;
@@ -111,6 +117,8 @@ namespace TiledTerrainDemo.DemoLandscape
             ridgedMultifractal.Noise = noise.GetValue;
             sinFractal.Noise = noise.GetValue;
             billow.Noise = noise.GetValue;
+
+            #endregion
 
             #region Noise combination test
 

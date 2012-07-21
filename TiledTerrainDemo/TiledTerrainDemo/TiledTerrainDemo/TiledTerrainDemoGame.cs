@@ -248,7 +248,6 @@ namespace TiledTerrainDemo
 
         protected override void Draw(GameTime gameTime)
         {
-            //GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1, 0);
             GraphicsDevice.RasterizerState = defaultRasterizerState;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
@@ -320,7 +319,7 @@ namespace TiledTerrainDemo
             sb.AppendNumber(partitionManager.MaxPartitionObjectCount).Append(")").AppendLine();
             sb.Append("Move velocity: ");
             sb.AppendNumber(viewInput.MoveVelocity).AppendLine();
-            sb.Append("Camera position: ");
+            sb.Append("Eye position: ");
             sb.AppendNumber(view.Position.X).Append(", ");
             sb.AppendNumber(view.Position.Y).Append(", ");
             sb.AppendNumber(view.Position.Z);
