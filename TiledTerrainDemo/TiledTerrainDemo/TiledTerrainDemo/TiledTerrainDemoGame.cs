@@ -51,7 +51,7 @@ namespace TiledTerrainDemo
         //float farPlaneDistance = 150000;
         //float farPlaneDistance = 10000;
         float farPlaneDistance = 200000;
-        float fogStart = 10000;
+        float fogStart = 20000;
         float fogEnd = 30000;
         //Vector3 fogColor = Vector3.One;
         Vector3 fogColor = Color.CornflowerBlue.ToVector3();
