@@ -35,22 +35,22 @@ namespace TiledTerrainDemo
         int levelCount = Settings.DefaultLevelCount;
         //int leafNodeSize = Settings.DefaultLeafNodeSize;
         int leafNodeSize = Settings.DefaultLeafNodeSize * 2;
-        //int patchResolution = Settings.DefaultPatchResolution;
-        int patchResolution = Settings.DefaultPatchResolution * 2;
+        int patchResolution = Settings.DefaultPatchResolution;
+        //int patchResolution = Settings.DefaultPatchResolution * 2;
         //float patchScale = Settings.DefaultPatchScale;
         float patchScale = 16 * 2;
         //float heightScale = Settings.DefaultHeightScale;
         float heightScale = Settings.DefaultHeightScale * 16;
 
-        int finestNodeSize = DemoPartitionContext.DefaultFinestNodeSize;
+        int finestNodeSize = DemoPartitionContext.DefaultFinestNodeSize + 3;
         int loadThreadCount = PartitionLoadQueue.DefaultThreadCount;
         int initialPartitionPoolCapacity = 20;
-        int maxPartitionPoolCapacity = 60;
+        int maxPartitionPoolCapacity = 100;
 
         // View settings for debug.
         //float farPlaneDistance = 150000;
         //float farPlaneDistance = 10000;
-        float farPlaneDistance = 200000;
+        float farPlaneDistance = 300000;
         float fogStart = 20000;
         float fogEnd = 30000;
         //Vector3 fogColor = Vector3.One;
@@ -155,8 +155,8 @@ namespace TiledTerrainDemo
             fpsCounter.Content.RootDirectory = "Content";
             fpsCounter.HorizontalAlignment = DebugHorizontalAlignment.Right;
             fpsCounter.SampleSpan = TimeSpan.FromSeconds(2);
-            //fpsCounter.Enabled = false;
-            //fpsCounter.Visible = false;
+            fpsCounter.Enabled = false;
+            fpsCounter.Visible = false;
             Components.Add(fpsCounter);
 
             base.Initialize();
