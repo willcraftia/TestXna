@@ -174,7 +174,7 @@ VS_OUTPUT VS(
     float4 quadScale = float4(instanceParam0.z, 0, instanceParam0.z, 0);
     int level = floor(instanceParam0.w);
 
-    // patch relative vertex.
+    // terrain relative vertex.
     float4 vertex = input.Position * quadScale + quadOffset;
     float2 preGlobalUV = CalculateGlobalUV(vertex);
     vertex.y = SampleHeightMap(preGlobalUV);
