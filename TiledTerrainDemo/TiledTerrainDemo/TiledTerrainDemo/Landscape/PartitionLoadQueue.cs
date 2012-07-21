@@ -37,7 +37,9 @@ namespace TiledTerrainDemo.Landscape
 
         #endregion
 
-        public const int MaxThreadCount = 4;
+        public const int MaxThreadCount = 20;
+
+        public const int DefaultThreadCount = 4;
 
         PartitionLoadResultCallback loadResultCallback;
 
@@ -60,7 +62,7 @@ namespace TiledTerrainDemo.Landscape
         }
 
         public PartitionLoadQueue(PartitionLoadResultCallback loadResultCallback)
-            : this(loadResultCallback, MaxThreadCount)
+            : this(loadResultCallback, DefaultThreadCount)
         {
         }
 

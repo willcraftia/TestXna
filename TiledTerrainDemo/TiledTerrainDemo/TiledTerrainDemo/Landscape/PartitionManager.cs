@@ -121,12 +121,13 @@ namespace TiledTerrainDemo.Landscape
 
         #endregion
 
-        public PartitionManager(Func<Partition> createFunction)
+        public PartitionManager(Func<Partition> createFunction, int loadThreadCount,
+            int initialPartitionPoolCapacity, int maxPartitionPoolCapacity)
         {
             if (createFunction == null) throw new ArgumentNullException("createFunction");
 
-            partitionPool = new Pool<Partition>(createFunction, 10, 20);
-            loadQueue = new PartitionLoadQueue(LoadResultCallback);
+            partitionPool = new Pool<Partition>(createFunction, initialPartitionPoolCapacity, maxPartitionPoolCapacity);
+            loadQueue = new PartitionLoadQueue(LoadResultCallback, loadThreadCount);
         }
 
         public void Update(GameTime gameTime)

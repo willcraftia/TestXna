@@ -13,13 +13,15 @@ namespace TiledTerrainDemo.DemoLandscape
 {
     public sealed class DemoPartitionContext
     {
+        public const int DefaultFinestNodeSize = 5;
+
         Settings settings;
 
         // noise parameters for debug.
         int noiseSeed = 300;
 
         // visible ranges.
-        int finestNodeSize = 5;
+        int finestNodeSize = DefaultFinestNodeSize;
 
         #region Noise and fractal test
 
@@ -51,6 +53,14 @@ namespace TiledTerrainDemo.DemoLandscape
 
         #endregion
 
+        #region Recording
+
+        ImprovedPerlinNoise recNoise = new ImprovedPerlinNoise();
+        SumFractal recBaseTerrain = new SumFractal();
+        ScaleBias recFinalTerrain = new ScaleBias();
+
+        #endregion
+
         DefaultVisibleRanges visibleRanges;
 
         public GraphicsDevice GraphicsDevice { get; private set; }
@@ -68,6 +78,12 @@ namespace TiledTerrainDemo.DemoLandscape
         public Settings Settings
         {
             get { return settings; }
+        }
+
+        public int FinestNodeSize
+        {
+            get { return finestNodeSize; }
+            set { finestNodeSize = value; }
         }
 
         public DemoTerrainRenderer TerrainRenderer { get; private set; }
@@ -145,6 +161,16 @@ namespace TiledTerrainDemo.DemoLandscape
 
             #endregion
 
+            #region Recording
+
+            recNoise.Seed = noiseSeed;
+            recBaseTerrain.Noise = recNoise.GetValue;
+            recBaseTerrain.OctaveCount = 7;
+            recFinalTerrain.Noise = recBaseTerrain.GetValue;
+            recFinalTerrain.Scale = 2.5f;
+
+            #endregion
+
             visibleRanges = new DefaultVisibleRanges(settings);
             visibleRanges.FinestNodeSize = finestNodeSize;
             visibleRanges.Initialize();
@@ -173,7 +199,7 @@ namespace TiledTerrainDemo.DemoLandscape
             //return improvedPerlinNoise.GetValue(x, y, z);
             //return simplexNoise.GetValue(x, y, z);
             //return voronoi.GetValue(x, y, z);
-            return sumFractal.GetValue(x, y, z) * 2.5f;
+            //return sumFractal.GetValue(x, y, z) * 2.5f + 0.3f;
             // take down.
             //return multifractal.GetValue(x, y, z) - 1;
             // take down.
@@ -187,6 +213,10 @@ namespace TiledTerrainDemo.DemoLandscape
 
             // Noise combination test.
             //return finalTerrain.GetValue(x, y, z);
+
+
+            // for recoding.
+            return recFinalTerrain.GetValue(x, y, z);
         }
     }
 }

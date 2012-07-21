@@ -24,8 +24,6 @@ namespace TiledTerrainDemo
         int heightMapWidth = 256 * 4 + 1;
         int heightMapHeight = 256 * 4 + 1;
         int heightMapOverlapSize = 1;
-        //int heightMapWidth = 256 * 4 + 1;
-        //int heightMapHeight = 256 * 4 + 1;
         float noiseSampleX = 0;
         float noiseSampleY = 0;
         //float noiseSampleWidth = 12;
@@ -35,18 +33,24 @@ namespace TiledTerrainDemo
 
         // CDLOD settings for debug.
         int levelCount = Settings.DefaultLevelCount;
-        int leafNodeSize = Settings.DefaultLeafNodeSize;
-        //int leafNodeSize = Settings.DefaultLeafNodeSize * 2;
-        int patchResolution = Settings.DefaultPatchResolution;
-        //int patchResolution = Settings.DefaultPatchResolution * 2;
+        //int leafNodeSize = Settings.DefaultLeafNodeSize;
+        int leafNodeSize = Settings.DefaultLeafNodeSize * 2;
+        //int patchResolution = Settings.DefaultPatchResolution;
+        int patchResolution = Settings.DefaultPatchResolution * 2;
         //float patchScale = Settings.DefaultPatchScale;
-        float patchScale = 16;
-        //float heightScale = Settings.DefaultHeightScale * 2;
-        float heightScale = Settings.DefaultHeightScale * 4;
+        float patchScale = 16 * 2;
+        //float heightScale = Settings.DefaultHeightScale;
+        float heightScale = Settings.DefaultHeightScale * 16;
+
+        int finestNodeSize = DemoPartitionContext.DefaultFinestNodeSize;
+        int loadThreadCount = PartitionLoadQueue.DefaultThreadCount;
+        int initialPartitionPoolCapacity = 20;
+        int maxPartitionPoolCapacity = 60;
 
         // View settings for debug.
-        float farPlaneDistance = 150000;
+        //float farPlaneDistance = 150000;
         //float farPlaneDistance = 10000;
+        float farPlaneDistance = 200000;
         float moveVelocity = 1000;
         float dashFactor = 2;
 
@@ -166,17 +170,18 @@ namespace TiledTerrainDemo
             partitionContext = new DemoPartitionContext(
                 GraphicsDevice, Content, settings,
                 noiseSampleX, noiseSampleY, noiseSampleWidth, noiseSampleHeight);
+            partitionContext.FinestNodeSize = finestNodeSize;
 
             partitionFactory = new DemoPartitionFactory(partitionContext);
 
             var terrainScale = settings.TerrainScale;
 
-            partitionManager = new PartitionManager(partitionFactory.Create);
+            partitionManager = new PartitionManager(partitionFactory.Create, loadThreadCount,
+                initialPartitionPoolCapacity, maxPartitionPoolCapacity);
             partitionManager.PartitionWidth = terrainScale.X;
             partitionManager.PartitionHeight = terrainScale.Z;
-            //partitionManager.ActivationRange = terrainScale.X * 2.5f;
-            partitionManager.ActivationRange = terrainScale.X * 2.0f;
-            partitionManager.DeactivationRange = partitionManager.ActivationRange * 1.0f;
+            partitionManager.ActivationRange = terrainScale.X * 3.0f;
+            partitionManager.DeactivationRange = partitionManager.ActivationRange * 1.5f;
             partitionManager.EyePosition = view.Position;
 
             #region Debug
