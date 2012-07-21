@@ -21,8 +21,8 @@ namespace TiledTerrainDemo
 {
     public class TiledTerrainDemoGame : Game
     {
-        int heightMapWidth = 256 * 2 + 1;
-        int heightMapHeight = 256 * 2 + 1;
+        int heightMapWidth = 256 * 4 + 1;
+        int heightMapHeight = 256 * 4 + 1;
         int heightMapOverlapSize = 1;
         //int heightMapWidth = 256 * 4 + 1;
         //int heightMapHeight = 256 * 4 + 1;
@@ -37,12 +37,12 @@ namespace TiledTerrainDemo
         int levelCount = Settings.DefaultLevelCount;
         int leafNodeSize = Settings.DefaultLeafNodeSize;
         //int leafNodeSize = Settings.DefaultLeafNodeSize * 2;
-        //int patchResolution = Settings.DefaultPatchResolution;
-        int patchResolution = Settings.DefaultPatchResolution * 2;
+        int patchResolution = Settings.DefaultPatchResolution;
+        //int patchResolution = Settings.DefaultPatchResolution * 2;
         //float patchScale = Settings.DefaultPatchScale;
-        float patchScale = Settings.DefaultPatchScale * 2 * 2 * 2;
-        float heightScale = Settings.DefaultHeightScale * 2;
-        //float heightScale = Settings.DefaultHeightScale * 0.5f;
+        float patchScale = 16;
+        //float heightScale = Settings.DefaultHeightScale * 2;
+        float heightScale = Settings.DefaultHeightScale * 4;
 
         // View settings for debug.
         float farPlaneDistance = 150000;
@@ -130,7 +130,8 @@ namespace TiledTerrainDemo
             viewInput.MoveVelocity = moveVelocity;
             viewInput.DashFactor = dashFactor;
 
-            view.Position = new Vector3(50, 30, 50);
+            //view.Position = new Vector3(50, 30, 50);
+            view.Position = new Vector3(-150000.0f, 30, 50);
             view.Yaw(MathHelper.PiOver4 * 5);
             view.Update();
 
@@ -173,8 +174,9 @@ namespace TiledTerrainDemo
             partitionManager = new PartitionManager(partitionFactory.Create);
             partitionManager.PartitionWidth = terrainScale.X;
             partitionManager.PartitionHeight = terrainScale.Z;
-            partitionManager.ActivationRange = partitionManager.PartitionWidth * 3;
-            partitionManager.DeactivationRange = partitionManager.ActivationRange * 1.5f;
+            //partitionManager.ActivationRange = terrainScale.X * 2.5f;
+            partitionManager.ActivationRange = terrainScale.X * 2.0f;
+            partitionManager.DeactivationRange = partitionManager.ActivationRange * 1.0f;
             partitionManager.EyePosition = view.Position;
 
             #region Debug
@@ -184,7 +186,7 @@ namespace TiledTerrainDemo
             fillTexture = Texture2DHelper.CreateFillTexture(GraphicsDevice);
             helpMessageFontSize = font.MeasureString(helpMessage);
 
-            BuildInformationMessage(9999, 99);
+            BuildInformationMessage();
             informationTextFontSize = font.MeasureString(stringBuilder);
 
             #endregion
@@ -273,39 +275,55 @@ namespace TiledTerrainDemo
             base.Draw(gameTime);
         }
 
-        void BuildInformationMessage(int quadCount, int partitionCount)
+        void BuildInformationMessage()
         {
-            stringBuilder.Length = 0;
-            stringBuilder.Append("Screen: ");
-            stringBuilder.AppendNumber(graphics.PreferredBackBufferWidth).Append('x').Append(graphics.PreferredBackBufferHeight).AppendLine();
-            stringBuilder.Append("Height map: ");
-            stringBuilder.AppendNumber(heightMapWidth).Append('x').Append(heightMapHeight).Append(" ");
-            stringBuilder.Append("(overlap ");
-            stringBuilder.AppendNumber(settings.HeightMapOverlapSize).Append(")").AppendLine();
-            stringBuilder.Append("Level count: ");
-            stringBuilder.AppendNumber(settings.LevelCount).Append(", ");
-            stringBuilder.Append("Leaf node size: ");
-            stringBuilder.AppendNumber(settings.LeafNodeSize).AppendLine();
-            stringBuilder.Append("Patch resolution: ");
-            stringBuilder.AppendNumber(settings.PatchResolution).Append(", ");
-            stringBuilder.Append("Patch Scale: ");
-            stringBuilder.AppendNumber(settings.PatchScale).AppendLine();
-            stringBuilder.Append("Top node size: ");
-            stringBuilder.AppendNumber(settings.TopNodeSize).AppendLine();
-            stringBuilder.Append("Far plane distance: ");
-            stringBuilder.AppendNumber(farPlaneDistance).AppendLine();
-            stringBuilder.AppendLine();
-            stringBuilder.Append("Quads: ");
-            stringBuilder.AppendNumber(quadCount).AppendLine();
-            stringBuilder.Append("Partitions: ");
-            stringBuilder.AppendNumber(partitionCount).Append(", ");
-            stringBuilder.Append("Waiting: ");
-            stringBuilder.AppendNumber(partitionManager.WaitLoadPartitionCount).AppendLine();
-            stringBuilder.Append("Free thread: ");
-            stringBuilder.AppendNumber(partitionManager.FreePartitionLoadingThreadCount).Append("/");
-            stringBuilder.AppendNumber(partitionManager.PartitionLoadingThreadCount).AppendLine();
-            stringBuilder.Append("Move velocity: ");
-            stringBuilder.AppendNumber(viewInput.MoveVelocity);
+            var sb = stringBuilder;
+
+            sb.Length = 0;
+            sb.Append("Screen: ");
+            sb.AppendNumber(graphics.PreferredBackBufferWidth).Append('x');
+            sb.AppendNumber(graphics.PreferredBackBufferHeight).AppendLine();
+            sb.Append("Height map: ");
+            sb.AppendNumber(heightMapWidth).Append('x').Append(heightMapHeight).Append(" ");
+            sb.Append("(overlap ");
+            sb.AppendNumber(settings.HeightMapOverlapSize).Append(")").AppendLine();
+            sb.Append("Level count: ");
+            sb.AppendNumber(settings.LevelCount).Append(", ");
+            sb.Append("Leaf node size: ");
+            sb.AppendNumber(settings.LeafNodeSize).AppendLine();
+            sb.Append("Patch resolution: ");
+            sb.AppendNumber(settings.PatchResolution).Append(", ");
+            sb.Append("Patch Scale: ");
+            sb.AppendNumber(settings.PatchScale).AppendLine();
+            sb.Append("Top node size: ");
+            sb.AppendNumber(settings.TopNodeSize).AppendLine();
+            sb.Append("Far plane distance: ");
+            sb.AppendNumber(farPlaneDistance).AppendLine();
+            sb.AppendLine();
+            sb.Append("Quads: ");
+            sb.AppendNumber(partitionContext.TotalSelectedNodeCount).AppendLine();
+            sb.Append("Partitions: ");
+            sb.AppendNumber(partitionContext.DrawPartitionCount).Append("/");
+            sb.AppendNumber(partitionManager.ActivePartitionCount).Append(" ");
+            sb.Append("W(");
+            sb.AppendNumber(partitionManager.WaitLoadPartitionCount).Append(") ");
+            sb.Append("L(");
+            sb.AppendNumber(partitionManager.LoadingParitionCount).Append(") ");
+            sb.Append("N(");
+            sb.AppendNumber(partitionManager.NonePartitionCount).Append(")").AppendLine();
+            sb.Append("Thread pool: ");
+            sb.AppendNumber(partitionManager.FreePartitionLoadingThreadCount).Append("/");
+            sb.AppendNumber(partitionManager.PartitionLoadingThreadCount).AppendLine();
+            sb.Append("Partition pool: ");
+            sb.AppendNumber(partitionManager.FreePartitionObjectCount).Append("/");
+            sb.AppendNumber(partitionManager.TotalPartitionObjectCount).Append("(");
+            sb.AppendNumber(partitionManager.MaxPartitionObjectCount).Append(")").AppendLine();
+            sb.Append("Move velocity: ");
+            sb.AppendNumber(viewInput.MoveVelocity).AppendLine();
+            sb.Append("Camera position: ");
+            sb.AppendNumber(view.Position.X).Append(", ");
+            sb.AppendNumber(view.Position.Y).Append(", ");
+            sb.AppendNumber(view.Position.Z);
         }
 
         void DrawHelp()
@@ -314,9 +332,11 @@ namespace TiledTerrainDemo
 
             var layout = new DebugLayout();
 
+            int informationWidth = 380;
+
             // calculate the background area for information.
             layout.ContainerBounds = GraphicsDevice.Viewport.TitleSafeArea;
-            layout.Width = (int) informationTextFontSize.X + 4;
+            layout.Width = informationWidth + 4;
             layout.Height = (int) informationTextFontSize.Y + 2;
             layout.HorizontalMargin = 8;
             layout.VerticalMargin = 8;
@@ -328,7 +348,7 @@ namespace TiledTerrainDemo
 
             // calculate the text area for help messages.
             layout.ContainerBounds = layout.ArrangedBounds;
-            layout.Width = (int) informationTextFontSize.X;
+            layout.Width = informationWidth;
             layout.Height = (int) informationTextFontSize.Y;
             layout.HorizontalMargin = 2;
             layout.VerticalMargin = 0;
@@ -336,7 +356,7 @@ namespace TiledTerrainDemo
             layout.VerticalAlignment = DebugVerticalAlignment.Center;
             layout.Arrange();
             // draw the text.
-            BuildInformationMessage(partitionContext.TotalSelectedNodeCount, partitionContext.DrawPartitionCount);
+            BuildInformationMessage();
             spriteBatch.DrawString(font, stringBuilder, new Vector2(layout.ArrangedBounds.X, layout.ArrangedBounds.Y), Color.Yellow);
 
             // calculate the background area for help messages.

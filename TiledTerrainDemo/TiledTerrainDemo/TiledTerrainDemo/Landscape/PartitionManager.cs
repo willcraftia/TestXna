@@ -56,9 +56,42 @@ namespace TiledTerrainDemo.Landscape
             set { eyePosition = value; }
         }
 
+        #region Debug
+
         public int WaitLoadPartitionCount
         {
             get { return loadQueue.RequestQueueCount; }
+        }
+
+        public int LoadingParitionCount
+        {
+            get
+            {
+                int counter = 0;
+                foreach (var p in partitions)
+                    if (p.LoadState == PartitionLoadState.Loading)
+                        counter++;
+
+                return counter;
+            }
+        }
+
+        public int NonePartitionCount
+        {
+            get
+            {
+                int counter = 0;
+                foreach (var p in partitions)
+                    if (p.LoadState == PartitionLoadState.None)
+                        counter++;
+
+                return counter;
+            }
+        }
+
+        public int ActivePartitionCount
+        {
+            get { return partitions.Count; }
         }
 
         public int PartitionLoadingThreadCount
@@ -71,11 +104,28 @@ namespace TiledTerrainDemo.Landscape
             get { return loadQueue.FreeThreadCount; }
         }
 
-        public PartitionManager(Func<Partition> creationFunction)
+        public int TotalPartitionObjectCount
         {
-            if (creationFunction == null) throw new ArgumentNullException("creationFunction");
+            get { return partitionPool.TotalObjectCount; }
+        }
 
-            partitionPool = new Pool<Partition>(creationFunction);
+        public int FreePartitionObjectCount
+        {
+            get { return partitionPool.FreeObjectCount; }
+        }
+
+        public int MaxPartitionObjectCount
+        {
+            get { return partitionPool.MaxCapacity; }
+        }
+
+        #endregion
+
+        public PartitionManager(Func<Partition> createFunction)
+        {
+            if (createFunction == null) throw new ArgumentNullException("createFunction");
+
+            partitionPool = new Pool<Partition>(createFunction, 10, 20);
             loadQueue = new PartitionLoadQueue(LoadResultCallback);
         }
 
@@ -114,18 +164,20 @@ namespace TiledTerrainDemo.Landscape
                     switch (partition.LoadState)
                     {
                         case PartitionLoadState.Loaded:
+                            // Unload and return this.
                             partition.UnloadContent();
                             partitions.RemoveAt(index);
                             partition.LoadState = PartitionLoadState.None;
                             partitionPool.Return(partition);
                             break;
                         case PartitionLoadState.WaitLoad:
+                            // Return this into pool immediately.
                             partitions.RemoveAt(index);
                             partition.LoadState = PartitionLoadState.None;
                             partitionPool.Return(partition);
                             break;
                         case PartitionLoadState.Loading:
-                            // This partition will be released after loaded.
+                            // This will be released after loaded.
                             index++;
                             break;
                         default:
@@ -159,6 +211,11 @@ namespace TiledTerrainDemo.Landscape
 
                     // A new partition.
                     var partition = partitionPool.Borrow();
+                    
+                    // Skip if no partition exists in pool.
+                    if (partition == null)
+                        continue;
+
                     partition.LoadState = PartitionLoadState.WaitLoad;
                     partition.Initialize(x, y, partitionWidth, partitionHeight);
 

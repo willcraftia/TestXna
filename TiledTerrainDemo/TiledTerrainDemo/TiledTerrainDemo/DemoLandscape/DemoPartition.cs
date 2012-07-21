@@ -2,6 +2,7 @@
 
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using TiledTerrainDemo.CDLOD;
 using TiledTerrainDemo.Landscape;
 using TiledTerrainDemo.Noise;
@@ -22,6 +23,10 @@ namespace TiledTerrainDemo.DemoLandscape
 
         Terrain terrain;
 
+        bool heightMapTextureDirty;
+
+        Texture2D heightMapTexture;
+
         public DemoPartition(DemoPartitionContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
@@ -35,7 +40,7 @@ namespace TiledTerrainDemo.DemoLandscape
             tiledNoiseMap.OverlapSize = settings.HeightMapOverlapSize;
             tiledNoiseMap.Noise = context.Noise;
 
-            heightMap = new DemoHeightMapSource(context.GraphicsDevice);
+            heightMap = new DemoHeightMapSource();
             heightMap.TiledNoiseMap = tiledNoiseMap;
 
             terrain = new Terrain(context.Settings);
@@ -44,6 +49,8 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public override void Draw(GameTime gameTime)
         {
+            RefreshHeightMapTexture();
+
             var terrainOffset = new Vector3(X, 0, Y);
             terrainOffset.X *= (settings.HeightMapWidth - 1);
             terrainOffset.Z *= (settings.HeightMapHeight - 1);
@@ -75,8 +82,8 @@ namespace TiledTerrainDemo.DemoLandscape
             tiledNoiseMap.Build();
             //tiledNoiseMap.Erode(16 / (float) context.Settings.HeightMapWidth, 10);
 
-            // Build the height map.
-            heightMap.Build();
+            // heightMapTexture is dirty.
+            heightMapTextureDirty = true;
 
             // Build the terrain.
             terrain.Build();
@@ -88,10 +95,34 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             if (disposing)
             {
-                heightMap.Dispose();
+                if (heightMapTexture != null) heightMapTexture.Dispose();
             }
 
             base.DisposeOverride(disposing);
+        }
+
+        void RefreshHeightMapTexture()
+        {
+            if (!heightMapTextureDirty) return;
+
+            int w = tiledNoiseMap.ActualWidth;
+            int h = tiledNoiseMap.ActualHeight;
+
+            if (heightMapTexture == null || heightMapTexture.Width != w || heightMapTexture.Height != h)
+            {
+                if (heightMapTexture != null) heightMapTexture.Dispose();
+
+                heightMapTexture = new Texture2D(context.GraphicsDevice, w, h, false, SurfaceFormat.Single);
+            }
+
+            //if (heightMapTexture != null) heightMapTexture.Dispose();
+            //heightMapTexture = new Texture2D(context.GraphicsDevice, w, h, false, SurfaceFormat.Single);
+
+            heightMapTexture.SetData(tiledNoiseMap.Values);
+
+            heightMap.Texture = heightMapTexture;
+
+            heightMapTextureDirty = false;
         }
     }
 }

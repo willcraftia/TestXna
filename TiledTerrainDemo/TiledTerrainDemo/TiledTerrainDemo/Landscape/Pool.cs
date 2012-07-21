@@ -11,21 +11,39 @@ namespace TiledTerrainDemo.Landscape
     {
         public const int DefaultInitialCapacity = 10;
 
-        Func<T> creationFunction;
+        public const int DefaultMaxCapacity = 0;
+
+        Func<T> createFunction;
 
         Stack<T> objects = new Stack<T>();
 
-        public Pool(Func<T> creationFunction)
-            : this(creationFunction, DefaultInitialCapacity)
+        public int InitialCapacity { get; private set; }
+
+        public int MaxCapacity { get; private set; }
+
+        public int TotalObjectCount { get; private set; }
+
+        public int FreeObjectCount
+        {
+            get { return objects.Count; }
+        }
+
+        public Pool(Func<T> createFunction)
+            : this(createFunction, DefaultInitialCapacity, DefaultMaxCapacity)
         {
         }
 
-        public Pool(Func<T> creationFunction, int initialCapacity)
+        public Pool(Func<T> createFunction, int initialCapacity, int maxCapacity)
         {
-            this.creationFunction = creationFunction;
+            if (0 < maxCapacity && maxCapacity < initialCapacity)
+                throw new ArgumentOutOfRangeException("initialCapacity");
+
+            this.createFunction = createFunction;
+            InitialCapacity = initialCapacity;
+            MaxCapacity = maxCapacity;
 
             for (int i = 0; i < initialCapacity; i++)
-                objects.Push(creationFunction());
+                objects.Push(CreateObject());
         }
 
         public T Borrow()
@@ -33,12 +51,21 @@ namespace TiledTerrainDemo.Landscape
             if (objects.Count != 0)
                 return objects.Pop();
 
-            return creationFunction();
+            return CreateObject();
         }
 
         public void Return(T partition)
         {
             objects.Push(partition);
+        }
+
+        T CreateObject()
+        {
+            if (0 < MaxCapacity && TotalObjectCount == MaxCapacity)
+                return null;
+
+            TotalObjectCount++;
+            return createFunction();
         }
     }
 }
