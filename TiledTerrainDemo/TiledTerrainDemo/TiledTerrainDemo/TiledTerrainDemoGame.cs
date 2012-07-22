@@ -42,7 +42,8 @@ namespace TiledTerrainDemo
         //float heightScale = Settings.DefaultHeightScale;
         float heightScale = Settings.DefaultHeightScale * 16;
 
-        int finestNodeSize = DemoPartitionContext.DefaultFinestNodeSize + 3;
+        int finestNodeSize = DefaultVisibleRanges.DefaultFinestNodeSize;
+        float detailBalance = DefaultVisibleRanges.DefaultDetailBalance;
         int loadThreadCount = PartitionLoadQueue.DefaultThreadCount;
         int initialPartitionPoolCapacity = 20;
         int maxPartitionPoolCapacity = 100;
@@ -173,10 +174,14 @@ namespace TiledTerrainDemo
             settings.HeightMapHeight = heightMapHeight;
             settings.HeightMapOverlapSize = heightMapOverlapSize;
 
+            var visibleRanges = new DefaultVisibleRanges(settings);
+            visibleRanges.FinestNodeSize = finestNodeSize;
+            visibleRanges.DetailBalance = detailBalance;
+            visibleRanges.Initialize();
+
             partitionContext = new DemoPartitionContext(
-                GraphicsDevice, Content, settings,
+                GraphicsDevice, Content, settings, visibleRanges,
                 noiseSampleX, noiseSampleY, noiseSampleWidth, noiseSampleHeight);
-            partitionContext.FinestNodeSize = finestNodeSize;
             partitionContext.TerrainRenderer.FogEnabled = true;
             partitionContext.TerrainRenderer.FogStart = fogStart;
             partitionContext.TerrainRenderer.FogEnd = fogEnd;

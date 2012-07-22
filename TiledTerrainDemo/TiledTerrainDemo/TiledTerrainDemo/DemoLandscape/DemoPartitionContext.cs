@@ -13,15 +13,10 @@ namespace TiledTerrainDemo.DemoLandscape
 {
     public sealed class DemoPartitionContext
     {
-        public const int DefaultFinestNodeSize = 5;
-
         Settings settings;
 
         // noise parameters for debug.
         int noiseSeed = 300;
-
-        // visible ranges.
-        int finestNodeSize = DefaultFinestNodeSize;
 
         #region Noise and fractal test
 
@@ -61,8 +56,6 @@ namespace TiledTerrainDemo.DemoLandscape
 
         #endregion
 
-        DefaultVisibleRanges visibleRanges;
-
         public GraphicsDevice GraphicsDevice { get; private set; }
 
         public ContentManager Content { get; private set; }
@@ -80,12 +73,6 @@ namespace TiledTerrainDemo.DemoLandscape
             get { return settings; }
         }
 
-        public int FinestNodeSize
-        {
-            get { return finestNodeSize; }
-            set { finestNodeSize = value; }
-        }
-
         public DemoTerrainRenderer TerrainRenderer { get; private set; }
 
         public Selection Selection { get; private set; }
@@ -100,6 +87,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public DemoPartitionContext(
             GraphicsDevice graphicsDevice, ContentManager content, Settings settings,
+            IVisibleRanges visibleRanges,
             float noiseMinX, float noiseMinY, float noiseWidth, float noiseHeight)
         {
             GraphicsDevice = graphicsDevice;
@@ -170,10 +158,6 @@ namespace TiledTerrainDemo.DemoLandscape
             recFinalTerrain.Scale = 2.5f;
 
             #endregion
-
-            visibleRanges = new DefaultVisibleRanges(settings);
-            visibleRanges.FinestNodeSize = finestNodeSize;
-            visibleRanges.Initialize();
 
             TerrainRenderer = new DemoTerrainRenderer(GraphicsDevice, Content, settings);
             TerrainRenderer.InitializeMorphConsts(visibleRanges);

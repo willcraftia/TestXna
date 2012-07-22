@@ -8,7 +8,7 @@ namespace TiledTerrainDemo.CDLOD
 {
     public sealed class DefaultVisibleRanges : IVisibleRanges
     {
-        public const float DefaultFinestNodeSize = 3;
+        public const int DefaultFinestNodeSize = 3;
 
         public const float DefaultDetailBalance = 2;
 
@@ -16,7 +16,7 @@ namespace TiledTerrainDemo.CDLOD
 
         float[] ranges;
 
-        public float FinestNodeSize { get; set; }
+        public int FinestNodeSize { get; set; }
 
         public float DetailBalance { get; set; }
 
