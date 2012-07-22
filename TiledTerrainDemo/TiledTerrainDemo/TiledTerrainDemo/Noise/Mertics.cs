@@ -18,7 +18,7 @@ namespace TiledTerrainDemo.Noise
         /// <returns></returns>
         public static float Squared(float x, float y, float z)
         {
-            return x * x + y * y + z + z;
+            return x * x + y * y + z * z;
         }
 
         /// <summary>

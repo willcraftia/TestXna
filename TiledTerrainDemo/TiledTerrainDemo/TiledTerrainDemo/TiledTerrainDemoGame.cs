@@ -21,8 +21,10 @@ namespace TiledTerrainDemo
 {
     public class TiledTerrainDemoGame : Game
     {
-        int heightMapWidth = 256 * 4 + 1;
-        int heightMapHeight = 256 * 4 + 1;
+        //int heightMapWidth = 256 * 4 + 1;
+        //int heightMapHeight = 256 * 4 + 1;
+        int heightMapWidth = 256 * 1 + 1;
+        int heightMapHeight = 256 * 1 + 1;
         int heightMapOverlapSize = 1;
         float noiseSampleX = 0;
         float noiseSampleY = 0;
@@ -39,8 +41,8 @@ namespace TiledTerrainDemo
         //int patchResolution = Settings.DefaultPatchResolution * 2;
         //float patchScale = Settings.DefaultPatchScale;
         float patchScale = 16 * 2;
-        //float heightScale = Settings.DefaultHeightScale;
-        float heightScale = Settings.DefaultHeightScale * 16;
+        float heightScale = Settings.DefaultHeightScale;
+        //float heightScale = Settings.DefaultHeightScale * 16;
 
         int finestNodeSize = DefaultVisibleRanges.DefaultFinestNodeSize;
         float detailBalance = DefaultVisibleRanges.DefaultDetailBalance;
