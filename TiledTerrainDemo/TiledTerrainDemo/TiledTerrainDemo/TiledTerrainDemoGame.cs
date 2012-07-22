@@ -127,7 +127,7 @@ namespace TiledTerrainDemo
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
-            // for recording settings
+            // for test settings
             //graphics.PreferredBackBufferWidth = 640;
             //graphics.PreferredBackBufferHeight = 480;
             graphics.PreferMultiSampling = true;

@@ -131,6 +131,7 @@ namespace TiledTerrainDemo.DemoLandscape
             #region Vorononi test
 
             voronoi.Seed = noiseSeed;
+            voronoi.Frequency = 1;
             voronoi.VoronoiType = VoronoiType.First;
             voronoi.Metrics = Mertics.Squared;
             //voronoi.DistanceEnabled = true;
