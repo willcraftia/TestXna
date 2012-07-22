@@ -41,7 +41,8 @@ namespace TiledTerrainDemo
         //int patchResolution = Settings.DefaultPatchResolution * 2;
         //float patchScale = Settings.DefaultPatchScale;
         float patchScale = 16 * 2;
-        float heightScale = Settings.DefaultHeightScale;
+        //float heightScale = Settings.DefaultHeightScale;
+        float heightScale = Settings.DefaultHeightScale * 4;
         //float heightScale = Settings.DefaultHeightScale * 16;
 
         int finestNodeSize = DefaultVisibleRanges.DefaultFinestNodeSize;

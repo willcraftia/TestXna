@@ -32,6 +32,11 @@ namespace TiledTerrainDemo.DemoLandscape
         RidgedMultifractal ridgedMultifractal = new RidgedMultifractal();
         SinFractal sinFractal = new SinFractal();
         Billow billow = new Billow();
+
+        #endregion
+
+        #region Voronoi test
+
         Voronoi voronoi = new Voronoi();
 
         #endregion
@@ -106,7 +111,6 @@ namespace TiledTerrainDemo.DemoLandscape
             improvedPerlinNoise.Reseed();
             simplexNoise.Seed = noiseSeed;
             simplexNoise.Reseed();
-            voronoi.Seed = noiseSeed;
 
             //var noise = perlinNoise;
             var noise = improvedPerlinNoise;
@@ -121,6 +125,15 @@ namespace TiledTerrainDemo.DemoLandscape
             ridgedMultifractal.Noise = noise.GetValue;
             sinFractal.Noise = noise.GetValue;
             billow.Noise = noise.GetValue;
+
+            #endregion
+
+            #region Vorononi test
+
+            voronoi.Seed = noiseSeed;
+            voronoi.VoronoiType = VoronoiType.First;
+            voronoi.Metrics = Mertics.Squared;
+            //voronoi.DistanceEnabled = true;
 
             #endregion
 

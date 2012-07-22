@@ -61,61 +61,6 @@ namespace TiledTerrainDemo.Noise
             set { metrics = value; }
         }
 
-        //public float GetValue(float x, float y, float z)
-        //{
-        //    x *= frequency;
-        //    y *= frequency;
-        //    z *= frequency;
-
-        //    int xi = NoiseHelper.Floor(x);
-        //    int yi = NoiseHelper.Floor(y);
-        //    int zi = NoiseHelper.Floor(z);
-
-        //    float minD = float.MaxValue;
-        //    float xc = 0;
-        //    float yc = 0;
-        //    float zc = 0;
-
-        //    // Inside each unit cube, there is a seed point at a random position.
-        //    // Go through each of the nearby cubes until we find a cube with a seed point
-        //    // that is closest to the specified position.
-        //    for (int zz = zi - 2; zz <= zi + 2; zz++)
-        //    {
-        //        for (int yy = yi - 2; yy <= yi + 2; yy++)
-        //        {
-        //            for (int xx = xi - 2; xx <= xi + 2; xx++)
-        //            {
-        //                // Calculate the position and distance to the seed point
-        //                // inside of this unit cube.
-        //                float xp = xx + GetValueNoise(xx, yy, zz, seed);
-        //                float yp = yy + GetValueNoise(xx, yy, zz, seed + 1);
-        //                float zp = zz + GetValueNoise(xx, yy, zz, seed + 2);
-        //                float xd = xp - x;
-        //                float yd = yp - y;
-        //                float zd = zp - z;
-        //                float d = xd * xd + yd * yd + zd * zd;
-
-        //                if (d < minD)
-        //                {
-        //                    minD = d;
-        //                    xc = xp;
-        //                    yc = yp;
-        //                    zc = zp;
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    float value = 0;
-        //    if (distanceEnabled)
-        //        value = (float) (Math.Sqrt(minD) * Math.Sqrt(3) - 1.0f);
-
-        //    int xci = NoiseHelper.Floor(xc);
-        //    int yci = NoiseHelper.Floor(yc);
-        //    int zci = NoiseHelper.Floor(zc);
-        //    return value + displacement * GetValueNoise(xci, yci, zci, 0);
-        //}
-
         public float GetValue(float x, float y, float z)
         {
             x *= frequency;
@@ -262,15 +207,26 @@ namespace TiledTerrainDemo.Noise
             int yi = NoiseHelper.Floor(y);
             int zi = NoiseHelper.Floor(z);
 
+            // NOTE:
+            //
+            // Why does libnoise use cells in [-1, 2] ? For accuracy ?
+            // Standard voronoi algorithms use cells in [-1, 1].
+
             // Inside each unit cube, there is a seed point at a random position.
             // Go through each of the nearby cubes until we find a cube with a seed point
             // that is closest to the specified position.
-            for (int zz = zi - 2; zz <= zi + 2; zz++)
+            for (int zz = zi - 1; zz <= zi + 1; zz++)
             {
-                for (int yy = yi - 2; yy <= yi + 2; yy++)
+                for (int yy = yi - 1; yy <= yi + 1; yy++)
                 {
-                    for (int xx = xi - 2; xx <= xi + 2; xx++)
+                    for (int xx = xi - 1; xx <= xi + 1; xx++)
                     {
+            //for (int zz = zi - 2; zz <= zi + 2; zz++)
+            //{
+            //    for (int yy = yi - 2; yy <= yi + 2; yy++)
+            //    {
+            //        for (int xx = xi - 2; xx <= xi + 2; xx++)
+            //        {
                         // Calculate the position and distance to the seed point
                         // inside of this unit cube.
                         float xp = xx + GetValueNoise(xx, yy, zz, seed);
