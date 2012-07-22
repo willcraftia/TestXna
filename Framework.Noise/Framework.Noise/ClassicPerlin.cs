@@ -74,9 +74,9 @@ namespace Willcraftia.Framework.Noise
             var indexLU = permutation[indexL + gridPointU];
             var indexRU = permutation[indexR + gridPointU];
 
-            var sx = NoiseHelper.CubicSCurve(distanceFromL);
-            var sy = NoiseHelper.CubicSCurve(distanceFromD);
-            var sz = NoiseHelper.CubicSCurve(distanceFromB);
+            var sx = NoiseHelper.SCurve(distanceFromL);
+            var sy = NoiseHelper.SCurve(distanceFromD);
+            var sz = NoiseHelper.SCurve(distanceFromB);
 
             Vector3 q;
             float u;

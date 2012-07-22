@@ -8,7 +8,7 @@ namespace Willcraftia.Framework.Noise
 {
     public static class NoiseHelper
     {
-        public static float CubicSCurve(float value)
+        public static float SCurve(float value)
         {
             return value * value * (3 - 2 * value);
         }

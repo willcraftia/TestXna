@@ -60,7 +60,7 @@ namespace Willcraftia.Framework.Noise
                 {
                     var lowerCurve = lowerBound - edgeFalloff;
                     var upperCurve = lowerBound + edgeFalloff;
-                    var amount = NoiseHelper.CubicSCurve((control - lowerCurve) / (upperCurve - lowerCurve));
+                    var amount = NoiseHelper.SCurve((control - lowerCurve) / (upperCurve - lowerCurve));
                     return MathHelper.Lerp(Noise0(x, y, z), Noise1(x, y, z), amount);
                 }
 
@@ -71,7 +71,7 @@ namespace Willcraftia.Framework.Noise
                 {
                     var lowerCurve = upperBound - edgeFalloff;
                     var upperCurve = upperBound + edgeFalloff;
-                    var amount = NoiseHelper.CubicSCurve((control - lowerCurve) / (upperCurve - lowerCurve));
+                    var amount = NoiseHelper.SCurve((control - lowerCurve) / (upperCurve - lowerCurve));
                     return MathHelper.Lerp(Noise1(x, y, z), Noise0(x, y, z), amount);
                 }
 
