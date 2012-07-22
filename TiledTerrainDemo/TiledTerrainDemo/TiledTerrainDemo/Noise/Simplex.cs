@@ -12,7 +12,7 @@ namespace TiledTerrainDemo.Noise
     /// http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
     /// http://staffwww.itn.liu.se/~stegu/aqsis/aqsis-newnoise/
     /// </summary>
-    public sealed class SimplexNoise
+    public sealed class Simplex
     {
         const int wrapIndex = 256;
 

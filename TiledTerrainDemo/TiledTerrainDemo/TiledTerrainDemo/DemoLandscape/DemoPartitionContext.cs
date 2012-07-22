@@ -20,17 +20,21 @@ namespace TiledTerrainDemo.DemoLandscape
 
         #region Noise and fractal test
 
-        PerlinNoise perlinNoise = new PerlinNoise();
-        ImprovedPerlinNoise improvedPerlinNoise = new ImprovedPerlinNoise();
-        SimplexNoise simplexNoise = new SimplexNoise();
+        ClassicPerlin classicPerlin = new ClassicPerlin();
+        Perlin perlin = new Perlin();
+        Simplex simplex = new Simplex();
 
         PerlinFractal perlinFractal = new PerlinFractal();
+
+        // Musgrave fractal.
         SumFractal sumFractal = new SumFractal();
         Multifractal multifractal = new Multifractal();
         Heterofractal heterofractal = new Heterofractal();
         HybridMultifractal hybridMultifractal = new HybridMultifractal();
         RidgedMultifractal ridgedMultifractal = new RidgedMultifractal();
         SinFractal sinFractal = new SinFractal();
+        // ---
+
         Billow billow = new Billow();
 
         #endregion
@@ -55,7 +59,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
         #region Recording
 
-        ImprovedPerlinNoise recNoise = new ImprovedPerlinNoise();
+        Perlin recNoise = new Perlin();
         SumFractal recBaseTerrain = new SumFractal();
         ScaleBias recFinalTerrain = new ScaleBias();
 
@@ -105,15 +109,15 @@ namespace TiledTerrainDemo.DemoLandscape
 
             #region Noise and fractal test
 
-            perlinNoise.Seed = noiseSeed;
-            perlinNoise.Reseed();
-            improvedPerlinNoise.Seed = noiseSeed;
-            improvedPerlinNoise.Reseed();
-            simplexNoise.Seed = noiseSeed;
-            simplexNoise.Reseed();
+            classicPerlin.Seed = noiseSeed;
+            classicPerlin.Reseed();
+            perlin.Seed = noiseSeed;
+            perlin.Reseed();
+            simplex.Seed = noiseSeed;
+            simplex.Reseed();
 
             //var noise = perlinNoise;
-            var noise = improvedPerlinNoise;
+            var noise = perlin;
             //var noise = simplexNoise;
             //var noise = voronoi;
 
@@ -140,7 +144,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
             #region Noise combination test
 
-            var testBaseNoise = improvedPerlinNoise;
+            var testBaseNoise = perlin;
 
             mountainTerrain.Noise = testBaseNoise.GetValue;
             baseFlatTerrain.Noise = testBaseNoise.GetValue;

@@ -93,7 +93,7 @@ namespace TiledTerrainDemo.Noise
                         if (distanceEnabled)
                             value = distanceResult.Distance0;
 
-                        return value + displacement * GetValueNoise(xci, yci, zci, 0);
+                        return value + displacement * GetPosition(xci, yci, zci, 0);
                     }
                 case VoronoiType.Second:
                     {
@@ -106,7 +106,7 @@ namespace TiledTerrainDemo.Noise
                         if (distanceEnabled)
                             value = distanceResult.Distance1;
 
-                        return value + displacement * GetValueNoise(xci, yci, zci, 0);
+                        return value + displacement * GetPosition(xci, yci, zci, 0);
                     }
                 case VoronoiType.Third:
                     {
@@ -119,7 +119,7 @@ namespace TiledTerrainDemo.Noise
                         if (distanceEnabled)
                             value = distanceResult.Distance2;
 
-                        return value + displacement * GetValueNoise(xci, yci, zci, 0);
+                        return value + displacement * GetPosition(xci, yci, zci, 0);
                     }
                 case VoronoiType.Fourth:
                     {
@@ -132,7 +132,7 @@ namespace TiledTerrainDemo.Noise
                         if (distanceEnabled)
                             value = distanceResult.Distance3;
 
-                        return value + displacement * GetValueNoise(xci, yci, zci, 0);
+                        return value + displacement * GetPosition(xci, yci, zci, 0);
                     }
                 case VoronoiType.Difference21:
                     {
@@ -148,7 +148,7 @@ namespace TiledTerrainDemo.Noise
                         if (distanceEnabled)
                             value = distanceResult.Distance1 - distanceResult.Distance0;
 
-                        return value + displacement * GetValueNoise(xci, yci, zci, 0);
+                        return value + displacement * GetPosition(xci, yci, zci, 0);
                     }
                 case VoronoiType.Difference32:
                     {
@@ -164,7 +164,7 @@ namespace TiledTerrainDemo.Noise
                         if (distanceEnabled)
                             value = distanceResult.Distance2 - distanceResult.Distance1;
 
-                        return value + displacement * GetValueNoise(xci, yci, zci, 0);
+                        return value + displacement * GetPosition(xci, yci, zci, 0);
                     }
                 case VoronoiType.Crackle:
                     {
@@ -229,9 +229,9 @@ namespace TiledTerrainDemo.Noise
             //        {
                         // Calculate the position and distance to the seed point
                         // inside of this unit cube.
-                        float xp = xx + GetValueNoise(xx, yy, zz, seed);
-                        float yp = yy + GetValueNoise(xx, yy, zz, seed + 1);
-                        float zp = zz + GetValueNoise(xx, yy, zz, seed + 2);
+                        float xp = xx + GetPosition(xx, yy, zz, seed);
+                        float yp = yy + GetPosition(xx, yy, zz, seed + 1);
+                        float zp = zz + GetPosition(xx, yy, zz, seed + 2);
                         float xd = xp - x;
                         float yd = yp - y;
                         float zd = zp - z;
@@ -288,13 +288,13 @@ namespace TiledTerrainDemo.Noise
             }
         }
 
-        float GetValueNoise(int x, int y, int z, int seed)
+        float GetPosition(int x, int y, int z, int seed)
         {
             // 1073741824 = 1000000000000000000000000000000 (bit)
-            return 1.0f - ((float) GetIntValueNoise(x, y, z, seed)) / 1073741824.0f;
+            return 1.0f - ((float) GetIntRandom(x, y, z, seed)) / 1073741824.0f;
         }
 
-        int GetIntValueNoise(int x, int y, int z, int seed)
+        int GetIntRandom(int x, int y, int z, int seed)
         {
             // define primes.
             const int primX = 1619;

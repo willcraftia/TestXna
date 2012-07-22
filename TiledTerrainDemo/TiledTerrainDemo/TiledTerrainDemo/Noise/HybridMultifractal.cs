@@ -6,7 +6,7 @@ using System;
 
 namespace TiledTerrainDemo.Noise
 {
-    public sealed class HybridMultifractal : Fractal
+    public sealed class HybridMultifractal : Musgrave
     {
         public const float MusgraveHurst = 0.25f;
 

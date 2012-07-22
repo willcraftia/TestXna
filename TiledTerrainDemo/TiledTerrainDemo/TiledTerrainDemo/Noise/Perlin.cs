@@ -12,7 +12,7 @@ namespace TiledTerrainDemo.Noise
     ///
     /// http://mrl.nyu.edu/~perlin/noise/
     /// </summary>
-    public sealed class ImprovedPerlinNoise
+    public sealed class Perlin
     {
         const int wrapIndex = 256;
 

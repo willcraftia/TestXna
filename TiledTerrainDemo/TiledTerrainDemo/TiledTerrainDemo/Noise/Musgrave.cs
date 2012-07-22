@@ -6,7 +6,7 @@ using System;
 
 namespace TiledTerrainDemo.Noise
 {
-    public abstract class Fractal
+    public abstract class Musgrave
     {
         public const int MaxOctaveCount = 30;
 

@@ -10,7 +10,7 @@ namespace TiledTerrainDemo.Noise
     /// <summary>
     /// The class generates Perlin noise.
     /// </summary>
-    public sealed class PerlinNoise
+    public sealed class ClassicPerlin
     {
         const int wrapIndex = 256;
 

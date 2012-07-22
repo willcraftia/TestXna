@@ -6,7 +6,7 @@ using System;
 
 namespace TiledTerrainDemo.Noise
 {
-    public sealed class SinFractal : Fractal
+    public sealed class SinFractal : Musgrave
     {
         protected override float GetValueOverride(float x, float y, float z)
         {

@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace TiledTerrainDemo.Noise
 {
-    public sealed class RidgedMultifractal : Fractal
+    public sealed class RidgedMultifractal : Musgrave
     {
         public const float MusgraveHurst = 1;
 

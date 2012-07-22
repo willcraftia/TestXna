@@ -8,15 +8,15 @@ namespace TiledTerrainDemo.Noise
 {
     public sealed class Turbulence
     {
-        public const float DefaultFrequency = Fractal.DefaultFrequency;
+        public const float DefaultFrequency = 1;
 
         public const float DefaultPower = 1;
 
         public const int DefaultRoughness = 3;
 
-        SimplexNoise noiseX = new SimplexNoise();
-        SimplexNoise noiseY = new SimplexNoise();
-        SimplexNoise noiseZ = new SimplexNoise();
+        Simplex noiseX = new Simplex();
+        Simplex noiseY = new Simplex();
+        Simplex noiseZ = new Simplex();
 
         PerlinFractal distortX = new PerlinFractal();
         PerlinFractal distortY = new PerlinFractal();

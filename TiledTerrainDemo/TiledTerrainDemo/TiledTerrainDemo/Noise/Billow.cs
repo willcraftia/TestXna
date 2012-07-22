@@ -6,7 +6,7 @@ using System;
 
 namespace TiledTerrainDemo.Noise
 {
-    public sealed class Billow/* : Fractal*/
+    public sealed class Billow
     {
         float frequency = 1;
 
@@ -68,29 +68,5 @@ namespace TiledTerrainDemo.Noise
 
             return value;
         }
-
-        //protected override float GetValueOverride(float x, float y, float z)
-        //{
-        //    x *= frequency;
-        //    y *= frequency;
-        //    z *= frequency;
-
-        //    float value = 0;
-
-        //    for (int i = 0; i < octaveCount; i++)
-        //    {
-        //        var signal = Noise(x, y, z);
-        //        signal = (2 * Math.Abs(signal) - 1) * spectralWeights[i];
-        //        value += signal;
-
-        //        x *= lacunarity;
-        //        y *= lacunarity;
-        //        z *= lacunarity;
-        //    }
-
-        //    value += 0.5f;
-
-        //    return value;
-        //}
     }
 }

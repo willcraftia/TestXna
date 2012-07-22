@@ -6,7 +6,7 @@ using System;
 
 namespace TiledTerrainDemo.Noise
 {
-    public sealed class Multifractal : Fractal
+    public sealed class Multifractal : Musgrave
     {
         float offset = 1f;
 
