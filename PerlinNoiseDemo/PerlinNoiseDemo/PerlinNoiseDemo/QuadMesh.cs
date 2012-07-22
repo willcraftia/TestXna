@@ -8,11 +8,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace PerlinNoiseDemo
 {
-    public sealed class HeightMapMesh : IDisposable
+    public sealed class QuadMesh : IDisposable
     {
         public VertexBuffer VertexBuffer { get; private set; }
 
-        public HeightMapMesh(GraphicsDevice graphicsDevice, float size)
+        public QuadMesh(GraphicsDevice graphicsDevice, float size)
         {
             var half = size * 0.5f;
 
@@ -35,7 +35,7 @@ namespace PerlinNoiseDemo
 
         bool disposed;
 
-        ~HeightMapMesh()
+        ~QuadMesh()
         {
             Dispose(false);
         }

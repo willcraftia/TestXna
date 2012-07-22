@@ -9,12 +9,10 @@ using Microsoft.Xna.Framework.Graphics;
 namespace PerlinNoiseDemo
 {
     /// <summary>
-    /// Height map をテクスチャとして生成するためのクラスです。
+    /// The class generates a height map texture.
     /// </summary>
     public sealed class HeightMapImage : IDisposable
     {
-        GraphicsDevice graphicsDevice;
-
         HeightColorCollection heightColors = new HeightColorCollection();
 
         float sqrt2 = (float) Math.Sqrt(2);
@@ -36,30 +34,20 @@ namespace PerlinNoiseDemo
         float cosElevation;
         
         float sinElevation;
-        
-        /// <summary>
-        /// HeightColorCollection を取得します。
-        /// </summary>
+
+        public GraphicsDevice GraphicsDevice { get; private set; }
+
         public HeightColorCollection HeightColors
         {
             get { return heightColors; }
         }
 
-        /// <summary>
-        /// 高度に応じて色付けされた height map をテクスチャとして取得します。
-        /// </summary>
         public Texture2D ColoredHeightMap { get; private set; }
 
-        /// <summary>
-        /// ライティングが有効であるかどうかを示す値を取得または設定します。
-        /// </summary>
-        /// <value>
-        /// true (ライティングが有効)、false (それ以外の場合)。
-        /// </value>
         public bool LightingEnabled { get; set; }
 
         /// <summary>
-        /// X-Z 平面についてのライトの角度 (ラジアン) を取得または設定します。
+        /// Gets/sets the angle (radian) of the light on x-z plane.
         /// </summary>
         public float LightAzimuth
         {
@@ -75,7 +63,7 @@ namespace PerlinNoiseDemo
         }
 
         /// <summary>
-        /// X-Y 平面についてのライトの角度 (ラジアン) を取得または設定します。
+        /// Gets/sets the angle (radian) of the light on x-y plane.
         /// </summary>
         public float LightElevation
         {
@@ -90,50 +78,32 @@ namespace PerlinNoiseDemo
             }
         }
 
-        /// <summary>
-        /// ライト色のコントラストの度合いを取得または設定します。
-        /// </summary>
         public float LightContrast
         {
             get { return lightContrast; }
             set { lightContrast = value; }
         }
 
-        /// <summary>
-        /// ライト色の明るさの度合いを取得または設定します。
-        /// </summary>
         public float LightBrightness
         {
             get { return lightBrightness; }
             set { lightBrightness = value; }
         }
 
-        /// <summary>
-        /// ライト色を取得または設定します。
-        /// </summary>
         public Vector4 LightColor
         {
             get { return lightColor; }
             set { lightColor = value; }
         }
 
-        /// <summary>
-        /// インスタンスを生成します。
-        /// </summary>
-        /// <param name="graphicsDevice"></param>
         public HeightMapImage(GraphicsDevice graphicsDevice)
         {
-            this.graphicsDevice = graphicsDevice;
+            GraphicsDevice = graphicsDevice;
 
             LightAzimuth = MathHelper.PiOver4;
             LightElevation = MathHelper.PiOver4;
         }
 
-        /// <summary>
-        /// テクスチャを生成します。
-        /// </summary>
-        /// <param name="size"></param>
-        /// <param name="heights"></param>
         public void Build(int size, float[] heights)
         {
             if (heights == null) throw new InvalidOperationException("'heights' is null.");
@@ -149,7 +119,7 @@ namespace PerlinNoiseDemo
 
             if (ColoredHeightMap == null)
             {
-                ColoredHeightMap = new Texture2D(graphicsDevice, size, size, false, SurfaceFormat.Color);
+                ColoredHeightMap = new Texture2D(GraphicsDevice, size, size, false, SurfaceFormat.Color);
             }
 
             var coloredHeights = new Color[heights.Length];
@@ -167,13 +137,6 @@ namespace PerlinNoiseDemo
             ColoredHeightMap.SetData(coloredHeights);
         }
 
-        /// <summary>
-        /// ライティングによる色を算出します。
-        /// </summary>
-        /// <param name="size"></param>
-        /// <param name="heights"></param>
-        /// <param name="index"></param>
-        /// <param name="color"></param>
         void Light(int size, float[] heights, int index, ref Vector4 color)
         {
             var x = index % size;
@@ -240,15 +203,6 @@ namespace PerlinNoiseDemo
             color.Z = MathHelper.Clamp(b, 0, 1);
         }
 
-        /// <summary>
-        /// ライトの強さを算出します。
-        /// </summary>
-        /// <param name="center"></param>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <param name="down"></param>
-        /// <param name="up"></param>
-        /// <returns></returns>
         float CalculateLightIntensity(float center, float left, float right, float down, float up)
         {
             float io = (float) (sqrt2 * sinElevation * 0.5f);
