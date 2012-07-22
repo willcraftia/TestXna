@@ -28,11 +28,21 @@ namespace PerlinNoiseDemo
 
         GraphicsDeviceManager graphics;
 
+        #region Noise Generators
+
         ClassicPerlin classicPerlin = new ClassicPerlin();
 
         Perlin perlin = new Perlin();
 
+        Simplex simplex = new Simplex();
+
+        Voronoi voronoi = new Voronoi();
+
+        #endregion
+
         PerlinFractal perlinFractal = new PerlinFractal();
+
+        #region Musgrave Fractal Algorithms
 
         SumFractal sumFractal = new SumFractal();
 
@@ -45,6 +55,10 @@ namespace PerlinNoiseDemo
         RidgedMultifractal ridgedMultifractal = new RidgedMultifractal();
 
         SinFractal sinFractal = new SinFractal();
+
+        #endregion
+
+        Billow billow = new Billow();
 
         Turbulence turbulence = new Turbulence();
 
@@ -70,6 +84,8 @@ namespace PerlinNoiseDemo
         {
             classicPerlin.Seed = noiseSeed;
             perlin.Seed = noiseSeed;
+            simplex.Seed = noiseSeed;
+            voronoi.Seed = noiseSeed;
 
             perlinFractal.Noise = perlin.GetValue;
 
@@ -81,6 +97,7 @@ namespace PerlinNoiseDemo
             ridgedMultifractal.Noise = perlin.GetValue;
             sinFractal.Noise = perlin.GetValue;
 
+            billow.Noise = perlin.GetValue;
             turbulence.Noise = perlin.GetValue;
 
             finalNoise = sumFractal;
