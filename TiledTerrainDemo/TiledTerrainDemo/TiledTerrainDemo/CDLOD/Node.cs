@@ -133,7 +133,7 @@ namespace TiledTerrainDemo.CDLOD
         public bool Select(Selection selection, bool parentCompletelyInFrustum, bool ignoreVisibilityCheck)
         {
             BoundingBox boundingBox;
-            GetBoundingBox(ref selection.TerrainOffset, selection.PatchScale, selection.HeightScale, out boundingBox);
+            GetBoundingBox(ref selection.TerrainOffset, selection.Settings.PatchScale, selection.Settings.HeightScale, out boundingBox);
 
             ContainmentType containmentType = ContainmentType.Contains;
             if (!parentCompletelyInFrustum)
@@ -209,7 +209,7 @@ namespace TiledTerrainDemo.CDLOD
         bool PreSelect(Selection selection, bool parentCompletelyInFrustum)
         {
             BoundingBox boundingBox;
-            GetBoundingBox(ref selection.TerrainOffset, selection.PatchScale, selection.HeightScale, out boundingBox);
+            GetBoundingBox(ref selection.TerrainOffset, selection.Settings.PatchScale, selection.Settings.HeightScale, out boundingBox);
 
             // do not check the intersection between AABB and the view frustum.
 

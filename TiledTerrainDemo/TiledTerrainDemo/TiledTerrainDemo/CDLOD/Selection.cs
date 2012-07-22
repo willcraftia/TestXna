@@ -22,7 +22,7 @@ namespace TiledTerrainDemo.CDLOD
 
         public Texture2D HeightMapTexture;
 
-        Settings settings;
+        public Settings Settings;
 
         SelectedNode[] selectedNodes;
 
@@ -32,32 +32,9 @@ namespace TiledTerrainDemo.CDLOD
 
         public int SelectedNodeCount { get; private set; }
 
-        public float PatchScale
-        {
-            get { return settings.PatchScale; }
-        }
-
-        public float HeightScale
-        {
-            get { return settings.HeightScale; }
-        }
-
-        public Vector3 TerrainScale
-        {
-            get
-            {
-                return new Vector3
-                {
-                    X = (settings.HeightMapWidth - 1) * settings.PatchScale,
-                    Y = settings.HeightScale,
-                    Z = (settings.HeightMapHeight - 1) * settings.PatchScale
-                };
-            }
-        }
-
         public Selection(Settings settings, IVisibleRanges visibleRanges)
         {
-            this.settings = settings;
+            Settings = settings;
             VisibleRanges = visibleRanges;
 
             Frustum = new BoundingFrustum(Matrix.Identity);
@@ -109,9 +86,9 @@ namespace TiledTerrainDemo.CDLOD
         public void GetPatchInstanceVertex(int index, out PatchInstanceVertex instance)
         {
             instance = new PatchInstanceVertex();
-            instance.Offset.X = selectedNodes[index].X * settings.PatchScale;
-            instance.Offset.Y = selectedNodes[index].Y * settings.PatchScale;
-            instance.Scale = selectedNodes[index].Size * settings.PatchScale;
+            instance.Offset.X = selectedNodes[index].X * Settings.PatchScale;
+            instance.Offset.Y = selectedNodes[index].Y * Settings.PatchScale;
+            instance.Scale = selectedNodes[index].Size * Settings.PatchScale;
             instance.Level = selectedNodes[index].Level;
         }
     }
