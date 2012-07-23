@@ -111,5 +111,12 @@ namespace Willcraftia.Framework.Noise
                 y += deltaY;
             }
         }
+
+        public void ForEach(Action<float> action)
+        {
+            for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
+                    action(values[x + y * width]);
+        }
     }
 }
