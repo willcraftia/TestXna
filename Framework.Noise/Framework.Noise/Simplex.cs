@@ -134,10 +134,10 @@ namespace Willcraftia.Framework.Noise
             float y3 = y0 - 1.0f + 3.0f * G3;
             float z3 = z0 - 1.0f + 3.0f * G3;
 
-            // Wrap the integer indices at 256, to avoid indexing perm[] out of bounds
-            int ii = i & 0xff;
-            int jj = j & 0xff;
-            int kk = k & 0xff;
+            // Wrap the integer indices at 'modMask', to avoid indexing perm[] out of bounds
+            int ii = i & modMask;
+            int jj = j & modMask;
+            int kk = k & modMask;
 
             // Calculate the contribution from the four corners
             float t0 = 0.6f - x0 * x0 - y0 * y0 - z0 * z0;
