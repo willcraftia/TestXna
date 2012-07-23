@@ -92,13 +92,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Add.cs" />
     <Compile Include="Billow.cs" />
     <Compile Include="Bounds.cs" />
     <Compile Include="ClassicPerlin.cs" />
     <Compile Include="Heterofractal.cs" />
     <Compile Include="HybridMultifractal.cs" />
     <Compile Include="INoiseModule.cs" />
-    <Compile Include="Mertics.cs" />
+    <Compile Include="Metrics.cs" />
     <Compile Include="MetricsDelegate.cs" />
     <Compile Include="Multifractal.cs" />
     <Compile Include="Musgrave.cs" />

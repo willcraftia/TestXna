@@ -20,9 +20,9 @@ namespace PerlinNoiseDemo
 
         const float heightMapMeshGap = 0.02f;
 
-        const int heightMapCountX = 5;
+        const int heightMapCountX = 1;
 
-        const int heightMapCountY = 5;
+        const int heightMapCountY = 1;
 
         const int noiseSeed = 300;
 
@@ -62,6 +62,12 @@ namespace PerlinNoiseDemo
 
         Turbulence turbulence = new Turbulence();
 
+        #region Procedural texture
+
+        Granite granite = new Granite();
+
+        #endregion
+
         INoiseModule finalNoise;
 
         NoiseMap[,] noiseMaps = new NoiseMap[heightMapCountX, heightMapCountY];
@@ -100,7 +106,10 @@ namespace PerlinNoiseDemo
             billow.Noise = perlin.GetValue;
             turbulence.Noise = perlin.GetValue;
 
-            finalNoise = simplex;
+            // Procedural texture
+            granite.Initialize();
+
+            finalNoise = granite;
 
             base.Initialize();
         }
@@ -120,6 +129,17 @@ namespace PerlinNoiseDemo
                     map.SeamlessEnabled = true;
                     map.Build();
 
+                    float minV = float.MaxValue;
+                    float maxV = float.MinValue;
+
+                    map.ForEach((v) =>
+                    {
+                        minV = MathHelper.Min(minV, v);
+                        maxV = MathHelper.Min(maxV, v);
+                    });
+
+                    Console.WriteLine("[{0}, {1}]", minV, maxV);
+
                     noiseMaps[i, j] = map;
                 }
             }
@@ -136,19 +156,28 @@ namespace PerlinNoiseDemo
                 for (int j = 0; j < heightMapCountY; j++)
                 {
                     var image = new HeightMapImage(GraphicsDevice);
+                    // height map
                     image.HeightColors.AddColor(-1.0000f, new Color(0, 0, 128));
                     image.HeightColors.AddColor(-0.2500f, new Color(0, 0, 255));
                     image.HeightColors.AddColor(0.0000f, new Color(0, 128, 255));
                     image.HeightColors.AddColor(0.0625f, new Color(240, 240, 64));
                     image.HeightColors.AddColor(0.1250f, new Color(32, 160, 0));
                     image.HeightColors.AddColor(0.3750f, new Color(224, 224, 0));
-                    //image.HeightColors.AddColor(0.7500f, new Color(128, 128, 128));
                     image.HeightColors.AddColor(0.7500f, new Color(64, 64, 64));
                     image.HeightColors.AddColor(1.0000f, new Color(255, 255, 255));
-                    image.LightingEnabled = true;
-                    image.LightContrast = 3;
-                    image.Build(heightMapSize, noiseMaps[i, j].Values);
+                    //image.LightingEnabled = true;
+                    //image.LightContrast = 3;
 
+                    // granite
+                    //image.HeightColors.AddColor(-1.0000f, new Color(0, 0, 0));
+                    //image.HeightColors.AddColor(-0.9375f, new Color(0, 0, 0));
+                    //image.HeightColors.AddColor(-0.8750f, new Color(216, 216, 242));
+                    //image.HeightColors.AddColor(0.0000f, new Color(191, 191, 191));
+                    //image.HeightColors.AddColor(0.5000f, new Color(210, 116, 125));
+                    //image.HeightColors.AddColor(0.7500f, new Color(210, 113, 98));
+                    //image.HeightColors.AddColor(1.0000f, new Color(255, 176, 192));
+
+                    image.Build(heightMapSize, noiseMaps[i, j].Values);
                     heightMapImages[i, j] = image;
 
                     var position = new Vector3
@@ -170,7 +199,7 @@ namespace PerlinNoiseDemo
 
             quadMesh = new QuadMesh(GraphicsDevice, heightMapMeshSize);
 
-            var view = Matrix.CreateLookAt(new Vector3(0.0f, 0.0f, 7.0f), Vector3.Zero, Vector3.Up);
+            var view = Matrix.CreateLookAt(new Vector3(0.0f, 0.0f, 2.0f), Vector3.Zero, Vector3.Up);
             var projection = Matrix.CreatePerspectiveFieldOfView(
                 MathHelper.ToRadians(45.0f),
                 (float) GraphicsDevice.Viewport.Width / (float) GraphicsDevice.Viewport.Height,
