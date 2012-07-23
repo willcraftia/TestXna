@@ -13,7 +13,7 @@ namespace PerlinNoiseDemo
     /// </summary>
     public sealed class HeightMapImage : IDisposable
     {
-        HeightColorCollection heightColors = new HeightColorCollection();
+        GradientColorCollection gradientColors = new GradientColorCollection();
 
         float sqrt2 = (float) Math.Sqrt(2);
 
@@ -37,9 +37,9 @@ namespace PerlinNoiseDemo
 
         public GraphicsDevice GraphicsDevice { get; private set; }
 
-        public HeightColorCollection HeightColors
+        public GradientColorCollection GradientColors
         {
-            get { return heightColors; }
+            get { return gradientColors; }
         }
 
         public Texture2D ColoredHeightMap { get; private set; }
@@ -127,7 +127,7 @@ namespace PerlinNoiseDemo
             {
                 Vector4 c;
 
-                heightColors.GetColor(heights[i], out c);
+                gradientColors.Get(heights[i], out c);
 
                 if (LightingEnabled) Light(size, heights, i, ref c);
 

@@ -108,7 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="QuadMesh.cs" />
-    <Compile Include="HeightColorCollection.cs" />
+    <Compile Include="GradientColorCollection.cs" />
     <Compile Include="HeightMapImage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />

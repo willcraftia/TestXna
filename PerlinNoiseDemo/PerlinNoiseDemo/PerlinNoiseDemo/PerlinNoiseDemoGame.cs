@@ -157,25 +157,25 @@ namespace PerlinNoiseDemo
                 {
                     var image = new HeightMapImage(GraphicsDevice);
                     // height map
-                    image.HeightColors.AddColor(-1.0000f, new Color(0, 0, 128));
-                    image.HeightColors.AddColor(-0.2500f, new Color(0, 0, 255));
-                    image.HeightColors.AddColor(0.0000f, new Color(0, 128, 255));
-                    image.HeightColors.AddColor(0.0625f, new Color(240, 240, 64));
-                    image.HeightColors.AddColor(0.1250f, new Color(32, 160, 0));
-                    image.HeightColors.AddColor(0.3750f, new Color(224, 224, 0));
-                    image.HeightColors.AddColor(0.7500f, new Color(64, 64, 64));
-                    image.HeightColors.AddColor(1.0000f, new Color(255, 255, 255));
+                    image.GradientColors.Add(-1.0000f,   0,   0, 128);
+                    image.GradientColors.Add(-0.2500f,   0,   0, 255);
+                    image.GradientColors.Add( 0.0000f,   0, 128, 255);
+                    image.GradientColors.Add( 0.0625f, 240, 240,  64);
+                    image.GradientColors.Add( 0.1250f,  32, 160,   0);
+                    image.GradientColors.Add( 0.3750f, 224, 224,   0);
+                    image.GradientColors.Add( 0.7500f,  64,  64,  64);
+                    image.GradientColors.Add( 1.0000f, 255, 255, 255);
                     //image.LightingEnabled = true;
                     //image.LightContrast = 3;
 
                     // granite
-                    //image.HeightColors.AddColor(-1.0000f, new Color(0, 0, 0));
-                    //image.HeightColors.AddColor(-0.9375f, new Color(0, 0, 0));
-                    //image.HeightColors.AddColor(-0.8750f, new Color(216, 216, 242));
-                    //image.HeightColors.AddColor(0.0000f, new Color(191, 191, 191));
-                    //image.HeightColors.AddColor(0.5000f, new Color(210, 116, 125));
-                    //image.HeightColors.AddColor(0.7500f, new Color(210, 113, 98));
-                    //image.HeightColors.AddColor(1.0000f, new Color(255, 176, 192));
+                    //image.GradientColors.Add(-1.0000f, 0, 0, 0);
+                    //image.GradientColors.Add(-0.9375f, 0, 0, 0);
+                    //image.GradientColors.Add(-0.8750f, 216, 216, 242);
+                    //image.GradientColors.Add(0.0000f, 191, 191, 191);
+                    //image.GradientColors.Add(0.5000f, 210, 116, 125);
+                    //image.GradientColors.Add(0.7500f, 210, 113, 98);
+                    //image.GradientColors.Add(1.0000f, 255, 176, 192);
 
                     image.Build(heightMapSize, noiseMaps[i, j].Values);
                     heightMapImages[i, j] = image;
