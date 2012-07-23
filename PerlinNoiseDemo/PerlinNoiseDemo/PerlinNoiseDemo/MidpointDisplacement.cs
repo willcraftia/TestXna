@@ -31,6 +31,11 @@ namespace PerlinNoiseDemo
             Values[   0 + size * Width] = GetPosition(   0, 0, size, Seed);
             Values[size + size * Width] = GetPosition(size, 0, size, Seed);
 
+            Console.WriteLine("Values[   0 +    0 * Width]=" + Values[0 + 0 * Width]);
+            Console.WriteLine("Values[size +    0 * Width]=" + Values[size + 0 * Width]);
+            Console.WriteLine("Values[   0 + size * Width]=" + Values[0 + size * Width]);
+            Console.WriteLine("Values[size + size * Width]=" + Values[size + size * Width]);
+
             float modifier = 0.7f;
             float range = 1;
 
@@ -88,6 +93,11 @@ namespace PerlinNoiseDemo
                 range *= modifier;
                 offset /= 2;
             }
+
+            Console.WriteLine("Values[   0 +    0 * Width]=" + Values[0 + 0 * Width]);
+            Console.WriteLine("Values[size +    0 * Width]=" + Values[size + 0 * Width]);
+            Console.WriteLine("Values[   0 + size * Width]=" + Values[0 + size * Width]);
+            Console.WriteLine("Values[size + size * Width]=" + Values[size + size * Width]);
         }
 
         float GetPosition(int x, int y, int z, int seed)
