@@ -20,6 +20,8 @@ namespace Willcraftia.Framework.Noise
 
         int seed = Environment.TickCount;
 
+        Func<float, float> fadeCurve = NoiseHelper.SCurve3;
+
         Random random;
 
         int[] permutation = new int[wrapIndex * 2 + 2];
@@ -32,6 +34,22 @@ namespace Willcraftia.Framework.Noise
         {
             get { return seed; }
             set { seed = value; }
+        }
+
+        /// <summary>
+        /// Gets/sets a curve function that fades the defference between
+        /// the coordinates of the input value and
+        /// the coordinates of the cube's outer-lower-left vertex.
+        /// 
+        /// e.g.
+        /// Low quality: set Noise.PassThrough()
+        /// Standard quality: set Noise.SCurve3()
+        /// High quality: set Noise.SCurve5()
+        /// </summary>
+        public Func<float, float> FadeCurve
+        {
+            get { return fadeCurve; }
+            set { fadeCurve = value; }
         }
 
         public void Reseed()
@@ -74,9 +92,9 @@ namespace Willcraftia.Framework.Noise
             var indexLU = permutation[indexL + gridPointU];
             var indexRU = permutation[indexR + gridPointU];
 
-            var sx = NoiseHelper.SCurve3(distanceFromL);
-            var sy = NoiseHelper.SCurve3(distanceFromD);
-            var sz = NoiseHelper.SCurve3(distanceFromB);
+            var sx = FadeCurve(distanceFromL);
+            var sy = FadeCurve(distanceFromD);
+            var sz = FadeCurve(distanceFromB);
 
             Vector3 q;
             float u;

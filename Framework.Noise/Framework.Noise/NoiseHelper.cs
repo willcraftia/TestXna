@@ -8,6 +8,11 @@ namespace Willcraftia.Framework.Noise
 {
     public static class NoiseHelper
     {
+        public static float PassThrough(float x)
+        {
+            return x;
+        }
+
         public static float SCurve3(float x)
         {
             return x * x * (3 - 2 * x);
