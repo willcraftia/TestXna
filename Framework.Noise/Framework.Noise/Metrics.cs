@@ -7,7 +7,7 @@ using System;
 namespace Willcraftia.Framework.Noise
 {
     // for voronoi.
-    public static class Mertics
+    public static class Metrics
     {
         /// <summary>
         /// Calculate Euclidean distance squared.
