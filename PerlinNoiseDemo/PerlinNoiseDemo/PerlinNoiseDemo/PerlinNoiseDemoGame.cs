@@ -114,35 +114,41 @@ namespace PerlinNoiseDemo
             base.Initialize();
         }
 
+        MidpointDisplacement md = new MidpointDisplacement();
+
         protected override void LoadContent()
         {
-            for (int i = 0; i < heightMapCountX; i++)
-            {
-                for (int j = 0; j < heightMapCountY; j++)
-                {
-                    var map = new NoiseMap();
+            //for (int i = 0; i < heightMapCountX; i++)
+            //{
+            //    for (int j = 0; j < heightMapCountY; j++)
+            //    {
+            //        var map = new NoiseMap();
 
-                    map.Source = finalModule.Sample;
-                    map.Width = heightMapSize;
-                    map.Height = heightMapSize;
-                    map.Bounds = new Bounds { X = i, Y = j, Width = 1, Height = 1 };
-                    map.SeamlessEnabled = true;
-                    map.Build();
+            //        map.Source = finalModule.Sample;
+            //        map.Width = heightMapSize;
+            //        map.Height = heightMapSize;
+            //        map.Bounds = new Bounds { X = i, Y = j, Width = 1, Height = 1 };
+            //        map.SeamlessEnabled = true;
+            //        map.Build();
 
-                    float minV = float.MaxValue;
-                    float maxV = float.MinValue;
+            //        float minV = float.MaxValue;
+            //        float maxV = float.MinValue;
 
-                    map.ForEach((v) =>
-                    {
-                        minV = MathHelper.Min(minV, v);
-                        maxV = MathHelper.Min(maxV, v);
-                    });
+            //        map.ForEach((v) =>
+            //        {
+            //            minV = MathHelper.Min(minV, v);
+            //            maxV = MathHelper.Min(maxV, v);
+            //        });
 
-                    Console.WriteLine("[{0}, {1}]", minV, maxV);
+            //        Console.WriteLine("[{0}, {1}]", minV, maxV);
 
-                    noiseMaps[i, j] = map;
-                }
-            }
+            //        noiseMaps[i, j] = map;
+            //    }
+            //}
+
+            md.Width = heightMapSize;
+            md.Height = heightMapSize;
+            md.Build();
 
             var centerPosition = new Vector3
             {
@@ -177,7 +183,8 @@ namespace PerlinNoiseDemo
                     //image.GradientColors.Add(0.7500f, 210, 113, 98);
                     //image.GradientColors.Add(1.0000f, 255, 176, 192);
 
-                    image.Build(heightMapSize, noiseMaps[i, j].Values);
+                    //image.Build(heightMapSize, noiseMaps[i, j].Values);
+                    image.Build(heightMapSize, md.Values);
                     heightMapImages[i, j] = image;
 
                     var position = new Vector3
