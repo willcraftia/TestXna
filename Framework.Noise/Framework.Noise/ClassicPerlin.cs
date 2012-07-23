@@ -92,9 +92,9 @@ namespace Willcraftia.Framework.Noise
             var indexLU = permutation[indexL + gridPointU];
             var indexRU = permutation[indexR + gridPointU];
 
-            var sx = FadeCurve(distanceFromL);
-            var sy = FadeCurve(distanceFromD);
-            var sz = FadeCurve(distanceFromB);
+            var sx = fadeCurve(distanceFromL);
+            var sy = fadeCurve(distanceFromD);
+            var sz = fadeCurve(distanceFromB);
 
             Vector3 q;
             float u;

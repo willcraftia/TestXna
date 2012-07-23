@@ -145,7 +145,8 @@ namespace Willcraftia.Framework.Noise
             else
             {
                 t0 *= t0;
-                n0 = t0 * t0 * CalculateGradient(permutation[ii + permutation[jj + permutation[kk]]], x0, y0, z0);
+                n0 = t0 * t0 * NoiseHelper.CalculateGradient(
+                    permutation[ii + permutation[jj + permutation[kk]]], x0, y0, z0);
             }
 
             float t1 = 0.6f - x1 * x1 - y1 * y1 - z1 * z1;
@@ -153,7 +154,8 @@ namespace Willcraftia.Framework.Noise
             else
             {
                 t1 *= t1;
-                n1 = t1 * t1 * CalculateGradient(permutation[ii + i1 + permutation[jj + j1 + permutation[kk + k1]]], x1, y1, z1);
+                n1 = t1 * t1 * NoiseHelper.CalculateGradient(
+                    permutation[ii + i1 + permutation[jj + j1 + permutation[kk + k1]]], x1, y1, z1);
             }
 
             float t2 = 0.6f - x2 * x2 - y2 * y2 - z2 * z2;
@@ -161,7 +163,8 @@ namespace Willcraftia.Framework.Noise
             else
             {
                 t2 *= t2;
-                n2 = t2 * t2 * CalculateGradient(permutation[ii + i2 + permutation[jj + j2 + permutation[kk + k2]]], x2, y2, z2);
+                n2 = t2 * t2 * NoiseHelper.CalculateGradient(
+                    permutation[ii + i2 + permutation[jj + j2 + permutation[kk + k2]]], x2, y2, z2);
             }
 
             float t3 = 0.6f - x3 * x3 - y3 * y3 - z3 * z3;
@@ -169,23 +172,13 @@ namespace Willcraftia.Framework.Noise
             else
             {
                 t3 *= t3;
-                n3 = t3 * t3 * CalculateGradient(permutation[ii + 1 + permutation[jj + 1 + permutation[kk + 1]]], x3, y3, z3);
+                n3 = t3 * t3 * NoiseHelper.CalculateGradient(
+                    permutation[ii + 1 + permutation[jj + 1 + permutation[kk + 1]]], x3, y3, z3);
             }
 
             // Add contributions from each corner to get the final noise value.
             // The result is scaled to stay just inside [-1,1]
             return 32.0f * (n0 + n1 + n2 + n3);
-        }
-
-        static float CalculateGradient(int hash, float x, float y, float z)
-        {
-            // Convert low 4 bits of hash code into 12 simple
-            int h = hash & 15;
-            // gradient directions, and compute dot product.
-            float u = h < 8 ? x : y;
-            // Fix repeats at h = 12 to 15
-            float v = h < 4 ? y : h == 12 || h == 14 ? x : z;
-            return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
         }
 
         void InitializePermutationTables()

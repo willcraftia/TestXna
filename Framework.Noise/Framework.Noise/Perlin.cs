@@ -90,14 +90,14 @@ namespace Willcraftia.Framework.Noise
             var bb = permutation[b + 1] + cz;
 
             // Gradients of the 8 cube corners.
-            var g0 = CalculateGradient(permutation[aa], rx, ry, rz);
-            var g1 = CalculateGradient(permutation[ba], rx - 1, ry, rz);
-            var g2 = CalculateGradient(permutation[ab], rx, ry - 1, rz);
-            var g3 = CalculateGradient(permutation[bb], rx - 1, ry - 1, rz);
-            var g4 = CalculateGradient(permutation[aa + 1], rx, ry, rz - 1);
-            var g5 = CalculateGradient(permutation[ba + 1], rx - 1, ry, rz - 1);
-            var g6 = CalculateGradient(permutation[ab + 1], rx, ry - 1, rz - 1);
-            var g7 = CalculateGradient(permutation[bb + 1], rx - 1, ry - 1, rz - 1);
+            var g0 = NoiseHelper.CalculateGradient(permutation[aa], rx, ry, rz);
+            var g1 = NoiseHelper.CalculateGradient(permutation[ba], rx - 1, ry, rz);
+            var g2 = NoiseHelper.CalculateGradient(permutation[ab], rx, ry - 1, rz);
+            var g3 = NoiseHelper.CalculateGradient(permutation[bb], rx - 1, ry - 1, rz);
+            var g4 = NoiseHelper.CalculateGradient(permutation[aa + 1], rx, ry, rz - 1);
+            var g5 = NoiseHelper.CalculateGradient(permutation[ba + 1], rx - 1, ry, rz - 1);
+            var g6 = NoiseHelper.CalculateGradient(permutation[ab + 1], rx, ry - 1, rz - 1);
+            var g7 = NoiseHelper.CalculateGradient(permutation[bb + 1], rx - 1, ry - 1, rz - 1);
 
             // Lerp.
             var l0 = MathHelper.Lerp(g0, g1, u);
@@ -107,15 +107,6 @@ namespace Willcraftia.Framework.Noise
             var l4 = MathHelper.Lerp(l0, l1, v);
             var l5 = MathHelper.Lerp(l2, l3, v);
             return MathHelper.Lerp(l4, l5, w);
-        }
-
-        float CalculateGradient(int hash, float x, float y, float z)
-        {
-            // convert LO 4 bits of hash code into 12 gradient directions.
-            int h = hash & 15;
-            float u = h < 8 ? x : y;
-            float v = h < 4 ? y : h == 12 || h == 14 ? x : z;
-            return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
         }
 
         void InitializePermutationTables()
