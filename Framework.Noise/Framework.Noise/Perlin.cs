@@ -59,9 +59,9 @@ namespace Willcraftia.Framework.Noise
             var rz = z - fz;
 
             // complute fade curves for each of x, y, z.
-            var u = CalculateFadeCurve(rx);
-            var v = CalculateFadeCurve(ry);
-            var w = CalculateFadeCurve(rz);
+            var u = NoiseHelper.SCurve5(rx);
+            var v = NoiseHelper.SCurve5(ry);
+            var w = NoiseHelper.SCurve5(rz);
 
             // Hash coordinates of the 8 cube corners.
             var a = permutation[cx] + cy;
@@ -89,11 +89,6 @@ namespace Willcraftia.Framework.Noise
             var l4 = MathHelper.Lerp(l0, l1, v);
             var l5 = MathHelper.Lerp(l2, l3, v);
             return MathHelper.Lerp(l4, l5, w);
-        }
-
-        float CalculateFadeCurve(float t)
-        {
-            return t * t * t * (t * (t * 6 - 15) + 10);
         }
 
         float CalculateGradient(int hash, float x, float y, float z)

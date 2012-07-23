@@ -8,9 +8,14 @@ namespace Willcraftia.Framework.Noise
 {
     public static class NoiseHelper
     {
-        public static float SCurve(float value)
+        public static float SCurve3(float x)
         {
-            return value * value * (3 - 2 * value);
+            return x * x * (3 - 2 * x);
+        }
+
+        public static float SCurve5(float x)
+        {
+            return x * x * x * (x * (x * 6 - 15) + 10);
         }
 
         public static int Floor(float v)
