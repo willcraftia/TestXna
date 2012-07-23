@@ -14,9 +14,9 @@ namespace Willcraftia.Framework.Noise
 
         public const int DefaultRoughness = 3;
 
-        Simplex noiseX = new Simplex();
-        Simplex noiseY = new Simplex();
-        Simplex noiseZ = new Simplex();
+        Perlin noiseX = new Perlin();
+        Perlin noiseY = new Perlin();
+        Perlin noiseZ = new Perlin();
 
         PerlinFractal distortX = new PerlinFractal();
         PerlinFractal distortY = new PerlinFractal();
