@@ -23,7 +23,7 @@ namespace Willcraftia.Framework.Noise
 
         VoronoiType voronoiType = VoronoiType.First;
 
-        MetricsDelegate metrics = Metrics.Squared;
+        MetricsDelegate metrics = Willcraftia.Framework.Noise.Metrics.Squared;
 
         public int Seed
         {
