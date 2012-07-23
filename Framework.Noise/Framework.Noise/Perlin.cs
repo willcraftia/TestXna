@@ -12,7 +12,7 @@ namespace Willcraftia.Framework.Noise
     ///
     /// http://mrl.nyu.edu/~perlin/noise/
     /// </summary>
-    public sealed class Perlin : INoiseModule
+    public sealed class Perlin : IModule
     {
         const int wrapIndex = 256;
 
@@ -58,7 +58,7 @@ namespace Willcraftia.Framework.Noise
             initialized = true;
         }
 
-        public float GetValue(float x, float y, float z)
+        public float Sample(float x, float y, float z)
         {
             if (!initialized) Reseed();
 

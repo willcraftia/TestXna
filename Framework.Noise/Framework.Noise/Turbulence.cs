@@ -6,7 +6,7 @@ using System;
 
 namespace Willcraftia.Framework.Noise
 {
-    public sealed class Turbulence : INoiseModule
+    public sealed class Turbulence : IModule
     {
         public const float DefaultFrequency = 1;
 
@@ -22,13 +22,19 @@ namespace Willcraftia.Framework.Noise
         PerlinFractal distortY = new PerlinFractal();
         PerlinFractal distortZ = new PerlinFractal();
 
+        SampleSourceDelegate source;
+
         float frequency = DefaultFrequency;
 
         float power = DefaultPower;
 
         int roughness = DefaultRoughness;
 
-        public NoiseDelegate Noise { get; set; }
+        public SampleSourceDelegate Source
+        {
+            get { return source; }
+            set { source = value; }
+        }
 
         public float Frequency
         {
@@ -75,9 +81,9 @@ namespace Willcraftia.Framework.Noise
 
         public Turbulence()
         {
-            distortX.Noise = noiseX.GetValue;
-            distortY.Noise = noiseY.GetValue;
-            distortZ.Noise = noiseZ.GetValue;
+            distortX.Source = noiseX.Sample;
+            distortY.Source = noiseY.Sample;
+            distortZ.Source = noiseZ.Sample;
 
             distortX.Frequency = frequency;
             distortY.Frequency = frequency;
@@ -91,7 +97,7 @@ namespace Willcraftia.Framework.Noise
             noiseZ.Seed = noiseX.Seed + 2;
         }
 
-        public float GetValue(float x, float y, float z)
+        public float Sample(float x, float y, float z)
         {
             // from libnoise's Turbulence class.
 
@@ -109,11 +115,11 @@ namespace Willcraftia.Framework.Noise
             //float dy = x + distortY.GetValue(x1, y1, z1) * power;
             //float dz = x + distortZ.GetValue(x2, y2, z2) * power;
 
-            float dx = x + distortX.GetValue(x, y, z) * power;
-            float dy = y + distortY.GetValue(x, y, z) * power;
-            float dz = z + distortZ.GetValue(x, y, z) * power;
+            float dx = x + distortX.Sample(x, y, z) * power;
+            float dy = y + distortY.Sample(x, y, z) * power;
+            float dz = z + distortZ.Sample(x, y, z) * power;
 
-            return Noise(dx, dy, dz);
+            return source(dx, dy, dz);
         }
     }
 }

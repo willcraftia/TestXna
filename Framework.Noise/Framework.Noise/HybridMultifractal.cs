@@ -36,7 +36,7 @@ namespace Willcraftia.Framework.Noise
 
             for (int i = 0; i < octaveCount; i++)
             {
-                float signal = (Noise(x, y, z) + offset) * spectralWeights[i];
+                float signal = (Source(x, y, z) + offset) * spectralWeights[i];
                 signal *= weight;
                 value += signal;
 

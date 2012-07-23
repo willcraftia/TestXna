@@ -22,7 +22,7 @@ namespace Willcraftia.Framework.Noise
             y *= frequency;
             z *= frequency;
 
-            float signal = Noise(x, y, z) + offset;
+            float signal = Source(x, y, z) + offset;
             float value = signal;
 
             x *= lacunarity;
@@ -31,7 +31,7 @@ namespace Willcraftia.Framework.Noise
 
             for (int i = 1; i < octaveCount; i++)
             {
-                signal = Noise(x, y, z) + offset;
+                signal = Source(x, y, z) + offset;
                 signal *= spectralWeights[i];
                 signal *= value;
                 value += signal;

@@ -18,7 +18,7 @@ namespace Willcraftia.Framework.Noise
 
             for (int i = 0; i < octaveCount; i++)
             {
-                var signal = Noise(x, y, z) * spectralWeights[i];
+                var signal = Source(x, y, z) * spectralWeights[i];
                 value += signal;
 
                 x *= lacunarity;

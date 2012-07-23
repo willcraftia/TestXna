@@ -6,7 +6,7 @@ using System;
 
 namespace Willcraftia.Framework.Noise
 {
-    public abstract class Musgrave : INoiseModule
+    public abstract class Musgrave : IModule
     {
         public const int MaxOctaveCount = 30;
 
@@ -30,7 +30,7 @@ namespace Willcraftia.Framework.Noise
 
         bool initialized;
 
-        public NoiseDelegate Noise { get; set; }
+        public SampleSourceDelegate Source { get; set; }
 
         /// <summary>
         /// H (Hurst).
@@ -77,7 +77,7 @@ namespace Willcraftia.Framework.Noise
             set { octaveCount = value; }
         }
 
-        public float GetValue(float x, float y, float z)
+        public float Sample(float x, float y, float z)
         {
             if (!initialized) Initialize();
 

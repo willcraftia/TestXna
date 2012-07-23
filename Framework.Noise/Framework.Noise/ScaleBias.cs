@@ -6,17 +6,23 @@ using System;
 
 namespace Willcraftia.Framework.Noise
 {
-    public sealed class ScaleBias : INoiseModule
+    public sealed class ScaleBias : IModule
     {
         public const float DefaultBias = 0;
 
         public const float DefaultScale = 1;
 
+        SampleSourceDelegate source;
+
         float bias = DefaultBias;
 
         float scale = DefaultScale;
 
-        public NoiseDelegate Noise { get; set; }
+        public SampleSourceDelegate Source
+        {
+            get { return source; }
+            set { source = value; }
+        }
 
         public float Bias
         {
@@ -30,9 +36,9 @@ namespace Willcraftia.Framework.Noise
             set { scale = value; }
         }
 
-        public float GetValue(float x, float y, float z)
+        public float Sample(float x, float y, float z)
         {
-            return Noise(x, y, z) * scale + bias;
+            return source(x, y, z) * scale + bias;
         }
     }
 }

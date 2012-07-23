@@ -98,12 +98,12 @@
     <Compile Include="ClassicPerlin.cs" />
     <Compile Include="Heterofractal.cs" />
     <Compile Include="HybridMultifractal.cs" />
-    <Compile Include="INoiseModule.cs" />
+    <Compile Include="IModule.cs" />
     <Compile Include="Metrics.cs" />
     <Compile Include="MetricsDelegate.cs" />
     <Compile Include="Multifractal.cs" />
     <Compile Include="Musgrave.cs" />
-    <Compile Include="NoiseDelegate.cs" />
+    <Compile Include="SampleSourceDelegate.cs" />
     <Compile Include="NoiseHelper.cs" />
     <Compile Include="NoiseMap.cs" />
     <Compile Include="Perlin.cs" />

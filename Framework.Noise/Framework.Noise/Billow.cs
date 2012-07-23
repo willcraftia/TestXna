@@ -6,7 +6,7 @@ using System;
 
 namespace Willcraftia.Framework.Noise
 {
-    public sealed class Billow : INoiseModule
+    public sealed class Billow : IModule
     {
         float frequency = 1;
 
@@ -16,7 +16,7 @@ namespace Willcraftia.Framework.Noise
 
         int octaveCount = 6;
 
-        public NoiseDelegate Noise { get; set; }
+        public SampleSourceDelegate Source { get; set; }
 
         public float Frequency
         {
@@ -42,7 +42,7 @@ namespace Willcraftia.Framework.Noise
             set { octaveCount = value; }
         }
 
-        public float GetValue(float x, float y, float z)
+        public float Sample(float x, float y, float z)
         {
             float value = 0;
             float amplitude = 1;
@@ -53,7 +53,7 @@ namespace Willcraftia.Framework.Noise
 
             for (int i = 0; i < octaveCount; i++)
             {
-                var signal = Noise(x, y, z);
+                var signal = Source(x, y, z);
                 signal = 2 * Math.Abs(signal) - 1;
                 value += signal * amplitude;
 

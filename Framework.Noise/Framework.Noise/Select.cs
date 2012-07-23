@@ -7,13 +7,19 @@ using Microsoft.Xna.Framework;
 
 namespace Willcraftia.Framework.Noise
 {
-    public sealed class Select : INoiseModule
+    public sealed class Select : IModule
     {
         public const float DefaultEdgeFalloff = 0;
 
         public const float DefaultLowerBound = -1;
 
         public const float DefaultUpperBound = 1;
+
+        SampleSourceDelegate controller;
+
+        SampleSourceDelegate source0;
+
+        SampleSourceDelegate source1;
 
         float edgeFalloff = DefaultEdgeFalloff;
 
@@ -39,49 +45,61 @@ namespace Willcraftia.Framework.Noise
             set { upperBound = value; }
         }
 
-        public NoiseDelegate ControllerNoise { get; set; }
-
-        public NoiseDelegate Noise0 { get; set; }
-
-        public NoiseDelegate Noise1 { get; set; }
-
-        public float GetValue(float x, float y, float z)
+        public SampleSourceDelegate Controller
         {
-            var control = ControllerNoise(x, y, z);
+            get { return controller; }
+            set { controller = value; }
+        }
+
+        public SampleSourceDelegate Source0
+        {
+            get { return source0; }
+            set { source0 = value; }
+        }
+
+        public SampleSourceDelegate Source1
+        {
+            get { return source1; }
+            set { source1 = value; }
+        }
+
+        public float Sample(float x, float y, float z)
+        {
+            var control = controller(x, y, z);
             var halfSize = (upperBound - lowerBound) * 0.5f;
             var ef = (halfSize < edgeFalloff) ? halfSize : edgeFalloff;
 
             if (0 < ef)
             {
                 if (control < lowerBound - edgeFalloff)
-                    return Noise0(x, y, z);
+                    return source0(x, y, z);
                 
                 if (control < lowerBound + edgeFalloff)
                 {
                     var lowerCurve = lowerBound - edgeFalloff;
                     var upperCurve = lowerBound + edgeFalloff;
                     var amount = NoiseHelper.SCurve3((control - lowerCurve) / (upperCurve - lowerCurve));
-                    return MathHelper.Lerp(Noise0(x, y, z), Noise1(x, y, z), amount);
+                    return MathHelper.Lerp(source0(x, y, z), source1(x, y, z), amount);
                 }
 
                 if (control < upperBound - edgeFalloff)
-                    return Noise1(x, y, z);
+                    return source1(x, y, z);
 
                 if (control < upperBound + edgeFalloff)
                 {
                     var lowerCurve = upperBound - edgeFalloff;
                     var upperCurve = upperBound + edgeFalloff;
                     var amount = NoiseHelper.SCurve3((control - lowerCurve) / (upperCurve - lowerCurve));
-                    return MathHelper.Lerp(Noise1(x, y, z), Noise0(x, y, z), amount);
+                    return MathHelper.Lerp(source1(x, y, z), source0(x, y, z), amount);
                 }
 
-                return Noise0(x, y, z);
+                return source0(x, y, z);
             }
 
             if (control < lowerBound || upperBound < control)
-                return Noise0(x, y, z);
+                return source0(x, y, z);
 
-            return Noise1(x, y, z);
+            return source1(x, y, z);
         }
     }
 }

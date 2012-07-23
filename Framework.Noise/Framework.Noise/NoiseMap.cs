@@ -16,7 +16,7 @@ namespace Willcraftia.Framework.Noise
 
         public const int DefaultHeight = 256 + 1;
 
-        NoiseDelegate noise;
+        SampleSourceDelegate source;
 
         int width = DefaultWidth;
 
@@ -28,10 +28,10 @@ namespace Willcraftia.Framework.Noise
 
         float[] values;
 
-        public NoiseDelegate Noise
+        public SampleSourceDelegate Source
         {
-            get { return noise; }
-            set { noise = value; }
+            get { return source; }
+            set { source = value; }
         }
 
         public int Width
@@ -91,14 +91,14 @@ namespace Willcraftia.Framework.Noise
 
                     if (!seamlessEnabled)
                     {
-                        values[index] = Noise(x, 0, y);
+                        values[index] = Source(x, 0, y);
                     }
                     else
                     {
-                        float sw = Noise(x, 0, y);
-                        float se = Noise(x + bounds.Width, 0, y);
-                        float nw = Noise(x, 0, y + bounds.Height);
-                        float ne = Noise(x + bounds.Width, 0, y + bounds.Height);
+                        float sw = Source(x, 0, y);
+                        float se = Source(x + bounds.Width, 0, y);
+                        float nw = Source(x, 0, y + bounds.Height);
+                        float ne = Source(x + bounds.Width, 0, y + bounds.Height);
                         float xa = 1 - ((x - bounds.X) / bounds.Width);
                         float ya = 1 - ((y - bounds.Y) / bounds.Height);
                         float y0 = MathHelper.Lerp(sw, se, xa);

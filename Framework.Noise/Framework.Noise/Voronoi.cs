@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace Willcraftia.Framework.Noise
 {
-    public sealed class Voronoi : INoiseModule
+    public sealed class Voronoi : IModule
     {
         public const float DefaultDisplacement = 1;
 
@@ -61,7 +61,7 @@ namespace Willcraftia.Framework.Noise
             set { metrics = value; }
         }
 
-        public float GetValue(float x, float y, float z)
+        public float Sample(float x, float y, float z)
         {
             x *= frequency;
             y *= frequency;

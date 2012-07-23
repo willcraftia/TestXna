@@ -7,7 +7,7 @@ using Willcraftia.Framework.Noise;
 
 namespace PerlinNoiseDemo
 {
-    public sealed class Granite : INoiseModule
+    public sealed class Granite : IModule
     {
         Perlin noise = new Perlin();
 
@@ -23,7 +23,7 @@ namespace PerlinNoiseDemo
 
         public void Initialize()
         {
-            primaryGranite.Noise = noise.GetValue;
+            primaryGranite.Source = noise.Sample;
             primaryGranite.Frequency = 8;
             primaryGranite.Persistence = 0.625f;
             primaryGranite.Lacunarity = 2.18359375f;
@@ -33,22 +33,22 @@ namespace PerlinNoiseDemo
             baseGrains.Metrics = Metrics.Real;
             baseGrains.DistanceEnabled = true;
 
-            scaledGrains.Noise = baseGrains.GetValue;
+            scaledGrains.Source = baseGrains.Sample;
             scaledGrains.Scale = 0.5f;
             scaledGrains.Bias = 0;
 
-            combinedGranite.Noise0 = primaryGranite.GetValue;
-            combinedGranite.Noise1 = scaledGrains.GetValue;
+            combinedGranite.Source0 = primaryGranite.Sample;
+            combinedGranite.Source1 = scaledGrains.Sample;
 
-            finalGranite.Noise = combinedGranite.GetValue;
+            finalGranite.Source = combinedGranite.Sample;
             finalGranite.Frequency = 4;
             finalGranite.Power = 1 / 8.0f;
             finalGranite.Roughness = 6;
         }
 
-        public float GetValue(float x, float y, float z)
+        public float Sample(float x, float y, float z)
         {
-            return finalGranite.GetValue(x, y, z);
+            return finalGranite.Sample(x, y, z);
         }
     }
 }

@@ -47,7 +47,7 @@ namespace Willcraftia.Framework.Noise
 
             for (int i = 0; i < octaveCount; i++)
             {
-                var signal = Noise(x, y, z);
+                var signal = Source(x, y, z);
 
                 signal = Math.Abs(signal);
                 signal = offset - signal;

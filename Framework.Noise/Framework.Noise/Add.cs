@@ -6,27 +6,27 @@ using System;
 
 namespace Willcraftia.Framework.Noise
 {
-    public sealed class Add : INoiseModule
+    public sealed class Add : IModule
     {
-        NoiseDelegate noise0;
+        SampleSourceDelegate source0;
 
-        NoiseDelegate noise1;
+        SampleSourceDelegate source1;
 
-        public NoiseDelegate Noise0
+        public SampleSourceDelegate Source0
         {
-            get { return noise0; }
-            set { noise0 = value; }
+            get { return source0; }
+            set { source0 = value; }
         }
 
-        public NoiseDelegate Noise1
+        public SampleSourceDelegate Source1
         {
-            get { return noise1; }
-            set { noise1 = value; }
+            get { return source1; }
+            set { source1 = value; }
         }
 
-        public float GetValue(float x, float y, float z)
+        public float Sample(float x, float y, float z)
         {
-            return noise0(x, y, z) + noise1(x, y, z);
+            return source0(x, y, z) + source1(x, y, z);
         }
     }
 }

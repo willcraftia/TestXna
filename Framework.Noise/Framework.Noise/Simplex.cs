@@ -12,7 +12,7 @@ namespace Willcraftia.Framework.Noise
     /// http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
     /// http://staffwww.itn.liu.se/~stegu/aqsis/aqsis-newnoise/
     /// </summary>
-    public sealed class Simplex : INoiseModule
+    public sealed class Simplex : IModule
     {
         const int wrapIndex = 256;
 
@@ -40,7 +40,7 @@ namespace Willcraftia.Framework.Noise
             initialized = true;
         }
 
-        public float GetValue(float x, float y, float z)
+        public float Sample(float x, float y, float z)
         {
             if (!initialized) Reseed();
 

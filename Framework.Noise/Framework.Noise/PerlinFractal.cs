@@ -6,7 +6,7 @@ using System;
 
 namespace Willcraftia.Framework.Noise
 {
-    public sealed class PerlinFractal : INoiseModule
+    public sealed class PerlinFractal : IModule
     {
         public const float DefaultFrequency = 1;
 
@@ -16,7 +16,7 @@ namespace Willcraftia.Framework.Noise
 
         public const int DefaultOctave = 6;
 
-        NoiseDelegate noise;
+        SampleSourceDelegate source;
 
         float frequency = DefaultFrequency;
 
@@ -26,10 +26,10 @@ namespace Willcraftia.Framework.Noise
 
         int octaveCount = DefaultOctave;
 
-        public NoiseDelegate Noise
+        public SampleSourceDelegate Source
         {
-            get { return noise; }
-            set { noise = value; }
+            get { return source; }
+            set { source = value; }
         }
 
         public float Frequency
@@ -56,7 +56,7 @@ namespace Willcraftia.Framework.Noise
             set { octaveCount = value; }
         }
 
-        public float GetValue(float x, float y, float z)
+        public float Sample(float x, float y, float z)
         {
             float value = 0;
             float amplitude = 1;
@@ -67,7 +67,7 @@ namespace Willcraftia.Framework.Noise
 
             for (int i = 0; i < octaveCount; i++)
             {
-                var signal = noise(x, y, z);
+                var signal = source(x, y, z);
                 value += signal * amplitude;
 
                 x *= lacunarity;

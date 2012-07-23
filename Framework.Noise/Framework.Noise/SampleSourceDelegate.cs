@@ -6,5 +6,5 @@ using System;
 
 namespace Willcraftia.Framework.Noise
 {
-    public delegate float NoiseDelegate(float x, float y, float z);
+    public delegate float SampleSourceDelegate(float x, float y, float z);
 }

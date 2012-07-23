@@ -68,7 +68,7 @@ namespace PerlinNoiseDemo
 
         #endregion
 
-        INoiseModule finalNoise;
+        IModule finalModule;
 
         NoiseMap[,] noiseMaps = new NoiseMap[heightMapCountX, heightMapCountY];
 
@@ -93,23 +93,23 @@ namespace PerlinNoiseDemo
             simplex.Seed = noiseSeed;
             voronoi.Seed = noiseSeed;
 
-            perlinFractal.Noise = perlin.GetValue;
+            perlinFractal.Source = perlin.Sample;
 
             // Musgrave
-            sumFractal.Noise = perlin.GetValue;
-            multifractal.Noise = perlin.GetValue;
-            heterofractal.Noise = perlin.GetValue;
-            hybridMultifractal.Noise = perlin.GetValue;
-            ridgedMultifractal.Noise = perlin.GetValue;
-            sinFractal.Noise = perlin.GetValue;
+            sumFractal.Source = perlin.Sample;
+            multifractal.Source = perlin.Sample;
+            heterofractal.Source = perlin.Sample;
+            hybridMultifractal.Source = perlin.Sample;
+            ridgedMultifractal.Source = perlin.Sample;
+            sinFractal.Source = perlin.Sample;
 
-            billow.Noise = perlin.GetValue;
-            turbulence.Noise = perlin.GetValue;
+            billow.Source = perlin.Sample;
+            turbulence.Source = perlin.Sample;
 
             // Procedural texture
             granite.Initialize();
 
-            finalNoise = granite;
+            finalModule = granite;
 
             base.Initialize();
         }
@@ -122,7 +122,7 @@ namespace PerlinNoiseDemo
                 {
                     var map = new NoiseMap();
 
-                    map.Noise = finalNoise.GetValue;
+                    map.Source = finalModule.Sample;
                     map.Width = heightMapSize;
                     map.Height = heightMapSize;
                     map.Bounds = new Bounds { X = i, Y = j, Width = 1, Height = 1 };

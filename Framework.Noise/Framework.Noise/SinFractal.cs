@@ -18,7 +18,7 @@ namespace Willcraftia.Framework.Noise
 
             for (int i = 0; i < octaveCount; i++)
             {
-                var signal = Noise(x, y, z) * spectralWeights[i];
+                var signal = Source(x, y, z) * spectralWeights[i];
                 if (signal < 0) signal = -signal;
                 value += signal;
 

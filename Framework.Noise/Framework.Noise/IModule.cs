@@ -6,8 +6,8 @@ using System;
 
 namespace Willcraftia.Framework.Noise
 {
-    public interface INoiseModule
+    public interface IModule
     {
-        float GetValue(float x, float y, float z);
+        float Sample(float x, float y, float z);
     }
 }
