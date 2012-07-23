@@ -9,7 +9,7 @@ namespace Willcraftia.Framework.Noise
     public struct Bounds
     {
         public float X;
-        
+
         public float Y;
         
         public float Width;

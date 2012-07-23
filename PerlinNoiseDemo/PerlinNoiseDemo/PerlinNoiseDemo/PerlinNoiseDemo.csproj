@@ -113,6 +113,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PerlinNoiseDemoGame.cs" />
+    <Compile Include="Wood.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

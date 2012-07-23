@@ -100,7 +100,7 @@ namespace PerlinNoiseDemo
             billow.Noise = perlin.GetValue;
             turbulence.Noise = perlin.GetValue;
 
-            finalNoise = sumFractal;
+            finalNoise = simplex;
 
             base.Initialize();
         }
@@ -117,6 +117,7 @@ namespace PerlinNoiseDemo
                     map.Width = heightMapSize;
                     map.Height = heightMapSize;
                     map.Bounds = new Bounds { X = i, Y = j, Width = 1, Height = 1 };
+                    map.SeamlessEnabled = true;
                     map.Build();
 
                     noiseMaps[i, j] = map;
