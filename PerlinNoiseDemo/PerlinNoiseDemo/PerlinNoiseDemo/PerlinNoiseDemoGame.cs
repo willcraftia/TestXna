@@ -112,6 +112,7 @@ namespace PerlinNoiseDemo
             finalModule = perlin;
 
             noiseMapBuilder.Source = finalModule.Sample;
+            //noiseMapBuilder.SeamlessEnabled = true;
 
             base.Initialize();
         }
@@ -140,21 +141,18 @@ namespace PerlinNoiseDemo
                     map.Width = heightMapSize;
                     map.Height = heightMapSize;
 
-                    noiseMapBuilder.NoiseMap = map;
-                    noiseMapBuilder.Bounds = new Bounds { X = i, Y = j, Width = 1, Height = 1 };
-                    //noiseMapBuilder.SeamlessEnabled = true;
-                    noiseMapBuilder.Build();
+                    // Noise.
+                    //noiseMapBuilder.NoiseMap = map;
+                    //noiseMapBuilder.Bounds = new Bounds { X = i, Y = j, Width = 1, Height = 1 };
+                    //noiseMapBuilder.Build();
 
-                    float minV = float.MaxValue;
-                    float maxV = float.MinValue;
+                    // Midpoint displacemenet.
+                    md.NoiseMap = map;
+                    md.BoundX = i * (heightMapSize - 1);
+                    md.BoundY = j * (heightMapSize - 1);
+                    md.Build();
 
-                    map.ForEach((v) =>
-                    {
-                        minV = MathHelper.Min(minV, v);
-                        maxV = MathHelper.Min(maxV, v);
-                    });
-
-                    Console.WriteLine("[{0}, {1}]", minV, maxV);
+                    Console.WriteLine("[{0}, {1}]", map.Min(), map.Max());
 
                     var image = new HeightMapImage(GraphicsDevice);
                     // height map

@@ -55,6 +55,9 @@ namespace Willcraftia.Framework.Noise
             var w = noiseMap.Width;
             var h = noiseMap.Height;
 
+            if (w == 0 || h == 0)
+                return;
+
             var deltaX = bounds.Width / (float) w;
             var deltaY = bounds.Height / (float) h;
 

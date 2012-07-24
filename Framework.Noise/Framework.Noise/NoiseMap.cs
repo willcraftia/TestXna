@@ -68,9 +68,32 @@ namespace Willcraftia.Framework.Noise
 
         public void ForEach(Action<float> action)
         {
-            for (int y = 0; y < height; y++)
-                for (int x = 0; x < width; x++)
-                    action(values[x + y * width]);
+            for (int i = 0; i < values.Length; i++)
+                action(values[i]);
+        }
+
+        public float Max()
+        {
+            Initialize();
+
+            float result = float.MinValue;
+
+            for (int i = 0; i < values.Length; i++)
+                result = Math.Max(result, values[i]);
+
+            return result;
+        }
+
+        public float Min()
+        {
+            Initialize();
+
+            float result = float.MaxValue;
+
+            for (int i = 0; i < values.Length; i++)
+                result = Math.Min(result, values[i]);
+
+            return result;
         }
     }
 }
