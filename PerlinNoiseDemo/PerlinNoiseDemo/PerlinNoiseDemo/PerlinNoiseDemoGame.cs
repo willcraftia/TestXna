@@ -72,6 +72,8 @@ namespace PerlinNoiseDemo
 
         NoiseMapBuilder noiseMapBuilder = new NoiseMapBuilder();
 
+        MidpointDisplacement md = new MidpointDisplacement();
+
         HeightMapImage[,] heightMapImages = new HeightMapImage[heightMapCountX, heightMapCountY];
 
         QuadMesh quadMesh;
@@ -114,10 +116,10 @@ namespace PerlinNoiseDemo
             noiseMapBuilder.Source = finalModule.Sample;
             //noiseMapBuilder.SeamlessEnabled = true;
 
+            md.Seed = 300;
+
             base.Initialize();
         }
-
-        MidpointDisplacement md = new MidpointDisplacement();
 
         protected override void LoadContent()
         {
@@ -127,10 +129,6 @@ namespace PerlinNoiseDemo
                 Y = (heightMapMeshSize + heightMapMeshGap) * heightMapCountY * 0.5f,
                 Z = 0
             };
-
-            //md.Width = heightMapSize;
-            //md.Height = heightMapSize;
-            //md.Build();
 
             var map = new NoiseMap();
 
