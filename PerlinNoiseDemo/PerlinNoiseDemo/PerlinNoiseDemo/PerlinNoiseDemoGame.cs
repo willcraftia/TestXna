@@ -20,9 +20,9 @@ namespace PerlinNoiseDemo
 
         const float heightMapMeshGap = 0.02f;
 
-        const int heightMapCountX = 1;
+        const int heightMapCountX = 5;
 
-        const int heightMapCountY = 1;
+        const int heightMapCountY = 5;
 
         const int noiseSeed = 300;
 
@@ -70,7 +70,7 @@ namespace PerlinNoiseDemo
 
         IModule finalModule;
 
-        NoiseMap[,] noiseMaps = new NoiseMap[heightMapCountX, heightMapCountY];
+        NoiseMapBuilder noiseMapBuilder = new NoiseMapBuilder();
 
         HeightMapImage[,] heightMapImages = new HeightMapImage[heightMapCountX, heightMapCountY];
 
@@ -109,7 +109,9 @@ namespace PerlinNoiseDemo
             // Procedural texture
             granite.Initialize();
 
-            finalModule = granite;
+            finalModule = perlin;
+
+            noiseMapBuilder.Source = finalModule.Sample;
 
             base.Initialize();
         }
@@ -118,38 +120,6 @@ namespace PerlinNoiseDemo
 
         protected override void LoadContent()
         {
-            //for (int i = 0; i < heightMapCountX; i++)
-            //{
-            //    for (int j = 0; j < heightMapCountY; j++)
-            //    {
-            //        var map = new NoiseMap();
-
-            //        map.Source = finalModule.Sample;
-            //        map.Width = heightMapSize;
-            //        map.Height = heightMapSize;
-            //        map.Bounds = new Bounds { X = i, Y = j, Width = 1, Height = 1 };
-            //        map.SeamlessEnabled = true;
-            //        map.Build();
-
-            //        float minV = float.MaxValue;
-            //        float maxV = float.MinValue;
-
-            //        map.ForEach((v) =>
-            //        {
-            //            minV = MathHelper.Min(minV, v);
-            //            maxV = MathHelper.Min(maxV, v);
-            //        });
-
-            //        Console.WriteLine("[{0}, {1}]", minV, maxV);
-
-            //        noiseMaps[i, j] = map;
-            //    }
-            //}
-
-            md.Width = heightMapSize;
-            md.Height = heightMapSize;
-            md.Build();
-
             var centerPosition = new Vector3
             {
                 X = (heightMapMeshSize + heightMapMeshGap) * heightMapCountX * 0.5f,
@@ -157,20 +127,45 @@ namespace PerlinNoiseDemo
                 Z = 0
             };
 
+            //md.Width = heightMapSize;
+            //md.Height = heightMapSize;
+            //md.Build();
+
+            var map = new NoiseMap();
+
             for (int i = 0; i < heightMapCountX; i++)
             {
                 for (int j = 0; j < heightMapCountY; j++)
                 {
+                    map.Width = heightMapSize;
+                    map.Height = heightMapSize;
+
+                    noiseMapBuilder.NoiseMap = map;
+                    noiseMapBuilder.Bounds = new Bounds { X = i, Y = j, Width = 1, Height = 1 };
+                    //noiseMapBuilder.SeamlessEnabled = true;
+                    noiseMapBuilder.Build();
+
+                    float minV = float.MaxValue;
+                    float maxV = float.MinValue;
+
+                    map.ForEach((v) =>
+                    {
+                        minV = MathHelper.Min(minV, v);
+                        maxV = MathHelper.Min(maxV, v);
+                    });
+
+                    Console.WriteLine("[{0}, {1}]", minV, maxV);
+
                     var image = new HeightMapImage(GraphicsDevice);
                     // height map
-                    image.GradientColors.Add(-1.0000f,   0,   0, 128);
-                    image.GradientColors.Add(-0.2500f,   0,   0, 255);
-                    image.GradientColors.Add( 0.0000f,   0, 128, 255);
-                    image.GradientColors.Add( 0.0625f, 240, 240,  64);
-                    image.GradientColors.Add( 0.1250f,  32, 160,   0);
-                    image.GradientColors.Add( 0.3750f, 224, 224,   0);
-                    image.GradientColors.Add( 0.7500f,  64,  64,  64);
-                    image.GradientColors.Add( 1.0000f, 255, 255, 255);
+                    image.GradientColors.Add(-1.0000f, 0, 0, 128);
+                    image.GradientColors.Add(-0.2500f, 0, 0, 255);
+                    image.GradientColors.Add(0.0000f, 0, 128, 255);
+                    image.GradientColors.Add(0.0625f, 240, 240, 64);
+                    image.GradientColors.Add(0.1250f, 32, 160, 0);
+                    image.GradientColors.Add(0.3750f, 224, 224, 0);
+                    image.GradientColors.Add(0.7500f, 64, 64, 64);
+                    image.GradientColors.Add(1.0000f, 255, 255, 255);
                     //image.LightingEnabled = true;
                     //image.LightContrast = 3;
 
@@ -183,14 +178,14 @@ namespace PerlinNoiseDemo
                     //image.GradientColors.Add(0.7500f, 210, 113, 98);
                     //image.GradientColors.Add(1.0000f, 255, 176, 192);
 
-                    //image.Build(heightMapSize, noiseMaps[i, j].Values);
-                    image.Build(heightMapSize, md.Values);
+                    image.Build(heightMapSize, map.Values);
+                    //image.Build(heightMapSize, md.Values);
                     heightMapImages[i, j] = image;
 
                     var position = new Vector3
                     {
                         X = (heightMapMeshSize + heightMapMeshGap) * i,
-                        Y = (heightMapMeshSize + heightMapMeshGap) * (noiseMaps.GetLength(1) - 1 - j),
+                        Y = (heightMapMeshSize + heightMapMeshGap) * (heightMapCountY - 1 - j),
                         Z = 0
                     };
                     position -= centerPosition;
@@ -206,7 +201,7 @@ namespace PerlinNoiseDemo
 
             quadMesh = new QuadMesh(GraphicsDevice, heightMapMeshSize);
 
-            var view = Matrix.CreateLookAt(new Vector3(0.0f, 0.0f, 2.0f), Vector3.Zero, Vector3.Up);
+            var view = Matrix.CreateLookAt(new Vector3(0.0f, 0.0f, 7.0f), Vector3.Zero, Vector3.Up);
             var projection = Matrix.CreatePerspectiveFieldOfView(
                 MathHelper.ToRadians(45.0f),
                 (float) GraphicsDevice.Viewport.Width / (float) GraphicsDevice.Viewport.Height,

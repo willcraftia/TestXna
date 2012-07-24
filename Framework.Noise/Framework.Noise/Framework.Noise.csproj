@@ -103,6 +103,7 @@
     <Compile Include="MetricsDelegate.cs" />
     <Compile Include="Multifractal.cs" />
     <Compile Include="Musgrave.cs" />
+    <Compile Include="NoiseMapBuilder.cs" />
     <Compile Include="SampleSourceDelegate.cs" />
     <Compile Include="NoiseHelper.cs" />
     <Compile Include="NoiseMap.cs" />

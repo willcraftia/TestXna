@@ -12,27 +12,11 @@ namespace Willcraftia.Framework.Noise
     /// </summary>
     public sealed class NoiseMap
     {
-        public const int DefaultWidth = 256 + 1;
+        int width;
 
-        public const int DefaultHeight = 256 + 1;
-
-        SampleSourceDelegate source;
-
-        int width = DefaultWidth;
-
-        int height = DefaultHeight;
-
-        Bounds bounds = Bounds.One;
-
-        bool seamlessEnabled;
+        int height;
 
         float[] values;
-
-        public SampleSourceDelegate Source
-        {
-            get { return source; }
-            set { source = value; }
-        }
 
         public int Width
         {
@@ -46,18 +30,6 @@ namespace Willcraftia.Framework.Noise
             set { height = value; }
         }
 
-        public Bounds Bounds
-        {
-            get { return bounds; }
-            set { bounds = value; }
-        }
-
-        public bool SeamlessEnabled
-        {
-            get { return seamlessEnabled; }
-            set { seamlessEnabled = value; }
-        }
-
         public float[] Values
         {
             get { return values; }
@@ -69,47 +41,29 @@ namespace Willcraftia.Framework.Noise
             set { values[x + y * width] = value; }
         }
 
-        /// <summary>
-        /// Builds 2-dimensional noise values.
-        /// </summary>
-        public void Build()
+        public void Initialize()
         {
             var length = width * height;
             if (values == null || values.Length != length)
                 values = new float[length];
+        }
 
-            var deltaX = bounds.Width / (float) width;
-            var deltaY = bounds.Height / (float) height;
+        public void Fill(float value)
+        {
+            Initialize();
 
-            float y = bounds.Y;
-            for (int i = 0; i < height; i++)
-            {
-                float x = bounds.X;
-                for (int j = 0; j < width; j++)
-                {
-                    var index = j + i * width;
+            for (int i = 0; i < values.Length; i++)
+                values[i] = value;
+        }
 
-                    if (!seamlessEnabled)
-                    {
-                        values[index] = Source(x, 0, y);
-                    }
-                    else
-                    {
-                        float sw = Source(x, 0, y);
-                        float se = Source(x + bounds.Width, 0, y);
-                        float nw = Source(x, 0, y + bounds.Height);
-                        float ne = Source(x + bounds.Width, 0, y + bounds.Height);
-                        float xa = 1 - ((x - bounds.X) / bounds.Width);
-                        float ya = 1 - ((y - bounds.Y) / bounds.Height);
-                        float y0 = MathHelper.Lerp(sw, se, xa);
-                        float y1 = MathHelper.Lerp(nw, ne, xa);
-                        values[index] = MathHelper.Lerp(y0, y1, ya);
-                    }
+        public void Clear()
+        {
+            if (values == null || width == 0 || height == 0)
+                return;
 
-                    x += deltaX;
-                }
-                y += deltaY;
-            }
+            Initialize();
+
+            Array.Clear(values, 0, values.Length);
         }
 
         public void ForEach(Action<float> action)
