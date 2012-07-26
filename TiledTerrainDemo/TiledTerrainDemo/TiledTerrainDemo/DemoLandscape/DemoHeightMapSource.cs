@@ -3,8 +3,8 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Willcraftia.Framework.Noise;
 using TiledTerrainDemo.CDLOD;
-using TiledTerrainDemo.Noise;
 
 #endregion
 
@@ -73,7 +73,7 @@ namespace TiledTerrainDemo.DemoLandscape
             get { return noiseMap.Height; }
         }
 
-        public NoiseDelegate NoiseSource
+        public SampleSourceDelegate NoiseSource
         {
             get { return builder.Source; }
             set { builder.Source = value; }

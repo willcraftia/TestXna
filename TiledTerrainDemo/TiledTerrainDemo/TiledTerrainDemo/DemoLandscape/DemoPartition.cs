@@ -3,9 +3,9 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Willcraftia.Framework.Noise;
 using TiledTerrainDemo.CDLOD;
 using TiledTerrainDemo.Landscape;
-using TiledTerrainDemo.Noise;
 
 #endregion
 

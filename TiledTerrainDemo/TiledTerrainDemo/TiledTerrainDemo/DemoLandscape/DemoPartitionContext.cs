@@ -4,8 +4,8 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Willcraftia.Framework.Noise;
 using TiledTerrainDemo.CDLOD;
-using TiledTerrainDemo.Noise;
 
 #endregion
 
@@ -121,14 +121,14 @@ namespace TiledTerrainDemo.DemoLandscape
             //var noise = simplexNoise;
             //var noise = voronoi;
 
-            perlinFractal.Noise = noise.GetValue;
-            sumFractal.Noise = noise.GetValue;
-            multifractal.Noise = noise.GetValue;
-            heterofractal.Noise = noise.GetValue;
-            hybridMultifractal.Noise = noise.GetValue;
-            ridgedMultifractal.Noise = noise.GetValue;
-            sinFractal.Noise = noise.GetValue;
-            billow.Noise = noise.GetValue;
+            perlinFractal.Source = noise.Sample;
+            sumFractal.Source = noise.Sample;
+            multifractal.Source = noise.Sample;
+            heterofractal.Source = noise.Sample;
+            hybridMultifractal.Source = noise.Sample;
+            ridgedMultifractal.Source = noise.Sample;
+            sinFractal.Source = noise.Sample;
+            billow.Source = noise.Sample;
 
             #endregion
 
@@ -137,7 +137,7 @@ namespace TiledTerrainDemo.DemoLandscape
             voronoi.Seed = noiseSeed;
             voronoi.Frequency = 1;
             voronoi.VoronoiType = VoronoiType.First;
-            voronoi.Metrics = Mertics.Squared;
+            voronoi.Metrics = Metrics.Squared;
             //voronoi.DistanceEnabled = true;
 
             #endregion
@@ -146,23 +146,23 @@ namespace TiledTerrainDemo.DemoLandscape
 
             var testBaseNoise = perlin;
 
-            mountainTerrain.Noise = testBaseNoise.GetValue;
-            baseFlatTerrain.Noise = testBaseNoise.GetValue;
+            mountainTerrain.Source = testBaseNoise.Sample;
+            baseFlatTerrain.Source = testBaseNoise.Sample;
             baseFlatTerrain.Frequency = 2.0f;
-            flatTerrain.Noise = baseFlatTerrain.GetValue;
+            flatTerrain.Source = baseFlatTerrain.Sample;
             flatTerrain.Scale = 0.525f;
             flatTerrain.Bias = -0.75f;
-            terrainType.Noise = testBaseNoise.GetValue;
-            terrainSelector.ControllerNoise = terrainType.GetValue;
-            terrainSelector.Noise0 = (x, y, z) => { return mountainTerrain.GetValue(x, y, z) * 1.25f - 1; };
-            terrainSelector.Noise1 = flatTerrain.GetValue;
+            terrainType.Source = testBaseNoise.Sample;
+            terrainSelector.Controller = terrainType.Sample;
+            terrainSelector.Source0 = (x, y, z) => { return mountainTerrain.Sample(x, y, z) * 1.25f - 1; };
+            terrainSelector.Source1 = flatTerrain.Sample;
             terrainSelector.LowerBound = 0;
             terrainSelector.UpperBound = 1000;
             terrainSelector.EdgeFalloff = 0.125f;
-            perturbTerrain.Noise = terrainSelector.GetValue;
+            perturbTerrain.Source = terrainSelector.Sample;
             perturbTerrain.Frequency = 4;
             perturbTerrain.Power = 0.125f;
-            finalTerrain.Noise = perturbTerrain.GetValue;
+            finalTerrain.Source = perturbTerrain.Sample;
             finalTerrain.Bias = 0.8f;
 
             #endregion
@@ -170,9 +170,9 @@ namespace TiledTerrainDemo.DemoLandscape
             #region Recording
 
             recNoise.Seed = noiseSeed;
-            recBaseTerrain.Noise = recNoise.GetValue;
+            recBaseTerrain.Source = recNoise.Sample;
             recBaseTerrain.OctaveCount = 7;
-            recFinalTerrain.Noise = recBaseTerrain.GetValue;
+            recFinalTerrain.Source = recBaseTerrain.Sample;
             recFinalTerrain.Scale = 2.5f;
 
             #endregion
@@ -198,26 +198,26 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public float Noise(float x, float y, float z)
         {
-            //return improvedPerlinNoise.GetValue(x, y, z);
-            //return simplexNoise.GetValue(x, y, z);
-            //return voronoi.GetValue(x, y, z);
-            //return sumFractal.GetValue(x, y, z) * 2.5f + 0.3f;
+            //return perlin.Sample(x, y, z);
+            //return simplex.Sample(x, y, z);
+            //return voronoi.Sample(x, y, z);
+            //return sumFractal.Sample(x, y, z) * 2.5f + 0.3f;
             // take down.
-            //return multifractal.GetValue(x, y, z) - 1;
+            //return multifractal.Sample(x, y, z) - 1;
             // take down.
-            //return heterofractal.GetValue(x, y, z) - 1;
+            //return heterofractal.Sample(x, y, z) - 1;
             // take down.
-            //return hybridMultifractal.GetValue(x, y, z) - 1;
+            //return hybridMultifractal.Sample(x, y, z) - 1;
             // take down.
-            //return ridgedMultifractal.GetValue(x, y, z) - 1;
-            //return sinFractal.GetValue(x, y, z);
-            //return billow.GetValue(x, y, z);
+            //return ridgedMultifractal.Sample(x, y, z) - 1;
+            //return sinFractal.Sample(x, y, z);
+            //return billow.Sample(x, y, z);
 
             // Noise combination test.
-            //return finalTerrain.GetValue(x, y, z);
+            //return finalTerrain.Sample(x, y, z);
 
             // for recoding.
-            return recFinalTerrain.GetValue(x, y, z);
+            return recFinalTerrain.Sample(x, y, z);
         }
     }
 }

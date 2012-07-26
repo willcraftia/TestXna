@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C# Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiledTerrainDemo", "TiledTerrainDemo\TiledTerrainDemo\TiledTerrainDemo.csproj", "{6916AB08-F6FA-45CF-8FB2-57112087CD7F}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "TiledTerrainDemoContent", "TiledTerrainDemo\TiledTerrainDemoContent\TiledTerrainDemoContent.contentproj", "{F647943A-AB8D-4CB6-9863-E704CBB20203}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiledTerrainDemoContent", "TiledTerrainDemo\TiledTerrainDemoContent\TiledTerrainDemoContent.contentproj", "{F647943A-AB8D-4CB6-9863-E704CBB20203}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Noise", "..\Framework.Noise\Framework.Noise\Framework.Noise.csproj", "{B25CD185-A331-406B-86D4-5EC24459B387}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,6 +19,10 @@ Global
 		{6916AB08-F6FA-45CF-8FB2-57112087CD7F}.Release|x86.Build.0 = Release|x86
 		{F647943A-AB8D-4CB6-9863-E704CBB20203}.Debug|x86.ActiveCfg = Debug|x86
 		{F647943A-AB8D-4CB6-9863-E704CBB20203}.Release|x86.ActiveCfg = Release|x86
+		{B25CD185-A331-406B-86D4-5EC24459B387}.Debug|x86.ActiveCfg = Debug|x86
+		{B25CD185-A331-406B-86D4-5EC24459B387}.Debug|x86.Build.0 = Debug|x86
+		{B25CD185-A331-406B-86D4-5EC24459B387}.Release|x86.ActiveCfg = Release|x86
+		{B25CD185-A331-406B-86D4-5EC24459B387}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

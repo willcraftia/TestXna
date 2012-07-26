@@ -50,8 +50,6 @@ namespace Willcraftia.Framework.Noise
             if (bounds.Height <= 0)
                 throw new InvalidOperationException(string.Format("Bounds.Height <= 0: {0}", bounds.Height));
 
-            //noiseMap.Initialize();
-
             var w = destination.Width;
             var h = destination.Height;
 
