@@ -23,8 +23,6 @@ namespace TiledTerrainDemo.DemoLandscape
 
         Terrain terrain;
 
-        //Vector3 terrainOffset;
-
         bool heightMapTextureDirty;
 
         Texture2D heightMapTexture;
@@ -58,6 +56,9 @@ namespace TiledTerrainDemo.DemoLandscape
 
             // select.
             terrain.Select(context.Selection);
+
+            // set the height map texture.
+            context.Selection.HeightMapTexture = heightMapTexture;
 
             #region Debug
 
@@ -114,8 +115,6 @@ namespace TiledTerrainDemo.DemoLandscape
             }
 
             heightMapTexture.SetData(tiledNoiseMap.Values);
-
-            heightMap.Texture = heightMapTexture;
 
             heightMapTextureDirty = false;
         }

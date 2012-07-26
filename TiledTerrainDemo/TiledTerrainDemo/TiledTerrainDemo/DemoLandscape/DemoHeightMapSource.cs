@@ -28,14 +28,12 @@ namespace TiledTerrainDemo.DemoLandscape
             }
         }
 
-        public TiledNoiseMap TiledNoiseMap { get; set; }
-
-        public Texture2D Texture { get; set; }
-
-        public float GetHeight(int x, int y)
+        public float this[int x, int y]
         {
-            return TiledNoiseMap[x, y];
+            get { return TiledNoiseMap[x, y]; }
         }
+
+        public TiledNoiseMap TiledNoiseMap { get; set; }
 
         public void GetAreaMinMaxHeight(int x, int y, int sizeX, int sizeY, out float minHeight, out float maxHeight)
         {
@@ -45,7 +43,7 @@ namespace TiledTerrainDemo.DemoLandscape
             {
                 for (int rx = 0; rx < sizeX; rx++)
                 {
-                    var h = GetHeight(x + rx, y + ry);
+                    var h = this[x + rx, y + ry];
                     minHeight = MathHelper.Min(minHeight, h);
                     maxHeight = MathHelper.Max(maxHeight, h);
                 }

@@ -41,9 +41,6 @@ namespace TiledTerrainDemo.CDLOD
 
             // Select visible nodes.
             quadTree.Select(selection);
-
-            // Set the height map texture to render.
-            selection.HeightMapTexture = HeightMap.Texture;
         }
     }
 }

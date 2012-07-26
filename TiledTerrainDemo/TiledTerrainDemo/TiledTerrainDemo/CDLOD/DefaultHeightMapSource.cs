@@ -17,13 +17,17 @@ namespace TiledTerrainDemo.CDLOD
 
         public int Height { get; private set; }
 
-        public Texture2D Texture { get; private set; }
+        public float this[int x, int y]
+        {
+            get { return heights[x, y]; }
+        }
 
         public GraphicsDevice GraphicsDevice { get; private set; }
 
         public DefaultHeightMapSource(GraphicsDevice graphicsDevice, float[] sourceHeights, int width, int height)
         {
-            if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
+            if (graphicsDevice == null)
+                throw new ArgumentNullException("graphicsDevice");
 
             GraphicsDevice = graphicsDevice;
             Width = width;
@@ -41,23 +45,6 @@ namespace TiledTerrainDemo.CDLOD
                     heights[x, y] = MathHelper.Clamp(h, -1, 1);
                 }
             }
-        }
-
-        public void Build()
-        {
-            Texture = new Texture2D(GraphicsDevice, Width, Height, false, SurfaceFormat.Single);
-
-            var data = new float[Width * Height];
-            for (int y = 0; y < Height; y++)
-                for (int x = 0; x < Width; x++)
-                    data[x + y * Width] = heights[x, y];
-
-            Texture.SetData(data);
-        }
-
-        public float GetHeight(int x, int y)
-        {
-            return heights[x, y];
         }
 
         public void GetAreaMinMaxHeight(int x, int y, int sizeX, int sizeY, out float minHeight, out float maxHeight)
