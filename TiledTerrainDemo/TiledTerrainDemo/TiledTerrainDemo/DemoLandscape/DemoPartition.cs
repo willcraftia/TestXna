@@ -17,7 +17,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
         CDLODSettings settings;
 
-        DemoHeightMapSource heightMap;
+        DemoHeightMap heightMap;
 
         CDLODTerrain terrain;
 
@@ -29,7 +29,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
             settings = context.Settings;
 
-            heightMap = new DemoHeightMapSource(context.GraphicsDevice, settings);
+            heightMap = new DemoHeightMap(context.GraphicsDevice, settings);
             heightMap.NoiseSource = context.Noise;
 
             terrain = new CDLODTerrain(context.Settings);
