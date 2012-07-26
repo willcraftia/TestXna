@@ -125,7 +125,10 @@
     <Compile Include="CDLOD\Selection.cs" />
     <Compile Include="CDLOD\Settings.cs" />
     <Compile Include="CDLOD\Terrain.cs" />
+    <Compile Include="DemoLandscape\Bounds.cs" />
     <Compile Include="DemoLandscape\HeightColor.cs" />
+    <Compile Include="DemoLandscape\INoiseMap.cs" />
+    <Compile Include="DemoLandscape\NoiseMapBuilder.cs" />
     <Compile Include="DemoLandscape\TerrainEffect.cs" />
     <Compile Include="CDLOD\TerrainRenderer.cs" />
     <Compile Include="DemoLandscape\DemoTerrainRenderer.cs" />
@@ -133,7 +136,6 @@
     <Compile Include="DemoLandscape\DemoHeightMapSource.cs" />
     <Compile Include="DemoLandscape\DemoPartitionContext.cs" />
     <Compile Include="DemoLandscape\DemoPartitionFactory.cs" />
-    <Compile Include="DemoLandscape\TiledNoiseMap.cs" />
     <Compile Include="Framework\AppendNumberOptions.cs" />
     <Compile Include="Framework\Cameras\PerspectiveFov.cs" />
     <Compile Include="Framework\Cameras\ProjectionBase.cs" />
@@ -165,7 +167,6 @@
     <Compile Include="Noise\Multifractal.cs" />
     <Compile Include="Noise\NoiseDelegate.cs" />
     <Compile Include="Noise\NoiseHelper.cs" />
-    <Compile Include="Noise\NoiseMap.cs" />
     <Compile Include="Noise\PerlinFractal.cs" />
     <Compile Include="Noise\ClassicPerlin.cs" />
     <Compile Include="Noise\RidgedMultifractal.cs" />

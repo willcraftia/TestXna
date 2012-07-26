@@ -200,7 +200,7 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             //return improvedPerlinNoise.GetValue(x, y, z);
             //return simplexNoise.GetValue(x, y, z);
-            return voronoi.GetValue(x, y, z);
+            //return voronoi.GetValue(x, y, z);
             //return sumFractal.GetValue(x, y, z) * 2.5f + 0.3f;
             // take down.
             //return multifractal.GetValue(x, y, z) - 1;
@@ -217,7 +217,7 @@ namespace TiledTerrainDemo.DemoLandscape
             //return finalTerrain.GetValue(x, y, z);
 
             // for recoding.
-            //return recFinalTerrain.GetValue(x, y, z);
+            return recFinalTerrain.GetValue(x, y, z);
         }
     }
 }

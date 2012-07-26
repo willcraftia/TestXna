@@ -17,15 +17,9 @@ namespace TiledTerrainDemo.DemoLandscape
 
         Settings settings;
 
-        TiledNoiseMap tiledNoiseMap = new TiledNoiseMap();
-
         DemoHeightMapSource heightMap;
 
         Terrain terrain;
-
-        bool heightMapTextureDirty;
-
-        Texture2D heightMapTexture;
 
         public DemoPartition(DemoPartitionContext context)
         {
@@ -35,13 +29,8 @@ namespace TiledTerrainDemo.DemoLandscape
 
             settings = context.Settings;
 
-            tiledNoiseMap.Width = settings.HeightMapWidth;
-            tiledNoiseMap.Height = settings.HeightMapHeight;
-            tiledNoiseMap.OverlapSize = settings.HeightMapOverlapSize;
-            tiledNoiseMap.Noise = context.Noise;
-
-            heightMap = new DemoHeightMapSource();
-            heightMap.TiledNoiseMap = tiledNoiseMap;
+            heightMap = new DemoHeightMapSource(context.GraphicsDevice, settings);
+            heightMap.NoiseSource = context.Noise;
 
             terrain = new Terrain(context.Settings);
             terrain.HeightMap = heightMap;
@@ -49,8 +38,6 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public override void Draw(GameTime gameTime)
         {
-            RefreshHeightMapTexture();
-
             var partitionPosition = Position;
             context.Selection.TerrainOffset = new Vector3(partitionPosition.X, 0, partitionPosition.Y);
 
@@ -58,7 +45,7 @@ namespace TiledTerrainDemo.DemoLandscape
             terrain.Select(context.Selection);
 
             // set the height map texture.
-            context.Selection.HeightMapTexture = heightMapTexture;
+            context.Selection.HeightMapTexture = heightMap.Texture;
 
             #region Debug
 
@@ -73,16 +60,15 @@ namespace TiledTerrainDemo.DemoLandscape
         protected override void LoadContentOverride()
         {
             // Build noise values with the noise bounds for this partition.
-            tiledNoiseMap.SetBounds(
-                context.NoiseMinX + X * context.NoiseWidth,
-                context.NoiseMinY + Y * context.NoiseHeight,
-                context.NoiseWidth,
-                context.NoiseHeight);
-            tiledNoiseMap.Build();
+            heightMap.Bounds = new Bounds
+            {
+                X = context.NoiseMinX + X * context.NoiseWidth,
+                Y = context.NoiseMinY + Y * context.NoiseHeight,
+                Width = context.NoiseWidth,
+                Height = context.NoiseHeight
+            };
+            heightMap.Build();
             //tiledNoiseMap.Erode(16 / (float) context.Settings.HeightMapWidth, 10);
-
-            // heightMapTexture is dirty.
-            heightMapTextureDirty = true;
 
             // Build the terrain.
             terrain.Build();
@@ -94,29 +80,10 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             if (disposing)
             {
-                if (heightMapTexture != null) heightMapTexture.Dispose();
+                heightMap.Dispose();
             }
 
             base.DisposeOverride(disposing);
-        }
-
-        void RefreshHeightMapTexture()
-        {
-            if (!heightMapTextureDirty) return;
-
-            int w = tiledNoiseMap.ActualWidth;
-            int h = tiledNoiseMap.ActualHeight;
-
-            if (heightMapTexture == null || heightMapTexture.Width != w || heightMapTexture.Height != h)
-            {
-                if (heightMapTexture != null) heightMapTexture.Dispose();
-
-                heightMapTexture = new Texture2D(context.GraphicsDevice, w, h, false, SurfaceFormat.Single);
-            }
-
-            heightMapTexture.SetData(tiledNoiseMap.Values);
-
-            heightMapTextureDirty = false;
         }
     }
 }
