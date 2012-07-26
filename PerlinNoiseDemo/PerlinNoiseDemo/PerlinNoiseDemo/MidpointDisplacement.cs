@@ -9,7 +9,17 @@ namespace PerlinNoiseDemo
 {
     public sealed class MidpointDisplacement
     {
+        public const float DefaultHurst = 0.8f;
+
         int seed = Environment.TickCount;
+
+        float hurst = DefaultHurst;
+
+        NoiseMap noiseMap;
+
+        int boundX;
+
+        int boundY;
 
         public int Seed
         {
@@ -17,11 +27,11 @@ namespace PerlinNoiseDemo
             set { seed = value; }
         }
 
-        NoiseMap noiseMap;
-
-        int boundX;
-
-        int boundY;
+        public float Hurst
+        {
+            get { return hurst; }
+            set { hurst = value; }
+        }
 
         public NoiseMap NoiseMap
         {
@@ -62,8 +72,8 @@ namespace PerlinNoiseDemo
             noiseMap[   0, size] = GetPosition(   0 + boundX, 0, size + boundY, Seed);
             noiseMap[size, size] = GetPosition(size + boundX, 0, size + boundY, Seed);
 
-            float modifier = 0.7f;
-            float range = 1;
+            float coeff = (float) Math.Pow(2, -hurst);
+            float weight = 1;
 
             while (0 < offset)
             {
@@ -109,14 +119,14 @@ namespace PerlinNoiseDemo
                         }
 
                         // Add a small error.
-                        value += GetPosition(x + boundX, 0, y + boundY, Seed) * range;
+                        value += GetPosition(x + boundX, 0, y + boundY, Seed) * weight;
 
                         // Set the value.
                         noiseMap[x, y] = value;
                     }
                 }
 
-                range *= modifier;
+                weight *= coeff;
                 offset /= 2;
             }
         }
