@@ -11,7 +11,7 @@ namespace PerlinNoiseDemo
     /// <summary>
     /// The class generates a height map texture.
     /// </summary>
-    public sealed class HeightMapImage : IDisposable
+    public sealed class HeightMapImageBuilder
     {
         GradientColorCollection gradientColors = new GradientColorCollection();
 
@@ -35,14 +35,16 @@ namespace PerlinNoiseDemo
         
         float sinElevation;
 
-        public GraphicsDevice GraphicsDevice { get; private set; }
+        Color[] buffer;
 
         public GradientColorCollection GradientColors
         {
             get { return gradientColors; }
         }
 
-        public Texture2D ColoredHeightMap { get; private set; }
+        public HeightMapSource Source { get; set; }
+
+        public Texture2D Destination { get; set; }
 
         public bool LightingEnabled { get; set; }
 
@@ -96,52 +98,50 @@ namespace PerlinNoiseDemo
             set { lightColor = value; }
         }
 
-        public HeightMapImage(GraphicsDevice graphicsDevice)
+        public HeightMapImageBuilder()
         {
-            GraphicsDevice = graphicsDevice;
-
             LightAzimuth = MathHelper.PiOver4;
             LightElevation = MathHelper.PiOver4;
         }
 
-        public void Build(int size, float[] heights)
+        public void Build()
         {
-            if (heights == null) throw new InvalidOperationException("'heights' is null.");
-            if (size <= 0) throw new InvalidOperationException("'size' must be a positive value.");
-            if (heights.Length != size * size) throw new InvalidOperationException("The length of 'heights' is invalid.");
+            if (Source == null)
+                throw new InvalidOperationException("Source is null.");
+            if (Destination == null)
+                throw new InvalidOperationException("Destination is null.");
+            if (Source.Width != Destination.Width)
+                throw new InvalidOperationException("Source.Width != Destination.Width");
+            if (Source.Height != Destination.Height)
+                throw new InvalidOperationException("Source.Width != Destination.Width");
 
-            if (ColoredHeightMap != null &&
-                (ColoredHeightMap.Width != size || ColoredHeightMap.Height != size))
+            int w = Source.Width;
+            int h = Source.Height;
+            int size = w * h;
+
+            if (buffer == null || buffer.Length != size)
+                buffer = new Color[size];
+
+            for (int y = 0; y < h; y++)
             {
-                ColoredHeightMap.Dispose();
-                ColoredHeightMap = null;
+                for (int x = 0; x < w; x++)
+                {
+                    Vector4 c;
+
+                    gradientColors.Get(Source[x, y], out c);
+
+                    if (LightingEnabled)
+                        Light(x, y, ref c);
+
+                    buffer[x + y * w] = new Color(c.X, c.Y, c.Z, c.W);
+                }
             }
 
-            if (ColoredHeightMap == null)
-            {
-                ColoredHeightMap = new Texture2D(GraphicsDevice, size, size, false, SurfaceFormat.Color);
-            }
-
-            var coloredHeights = new Color[heights.Length];
-            for (int i = 0; i < heights.Length; i++)
-            {
-                Vector4 c;
-
-                gradientColors.Get(heights[i], out c);
-
-                if (LightingEnabled) Light(size, heights, i, ref c);
-
-                coloredHeights[i] = new Color(c.X, c.Y, c.Z, c.W);
-            }
-
-            ColoredHeightMap.SetData(coloredHeights);
+            Destination.SetData(buffer);
         }
 
-        void Light(int size, float[] heights, int index, ref Vector4 color)
+        void Light(int x, int y, ref Vector4 color)
         {
-            var x = index % size;
-            var y = index / size;
-
             int offsetL;
             int offsetR;
 
@@ -150,7 +150,7 @@ namespace PerlinNoiseDemo
                 offsetL = 0;
                 offsetR = 1;
             }
-            else if (x == size - 1)
+            else if (x == Source.Width - 1)
             {
                 offsetL = -1;
                 offsetR = 0;
@@ -169,7 +169,7 @@ namespace PerlinNoiseDemo
                 offsetD = 0;
                 offsetU = 1;
             }
-            else if (y == size - 1)
+            else if (y == Source.Height - 1)
             {
                 offsetD = -1;
                 offsetU = 0;
@@ -180,14 +180,11 @@ namespace PerlinNoiseDemo
                 offsetU = 1;
             }
 
-            offsetD *= size;
-            offsetU *= size;
-
-            var center = heights[index];
-            var left = heights[index + offsetL];
-            var right = heights[index + offsetR];
-            var down = heights[index + offsetD];
-            var up = heights[index + offsetU];
+            var center = Source[x, y];
+            var left = Source[x + offsetL, y];
+            var right = Source[x + offsetR, y];
+            var down = Source[x, y + offsetD];
+            var up = Source[x, y + offsetU];
 
             var intensity = CalculateLightIntensity(center, left, right, down, up);
             intensity *= lightBrightness;
@@ -212,34 +209,5 @@ namespace PerlinNoiseDemo
             if (intensity < 0) intensity = 0;
             return intensity;
         }
-
-        #region IDisposable
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        bool disposed;
-
-        ~HeightMapImage()
-        {
-            Dispose(false);
-        }
-
-        void Dispose(bool disposing)
-        {
-            if (disposed) return;
-
-            if (disposing)
-            {
-                if (ColoredHeightMap != null) ColoredHeightMap.Dispose();
-            }
-
-            disposed = true;
-        }
-
-        #endregion
     }
 }

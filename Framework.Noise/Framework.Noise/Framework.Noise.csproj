@@ -99,6 +99,7 @@
     <Compile Include="Heterofractal.cs" />
     <Compile Include="HybridMultifractal.cs" />
     <Compile Include="IModule.cs" />
+    <Compile Include="INoiseMap.cs" />
     <Compile Include="Metrics.cs" />
     <Compile Include="MetricsDelegate.cs" />
     <Compile Include="Multifractal.cs" />
@@ -106,7 +107,6 @@
     <Compile Include="NoiseMapBuilder.cs" />
     <Compile Include="SampleSourceDelegate.cs" />
     <Compile Include="NoiseHelper.cs" />
-    <Compile Include="NoiseMap.cs" />
     <Compile Include="Perlin.cs" />
     <Compile Include="PerlinFractal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

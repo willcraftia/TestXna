@@ -2,15 +2,16 @@
 
 using System;
 using Microsoft.Xna.Framework;
+using Willcraftia.Framework.Noise;
 
 #endregion
 
-namespace Willcraftia.Framework.Noise
+namespace PerlinNoiseDemo
 {
     /// <summary>
-    /// The class manages 2-dimensional noise values.
+    /// The class manages a height map.
     /// </summary>
-    public sealed class NoiseMap
+    public sealed class HeightMapSource : INoiseMap
     {
         int width;
 
@@ -21,13 +22,11 @@ namespace Willcraftia.Framework.Noise
         public int Width
         {
             get { return width; }
-            set { width = value; }
         }
 
         public int Height
         {
             get { return height; }
-            set { height = value; }
         }
 
         public float[] Values
@@ -41,27 +40,24 @@ namespace Willcraftia.Framework.Noise
             set { values[x + y * width] = value; }
         }
 
-        public void Initialize()
+        public HeightMapSource(int width, int height)
         {
-            var length = width * height;
-            if (values == null || values.Length != length)
-                values = new float[length];
+            this.width = width;
+            this.height = height;
+
+            values = new float[width * height];
         }
 
         public void Fill(float value)
         {
-            Initialize();
-
             for (int i = 0; i < values.Length; i++)
                 values[i] = value;
         }
 
         public void Clear()
         {
-            if (values == null || width == 0 || height == 0)
+            if (values.Length == 0)
                 return;
-
-            Initialize();
 
             Array.Clear(values, 0, values.Length);
         }
@@ -74,8 +70,6 @@ namespace Willcraftia.Framework.Noise
 
         public float Max()
         {
-            Initialize();
-
             float result = float.MinValue;
 
             for (int i = 0; i < values.Length; i++)
@@ -86,8 +80,6 @@ namespace Willcraftia.Framework.Noise
 
         public float Min()
         {
-            Initialize();
-
             float result = float.MaxValue;
 
             for (int i = 0; i < values.Length; i++)

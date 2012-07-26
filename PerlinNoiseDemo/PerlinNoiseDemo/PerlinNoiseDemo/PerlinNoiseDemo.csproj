@@ -108,9 +108,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MidpointDisplacement.cs" />
+    <Compile Include="HeightMapSource.cs" />
     <Compile Include="QuadMesh.cs" />
     <Compile Include="GradientColorCollection.cs" />
-    <Compile Include="HeightMapImage.cs" />
+    <Compile Include="HeightMapImageBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PerlinNoiseDemoGame.cs" />

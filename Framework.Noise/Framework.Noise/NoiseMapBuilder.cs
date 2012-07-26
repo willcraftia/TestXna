@@ -11,7 +11,7 @@ namespace Willcraftia.Framework.Noise
     {
         SampleSourceDelegate source;
 
-        NoiseMap noiseMap;
+        INoiseMap destination;
 
         Bounds bounds = Bounds.One;
 
@@ -23,10 +23,10 @@ namespace Willcraftia.Framework.Noise
             set { source = value; }
         }
 
-        public NoiseMap NoiseMap
+        public INoiseMap Destination
         {
-            get { return noiseMap; }
-            set { noiseMap = value; }
+            get { return destination; }
+            set { destination = value; }
         }
 
         public Bounds Bounds
@@ -43,17 +43,17 @@ namespace Willcraftia.Framework.Noise
 
         public void Build()
         {
-            if (noiseMap == null)
+            if (destination == null)
                 throw new InvalidOperationException("NoiseMap is null.");
             if (bounds.Width <= 0)
                 throw new InvalidOperationException(string.Format("Bounds.Width <= 0: {0}", bounds.Width));
             if (bounds.Height <= 0)
                 throw new InvalidOperationException(string.Format("Bounds.Height <= 0: {0}", bounds.Height));
 
-            noiseMap.Initialize();
+            //noiseMap.Initialize();
 
-            var w = noiseMap.Width;
-            var h = noiseMap.Height;
+            var w = destination.Width;
+            var h = destination.Height;
 
             if (w == 0 || h == 0)
                 return;
@@ -71,14 +71,14 @@ namespace Willcraftia.Framework.Noise
 
                     if (!seamlessEnabled)
                     {
-                        value = Source(x, 0, y);
+                        value = source(x, 0, y);
                     }
                     else
                     {
-                        float sw = Source(x, 0, y);
-                        float se = Source(x + bounds.Width, 0, y);
-                        float nw = Source(x, 0, y + bounds.Height);
-                        float ne = Source(x + bounds.Width, 0, y + bounds.Height);
+                        float sw = source(x, 0, y);
+                        float se = source(x + bounds.Width, 0, y);
+                        float nw = source(x, 0, y + bounds.Height);
+                        float ne = source(x + bounds.Width, 0, y + bounds.Height);
                         float xa = 1 - ((x - bounds.X) / bounds.Width);
                         float ya = 1 - ((y - bounds.Y) / bounds.Height);
                         float y0 = MathHelper.Lerp(sw, se, xa);
@@ -86,7 +86,7 @@ namespace Willcraftia.Framework.Noise
                         value = MathHelper.Lerp(y0, y1, ya);
                     }
 
-                    noiseMap[j, i] = value;
+                    destination[j, i] = value;
 
                     x += deltaX;
                 }
