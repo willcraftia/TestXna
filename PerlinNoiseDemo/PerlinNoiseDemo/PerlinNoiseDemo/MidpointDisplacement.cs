@@ -15,7 +15,7 @@ namespace PerlinNoiseDemo
 
         float hurst = DefaultHurst;
 
-        NoiseMap noiseMap;
+        float[,] destination;
 
         int boundX;
 
@@ -33,10 +33,10 @@ namespace PerlinNoiseDemo
             set { hurst = value; }
         }
 
-        public NoiseMap NoiseMap
+        public float[,] Destination
         {
-            get { return noiseMap; }
-            set { noiseMap = value; }
+            get { return destination; }
+            set { destination = value; }
         }
 
         public int BoundX
@@ -53,13 +53,11 @@ namespace PerlinNoiseDemo
 
         public void Build()
         {
-            if (noiseMap == null)
-                throw new InvalidOperationException("NoiseMap is null.");
+            if (destination == null)
+                throw new InvalidOperationException("Destination is null.");
 
-            noiseMap.Initialize();
-
-            var w = noiseMap.Width;
-            var h = noiseMap.Height;
+            var w = destination.GetLength(0);
+            var h = destination.GetLength(1);
 
             if (w == 0 || h == 0)
                 return;
@@ -67,10 +65,10 @@ namespace PerlinNoiseDemo
             int size = ((w < h) ? w : h) - 1;
             int offset = size / 2;
 
-            noiseMap[   0,    0] = GetPosition(   0 + boundX, 0,    0 + boundY, Seed);
-            noiseMap[size,    0] = GetPosition(size + boundX, 0,    0 + boundY, Seed);
-            noiseMap[   0, size] = GetPosition(   0 + boundX, 0, size + boundY, Seed);
-            noiseMap[size, size] = GetPosition(size + boundX, 0, size + boundY, Seed);
+            destination[   0,    0] = GetPosition(   0 + boundX, 0,    0 + boundY, Seed);
+            destination[size,    0] = GetPosition(size + boundX, 0,    0 + boundY, Seed);
+            destination[   0, size] = GetPosition(   0 + boundX, 0, size + boundY, Seed);
+            destination[size, size] = GetPosition(size + boundX, 0, size + boundY, Seed);
 
             float coeff = (float) Math.Pow(2, -hurst);
             float weight = 1;
@@ -96,24 +94,24 @@ namespace PerlinNoiseDemo
 
                         if (oddX && oddY)
                         {
-                            float v0 = noiseMap[x0, y0];
-                            float v1 = noiseMap[x1, y0];
-                            float v2 = noiseMap[x0, y1];
-                            float v3 = noiseMap[x1, y1];
+                            float v0 = destination[x0, y0];
+                            float v1 = destination[x1, y0];
+                            float v2 = destination[x0, y1];
+                            float v3 = destination[x1, y1];
                             value = (v0 + v1 + v2 + v3) * 0.25f;
                         }
                         else
                         {
                             if (oddX)
                             {
-                                float v0 = noiseMap[x0, y];
-                                float v1 = noiseMap[x1, y];
+                                float v0 = destination[x0, y];
+                                float v1 = destination[x1, y];
                                 value = (v0 + v1) * 0.5f;
                             }
                             else
                             {
-                                float v0 = noiseMap[x, y0];
-                                float v1 = noiseMap[x, y1];
+                                float v0 = destination[x, y0];
+                                float v1 = destination[x, y1];
                                 value = (v0 + v1) * 0.5f;
                             }
                         }
@@ -122,7 +120,7 @@ namespace PerlinNoiseDemo
                         value += GetPosition(x + boundX, 0, y + boundY, Seed) * weight;
 
                         // Set the value.
-                        noiseMap[x, y] = value;
+                        destination[x, y] = value;
                     }
                 }
 

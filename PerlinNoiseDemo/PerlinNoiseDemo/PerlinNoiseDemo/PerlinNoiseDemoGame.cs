@@ -16,9 +16,9 @@ namespace PerlinNoiseDemo
     {
         const int heightMapSize = 256 + 1;
 
-        const float heightMapMeshSize = 1;
+        const float meshSize = 1;
 
-        const float heightMapMeshGap = 0.02f;
+        const float meshGap = 0.02f;
 
         const int heightMapCountX = 5;
 
@@ -70,17 +70,21 @@ namespace PerlinNoiseDemo
 
         IModule finalModule;
 
+        float[,] heightMap = new float[heightMapSize, heightMapSize];
+
         NoiseMapBuilder noiseMapBuilder = new NoiseMapBuilder();
 
         MidpointDisplacement md = new MidpointDisplacement();
 
-        HeightMapImage[,] heightMapImages = new HeightMapImage[heightMapCountX, heightMapCountY];
+        HeightMapImageBuilder heightMapImageBuilder = new HeightMapImageBuilder();
+
+        Texture2D[,] textures = new Texture2D[heightMapCountX, heightMapCountY];
 
         QuadMesh quadMesh;
 
         BasicEffect basicEffect;
 
-        Matrix[,] heightMapMeshTransforms = new Matrix[heightMapCountX, heightMapCountY];
+        Matrix[,] transforms = new Matrix[heightMapCountX, heightMapCountY];
 
         public PerlinNoiseDemoGame()
         {
@@ -116,6 +120,27 @@ namespace PerlinNoiseDemo
             noiseMapBuilder.Source = finalModule.Sample;
             //noiseMapBuilder.SeamlessEnabled = true;
 
+            // height map
+            heightMapImageBuilder.GradientColors.Add(-1.0000f,   0,   0, 128);
+            heightMapImageBuilder.GradientColors.Add(-0.2500f,   0,   0, 255);
+            heightMapImageBuilder.GradientColors.Add( 0.0000f,   0, 128, 255);
+            heightMapImageBuilder.GradientColors.Add( 0.0625f, 240, 240,  64);
+            heightMapImageBuilder.GradientColors.Add( 0.1250f,  32, 160,   0);
+            heightMapImageBuilder.GradientColors.Add( 0.3750f, 224, 224,   0);
+            heightMapImageBuilder.GradientColors.Add( 0.7500f,  64,  64,  64);
+            heightMapImageBuilder.GradientColors.Add( 1.0000f, 255, 255, 255);
+            //heightMapImageBuilder.LightingEnabled = true;
+            //heightMapImageBuilder.LightContrast = 3;
+
+            // granite
+            //heightMapImageBuilder.GradientColors.Add(-1.0000f, 0, 0, 0);
+            //heightMapImageBuilder.GradientColors.Add(-0.9375f, 0, 0, 0);
+            //heightMapImageBuilder.GradientColors.Add(-0.8750f, 216, 216, 242);
+            //heightMapImageBuilder.GradientColors.Add(0.0000f, 191, 191, 191);
+            //heightMapImageBuilder.GradientColors.Add(0.5000f, 210, 116, 125);
+            //heightMapImageBuilder.GradientColors.Add(0.7500f, 210, 113, 98);
+            //heightMapImageBuilder.GradientColors.Add(1.0000f, 255, 176, 192);
+
             md.Seed = 300;
 
             base.Initialize();
@@ -125,77 +150,51 @@ namespace PerlinNoiseDemo
         {
             var centerPosition = new Vector3
             {
-                X = (heightMapMeshSize + heightMapMeshGap) * heightMapCountX * 0.5f,
-                Y = (heightMapMeshSize + heightMapMeshGap) * heightMapCountY * 0.5f,
+                X = (meshSize + meshGap) * heightMapCountX * 0.5f,
+                Y = (meshSize + meshGap) * heightMapCountY * 0.5f,
                 Z = 0
             };
-
-            var map = new NoiseMap();
 
             for (int i = 0; i < heightMapCountX; i++)
             {
                 for (int j = 0; j < heightMapCountY; j++)
                 {
-                    map.Width = heightMapSize;
-                    map.Height = heightMapSize;
+                    Array.Clear(heightMap, 0, heightMap.Length);
 
                     // Noise.
-                    //noiseMapBuilder.NoiseMap = map;
+                    //noiseMapBuilder.Destination = heightMap;
                     //noiseMapBuilder.Bounds = new Bounds { X = i, Y = j, Width = 1, Height = 1 };
                     //noiseMapBuilder.Build();
 
                     // Midpoint displacemenet.
-                    md.NoiseMap = map;
+                    md.Destination = heightMap;
                     md.BoundX = i * (heightMapSize - 1);
                     md.BoundY = j * (heightMapSize - 1);
                     md.Build();
 
-                    Console.WriteLine("[{0}, {1}]", map.Min(), map.Max());
+                    Console.WriteLine("[{0}, {1}]", NoiseHelper.Min(heightMap), NoiseHelper.Max(heightMap));
 
-                    var image = new HeightMapImage(GraphicsDevice);
-                    // height map
-                    image.GradientColors.Add(-1.0000f, 0, 0, 128);
-                    image.GradientColors.Add(-0.2500f, 0, 0, 255);
-                    image.GradientColors.Add(0.0000f, 0, 128, 255);
-                    image.GradientColors.Add(0.0625f, 240, 240, 64);
-                    image.GradientColors.Add(0.1250f, 32, 160, 0);
-                    image.GradientColors.Add(0.3750f, 224, 224, 0);
-                    image.GradientColors.Add(0.7500f, 64, 64, 64);
-                    image.GradientColors.Add(1.0000f, 255, 255, 255);
-                    //image.LightingEnabled = true;
-                    //image.LightContrast = 3;
-
-                    // granite
-                    //image.GradientColors.Add(-1.0000f, 0, 0, 0);
-                    //image.GradientColors.Add(-0.9375f, 0, 0, 0);
-                    //image.GradientColors.Add(-0.8750f, 216, 216, 242);
-                    //image.GradientColors.Add(0.0000f, 191, 191, 191);
-                    //image.GradientColors.Add(0.5000f, 210, 116, 125);
-                    //image.GradientColors.Add(0.7500f, 210, 113, 98);
-                    //image.GradientColors.Add(1.0000f, 255, 176, 192);
-
-                    image.Build(heightMapSize, map.Values);
-                    //image.Build(heightMapSize, md.Values);
-                    heightMapImages[i, j] = image;
+                    textures[i, j] = new Texture2D(GraphicsDevice, heightMapSize, heightMapSize, false, SurfaceFormat.Color);
+                    heightMapImageBuilder.Source = heightMap;
+                    heightMapImageBuilder.Destination = textures[i, j];
+                    heightMapImageBuilder.Build();
 
                     var position = new Vector3
                     {
-                        X = (heightMapMeshSize + heightMapMeshGap) * i,
-                        Y = (heightMapMeshSize + heightMapMeshGap) * (heightMapCountY - 1 - j),
+                        X = (meshSize + meshGap) * i,
+                        Y = (meshSize + meshGap) * (heightMapCountY - 1 - j),
                         Z = 0
                     };
                     position -= centerPosition;
-                    Matrix.CreateTranslation(ref position, out heightMapMeshTransforms[i, j]);
+                    Matrix.CreateTranslation(ref position, out transforms[i, j]);
 
                     var fileName = string.Format("ColoredHeightMap_{0}{1}.png", i, j);
                     using (var stream = new FileStream(fileName, FileMode.Create))
-                    {
-                        image.ColoredHeightMap.SaveAsPng(stream, heightMapSize, heightMapSize);
-                    }
+                        textures[i, j].SaveAsPng(stream, heightMapSize, heightMapSize);
                 }
             }
 
-            quadMesh = new QuadMesh(GraphicsDevice, heightMapMeshSize);
+            quadMesh = new QuadMesh(GraphicsDevice, meshSize);
 
             var view = Matrix.CreateLookAt(new Vector3(0.0f, 0.0f, 7.0f), Vector3.Zero, Vector3.Up);
             var projection = Matrix.CreatePerspectiveFieldOfView(
@@ -213,19 +212,17 @@ namespace PerlinNoiseDemo
         protected override void UnloadContent()
         {
             for (int i = 0; i < heightMapCountX; i++)
-            {
                 for (int j = 0; j < heightMapCountY; j++)
-                {
-                    heightMapImages[i, j].Dispose();
-                }
-            }
+                    textures[i, j].Dispose();
+
             quadMesh.Dispose();
             basicEffect.Dispose();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
 
             base.Update(gameTime);
         }
@@ -249,8 +246,8 @@ namespace PerlinNoiseDemo
 
         protected void DrawHeightMapMesh(int x, int y)
         {
-            basicEffect.World = heightMapMeshTransforms[x, y];
-            basicEffect.Texture = heightMapImages[x, y].ColoredHeightMap;
+            basicEffect.World = transforms[x, y];
+            basicEffect.Texture = textures[x, y];
 
             foreach (var pass in basicEffect.CurrentTechnique.Passes)
             {

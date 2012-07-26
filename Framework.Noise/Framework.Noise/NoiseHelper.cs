@@ -39,5 +39,33 @@ namespace Willcraftia.Framework.Noise
             float v = h < 4 ? y : h == 12 || h == 14 ? x : z;
             return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
         }
+
+        public static float Max(float[,] values)
+        {
+            float result = float.MinValue;
+
+            int w = values.GetLength(0);
+            int h = values.GetLength(1);
+
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                    result = Math.Max(result, values[x, y]);
+
+            return result;
+        }
+
+        public static float Min(float[,] values)
+        {
+            float result = float.MaxValue;
+
+            int w = values.GetLength(0);
+            int h = values.GetLength(1);
+
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                    result = Math.Min(result, values[x, y]);
+
+            return result;
+        }
     }
 }
