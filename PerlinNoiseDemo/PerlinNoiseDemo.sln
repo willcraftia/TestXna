@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerlinNoiseDemoContent", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Noise", "..\Framework.Noise\Framework.Noise\Framework.Noise.csproj", "{B25CD185-A331-406B-86D4-5EC24459B387}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Terrain", "..\Framework.Terrain\Framework.Terrain\Framework.Terrain.csproj", "{A7C24D5C-A14B-4944-A5F4-BEFBF754B621}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -23,6 +25,10 @@ Global
 		{B25CD185-A331-406B-86D4-5EC24459B387}.Debug|x86.Build.0 = Debug|x86
 		{B25CD185-A331-406B-86D4-5EC24459B387}.Release|x86.ActiveCfg = Release|x86
 		{B25CD185-A331-406B-86D4-5EC24459B387}.Release|x86.Build.0 = Release|x86
+		{A7C24D5C-A14B-4944-A5F4-BEFBF754B621}.Debug|x86.ActiveCfg = Debug|x86
+		{A7C24D5C-A14B-4944-A5F4-BEFBF754B621}.Debug|x86.Build.0 = Debug|x86
+		{A7C24D5C-A14B-4944-A5F4-BEFBF754B621}.Release|x86.ActiveCfg = Release|x86
+		{A7C24D5C-A14B-4944-A5F4-BEFBF754B621}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
