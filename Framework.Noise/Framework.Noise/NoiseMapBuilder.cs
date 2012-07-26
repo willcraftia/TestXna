@@ -11,7 +11,7 @@ namespace Willcraftia.Framework.Noise
     {
         SampleSourceDelegate source;
 
-        float[,] destination;
+        NoiseMap noiseMap;
 
         Bounds bounds = Bounds.One;
 
@@ -23,10 +23,10 @@ namespace Willcraftia.Framework.Noise
             set { source = value; }
         }
 
-        public float[,] Destination
+        public NoiseMap NoiseMap
         {
-            get { return destination; }
-            set { destination = value; }
+            get { return noiseMap; }
+            set { noiseMap = value; }
         }
 
         public Bounds Bounds
@@ -43,17 +43,17 @@ namespace Willcraftia.Framework.Noise
 
         public void Build()
         {
-            if (source == null)
-                throw new InvalidOperationException("Source is null.");
-            if (destination == null)
-                throw new InvalidOperationException("Destination is null.");
+            if (noiseMap == null)
+                throw new InvalidOperationException("NoiseMap is null.");
             if (bounds.Width <= 0)
                 throw new InvalidOperationException(string.Format("Bounds.Width <= 0: {0}", bounds.Width));
             if (bounds.Height <= 0)
                 throw new InvalidOperationException(string.Format("Bounds.Height <= 0: {0}", bounds.Height));
 
-            var w = destination.GetLength(0);
-            var h = destination.GetLength(1);
+            noiseMap.Initialize();
+
+            var w = noiseMap.Width;
+            var h = noiseMap.Height;
 
             if (w == 0 || h == 0)
                 return;
@@ -86,7 +86,7 @@ namespace Willcraftia.Framework.Noise
                         value = MathHelper.Lerp(y0, y1, ya);
                     }
 
-                    destination[j, i] = value;
+                    noiseMap[j, i] = value;
 
                     x += deltaX;
                 }
