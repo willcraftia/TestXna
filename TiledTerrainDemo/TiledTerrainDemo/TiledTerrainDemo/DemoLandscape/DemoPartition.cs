@@ -17,7 +17,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
         CDLODSettings settings;
 
-        DemoHeightMap heightMap;
+        NoiseHeightMap heightMap;
 
         CDLODTerrain terrain;
 
@@ -29,7 +29,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
             settings = context.Settings;
 
-            heightMap = new DemoHeightMap(context.GraphicsDevice, settings);
+            heightMap = new NoiseHeightMap(context.GraphicsDevice, settings);
             heightMap.NoiseSource = context.Noise;
 
             terrain = new CDLODTerrain(context.Settings);
@@ -68,7 +68,6 @@ namespace TiledTerrainDemo.DemoLandscape
                 Height = context.NoiseHeight
             };
             heightMap.Build();
-            //tiledNoiseMap.Erode(16 / (float) context.Settings.HeightMapWidth, 10);
 
             // Build the terrain.
             terrain.Build();

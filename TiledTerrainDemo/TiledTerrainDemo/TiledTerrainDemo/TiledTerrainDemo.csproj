@@ -113,7 +113,7 @@
     <Compile Include="DemoLandscape\HeightColor.cs" />
     <Compile Include="DemoLandscape\TerrainEffect.cs" />
     <Compile Include="DemoLandscape\DemoTerrainRenderer.cs" />
-    <Compile Include="DemoLandscape\DemoHeightMapSource.cs" />
+    <Compile Include="DemoLandscape\NoiseHeightMap.cs" />
     <Compile Include="DemoLandscape\DemoPartitionContext.cs" />
     <Compile Include="DemoLandscape\DemoPartitionFactory.cs" />
     <Compile Include="DemoLandscape\DemoPartition.cs" />

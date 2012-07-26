@@ -10,7 +10,7 @@ using Willcraftia.Xna.Framework.Terrain.CDLOD;
 
 namespace TiledTerrainDemo.DemoLandscape
 {
-    public sealed class DemoHeightMap : ICDLODHeightMap, IDisposable
+    public sealed class NoiseHeightMap : ICDLODHeightMap, IDisposable
     {
         class NoiseMapImpl : INoiseMap
         {
@@ -104,7 +104,7 @@ namespace TiledTerrainDemo.DemoLandscape
             }
         }
 
-        public DemoHeightMap(GraphicsDevice graphicsDevice, CDLODSettings settings)
+        public NoiseHeightMap(GraphicsDevice graphicsDevice, CDLODSettings settings)
         {
             GraphicsDevice = graphicsDevice;
             width = settings.HeightMapWidth;
@@ -229,7 +229,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
         bool disposed;
 
-        ~DemoHeightMap()
+        ~NoiseHeightMap()
         {
             Dispose(false);
         }
