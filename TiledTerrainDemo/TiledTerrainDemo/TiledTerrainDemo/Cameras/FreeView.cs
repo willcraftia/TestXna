@@ -3,7 +3,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using TiledTerrainDemo.Framework.Cameras;
+using Willcraftia.Xna.Framework.Cameras;
 
 #endregion
 

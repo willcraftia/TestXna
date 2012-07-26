@@ -6,12 +6,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TiledTerrainDemo.Framework;
-using TiledTerrainDemo.Framework.Cameras;
-using TiledTerrainDemo.Framework.Debug;
-using TiledTerrainDemo.Framework.Graphics;
+using Willcraftia.Xna.Framework;
+using Willcraftia.Xna.Framework.Cameras;
+using Willcraftia.Xna.Framework.Debug;
+using Willcraftia.Xna.Framework.Graphics;
+using Willcraftia.Xna.Framework.Terrain.CDLOD;
 using TiledTerrainDemo.Cameras;
-using TiledTerrainDemo.CDLOD;
 using TiledTerrainDemo.DemoLandscape;
 using TiledTerrainDemo.Landscape;
 

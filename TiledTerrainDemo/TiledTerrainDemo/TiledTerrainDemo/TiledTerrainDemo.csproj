@@ -110,41 +110,12 @@
     <Compile Include="Cameras\FreeView.cs" />
     <Compile Include="Cameras\FreeViewInput.cs" />
     <Compile Include="DemoLandscape\BoundingBoxDrawer.cs" />
-    <Compile Include="CDLOD\CDLODDefaultVisibleRanges.cs" />
-    <Compile Include="CDLOD\CDLODHelper.cs" />
-    <Compile Include="CDLOD\ICDLODHeightMap.cs" />
-    <Compile Include="CDLOD\ICDLODVisibleRanges.cs" />
-    <Compile Include="CDLOD\CDLODMorphConsts.cs" />
-    <Compile Include="CDLOD\Node.cs" />
-    <Compile Include="CDLOD\CDLODOriginalVisibleRanges.cs" />
-    <Compile Include="CDLOD\PatchInstanceVertex.cs" />
-    <Compile Include="CDLOD\PatchMesh.cs" />
-    <Compile Include="CDLOD\QuadTree.cs" />
-    <Compile Include="CDLOD\CDLODSelectedNode.cs" />
-    <Compile Include="CDLOD\CDLODSelection.cs" />
-    <Compile Include="CDLOD\CDLODSettings.cs" />
-    <Compile Include="CDLOD\CDLODTerrain.cs" />
     <Compile Include="DemoLandscape\HeightColor.cs" />
     <Compile Include="DemoLandscape\TerrainEffect.cs" />
-    <Compile Include="CDLOD\CDLODTerrainRenderer.cs" />
     <Compile Include="DemoLandscape\DemoTerrainRenderer.cs" />
-    <Compile Include="CDLOD\VertexPosition.cs" />
     <Compile Include="DemoLandscape\DemoHeightMapSource.cs" />
     <Compile Include="DemoLandscape\DemoPartitionContext.cs" />
     <Compile Include="DemoLandscape\DemoPartitionFactory.cs" />
-    <Compile Include="Framework\AppendNumberOptions.cs" />
-    <Compile Include="Framework\Cameras\PerspectiveFov.cs" />
-    <Compile Include="Framework\Cameras\ProjectionBase.cs" />
-    <Compile Include="Framework\Cameras\ViewBase.cs" />
-    <Compile Include="Framework\Debug\DebugHorizontalAlignment.cs" />
-    <Compile Include="Framework\Debug\DebugLayout.cs" />
-    <Compile Include="Framework\Debug\DebugVerticalAlignment.cs" />
-    <Compile Include="Framework\Debug\FpsCounter.cs" />
-    <Compile Include="Framework\Graphics\Texture2DHelper.cs" />
-    <Compile Include="Framework\Graphics\WritableVertexBuffer.cs" />
-    <Compile Include="Framework\Projection.cs" />
-    <Compile Include="Framework\StringBuilderExtension.cs" />
-    <Compile Include="Framework\View.cs" />
     <Compile Include="DemoLandscape\DemoPartition.cs" />
     <Compile Include="Landscape\Partition.cs" />
     <Compile Include="Landscape\PartitionLoadResultCallback.cs" />
@@ -162,9 +133,17 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\DemoFramework\DemoFramework\DemoFramework.csproj">
+      <Project>{E60A4536-A0D7-4242-AC07-BCE790BCA71E}</Project>
+      <Name>DemoFramework</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Framework.Noise\Framework.Noise\Framework.Noise.csproj">
       <Project>{B25CD185-A331-406B-86D4-5EC24459B387}</Project>
       <Name>Framework.Noise</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Framework.Terrain.CDLOD\Framework.Terrain.CDLOD\Framework.Terrain.CDLOD.csproj">
+      <Project>{0B753DED-6698-4FF3-AA08-28FDBC2B91EA}</Project>
+      <Name>Framework.Terrain.CDLOD</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Framework.Terrain\Framework.Terrain\Framework.Terrain.csproj">
       <Project>{A7C24D5C-A14B-4944-A5F4-BEFBF754B621}</Project>

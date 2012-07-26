@@ -37,6 +37,11 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
             get { return settings; }
         }
 
+        public int PatchGridSize
+        {
+            get { return patchMesh.GridSize; }
+        }
+
         public CDLODTerrainRenderer(GraphicsDevice graphicsDevice, CDLODSettings settings)
         {
             if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");

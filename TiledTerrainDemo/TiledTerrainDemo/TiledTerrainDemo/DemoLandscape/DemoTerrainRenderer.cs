@@ -4,9 +4,9 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using TiledTerrainDemo.Framework;
-using TiledTerrainDemo.Framework.Graphics;
-using TiledTerrainDemo.CDLOD;
+using Willcraftia.Xna.Framework;
+using Willcraftia.Xna.Framework.Graphics;
+using Willcraftia.Xna.Framework.Terrain.CDLOD;
 
 #endregion
 
@@ -89,7 +89,7 @@ namespace TiledTerrainDemo.DemoLandscape
             effect = new TerrainEffect(sourceEffect);
             effect.LevelCount = settings.LevelCount;
             effect.TerrainScale = settings.TerrainScale;
-            effect.PatchGridSize = renderer.PatchMesh.GridSize;
+            effect.PatchGridSize = renderer.PatchGridSize;
             effect.SetHeightMapInfo(settings.HeightMapWidth, settings.HeightMapHeight, settings.HeightMapOverlapSize);
 
             lightDirection = new Vector3(0, -1, -1);
