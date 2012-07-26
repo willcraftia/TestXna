@@ -14,9 +14,9 @@ namespace TiledTerrainDemo.DemoLandscape
 {
     public sealed class DemoTerrainRenderer : IDisposable
     {
-        Settings settings;
+        CDLODSettings settings;
 
-        TerrainRenderer renderer;
+        CDLODTerrainRenderer renderer;
 
         Effect sourceEffect;
 
@@ -50,7 +50,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public ContentManager Content { get; private set; }
 
-        public Settings Settings
+        public CDLODSettings Settings
         {
             get { return settings; }
         }
@@ -77,13 +77,13 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public bool LightEnabled { get; set; }
 
-        public DemoTerrainRenderer(GraphicsDevice graphicsDevice, ContentManager content, Settings settings)
+        public DemoTerrainRenderer(GraphicsDevice graphicsDevice, ContentManager content, CDLODSettings settings)
         {
             GraphicsDevice = graphicsDevice;
             Content = content;
             this.settings = settings;
 
-            renderer = new TerrainRenderer(graphicsDevice, settings);
+            renderer = new CDLODTerrainRenderer(graphicsDevice, settings);
 
             sourceEffect = Content.Load<Effect>("TerrainEffect");
             effect = new TerrainEffect(sourceEffect);
@@ -105,10 +105,10 @@ namespace TiledTerrainDemo.DemoLandscape
         }
 
         // Invoke this method if the state of a IVisibleRanges instance is changed.
-        public void InitializeMorphConsts(IVisibleRanges visibleRanges)
+        public void InitializeMorphConsts(ICDLODVisibleRanges visibleRanges)
         {
             Vector2[] morphConsts;
-            MorphConsts.Create(visibleRanges, out morphConsts);
+            CDLODMorphConsts.Create(visibleRanges, out morphConsts);
             effect.MorphConsts = morphConsts;
         }
 
@@ -126,7 +126,7 @@ namespace TiledTerrainDemo.DemoLandscape
             effect.HeightColorPositions = heightColorPositionBuffer;
         }
 
-        public void Draw(GameTime gameTime, Selection selection)
+        public void Draw(GameTime gameTime, CDLODSelection selection)
         {
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
@@ -189,7 +189,7 @@ namespace TiledTerrainDemo.DemoLandscape
                 debugEffect.View = selection.View;
                 debugEffect.Projection = selection.Projection;
 
-                SelectedNode selectedNode;
+                CDLODSelectedNode selectedNode;
                 BoundingBox box;
                 for (int i = 0; i < selection.SelectedNodeCount; i++)
                 {

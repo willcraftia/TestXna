@@ -13,7 +13,7 @@ namespace TiledTerrainDemo.DemoLandscape
 {
     public sealed class DemoPartitionContext
     {
-        Settings settings;
+        CDLODSettings settings;
 
         // noise parameters for debug.
         int noiseSeed = 300;
@@ -77,14 +77,14 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public float NoiseHeight { get; private set; }
 
-        public Settings Settings
+        public CDLODSettings Settings
         {
             get { return settings; }
         }
 
         public DemoTerrainRenderer TerrainRenderer { get; private set; }
 
-        public Selection Selection { get; private set; }
+        public CDLODSelection Selection { get; private set; }
 
         #region Debug
 
@@ -95,8 +95,8 @@ namespace TiledTerrainDemo.DemoLandscape
         #endregion
 
         public DemoPartitionContext(
-            GraphicsDevice graphicsDevice, ContentManager content, Settings settings,
-            IVisibleRanges visibleRanges,
+            GraphicsDevice graphicsDevice, ContentManager content, CDLODSettings settings,
+            ICDLODVisibleRanges visibleRanges,
             float noiseMinX, float noiseMinY, float noiseWidth, float noiseHeight)
         {
             GraphicsDevice = graphicsDevice;
@@ -193,7 +193,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
             TerrainRenderer.InitializeHeightColors(heightColors);
 
-            Selection = new Selection(settings, visibleRanges);
+            Selection = new CDLODSelection(settings, visibleRanges);
         }
 
         public float Noise(float x, float y, float z)

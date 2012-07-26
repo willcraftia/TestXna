@@ -10,7 +10,7 @@ using TiledTerrainDemo.CDLOD;
 
 namespace TiledTerrainDemo.DemoLandscape
 {
-    public sealed class DemoHeightMapSource : IHeightMapSource, IDisposable
+    public sealed class DemoHeightMapSource : ICDLODHeightMap, IDisposable
     {
         class NoiseMapImpl : INoiseMap
         {
@@ -104,7 +104,7 @@ namespace TiledTerrainDemo.DemoLandscape
             }
         }
 
-        public DemoHeightMapSource(GraphicsDevice graphicsDevice, Settings settings)
+        public DemoHeightMapSource(GraphicsDevice graphicsDevice, CDLODSettings settings)
         {
             GraphicsDevice = graphicsDevice;
             width = settings.HeightMapWidth;

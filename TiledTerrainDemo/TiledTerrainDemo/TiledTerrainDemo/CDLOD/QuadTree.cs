@@ -16,7 +16,7 @@ namespace TiledTerrainDemo.CDLOD
 
         Node[,] topNodes;
 
-        public QuadTree(Settings settings)
+        public QuadTree(CDLODSettings settings)
         {
             topNodeSize = settings.TopNodeSize;
 
@@ -29,14 +29,14 @@ namespace TiledTerrainDemo.CDLOD
                     topNodes[x, y] = new Node(x * topNodeSize, y * topNodeSize, topNodeSize, ref settings);
         }
 
-        public void Build(IHeightMapSource heightMap)
+        public void Build(ICDLODHeightMap heightMap)
         {
             for (int y = 0; y < topNodeCountY; y++)
                 for (int x = 0; x < topNodeCountX; x++)
                     topNodes[x, y].Build(heightMap);
         }
 
-        public void Select(Selection selection)
+        public void Select(CDLODSelection selection)
         {
             for (int y = 0; y < topNodeCountY; y++)
             {

@@ -10,15 +10,15 @@ using TiledTerrainDemo.Framework.Graphics;
 
 namespace TiledTerrainDemo.CDLOD
 {
-    public sealed class Terrain
+    public sealed class CDLODTerrain
     {
-        Settings settings;
+        CDLODSettings settings;
 
         QuadTree quadTree;
 
-        public IHeightMapSource HeightMap { get; set; }
+        public ICDLODHeightMap HeightMap { get; set; }
 
-        public Terrain(Settings settings)
+        public CDLODTerrain(CDLODSettings settings)
         {
             this.settings = settings;
 
@@ -34,7 +34,7 @@ namespace TiledTerrainDemo.CDLOD
             quadTree.Build(HeightMap);
         }
 
-        public void Select(Selection selection)
+        public void Select(CDLODSelection selection)
         {
             // Prepare selection's state per a terrain.
             selection.ClearSelectedNodes();

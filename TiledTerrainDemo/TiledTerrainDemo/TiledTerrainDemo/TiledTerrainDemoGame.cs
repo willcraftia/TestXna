@@ -34,19 +34,19 @@ namespace TiledTerrainDemo
         float noiseSampleHeight = 2;
 
         // CDLOD settings for debug.
-        int levelCount = Settings.DefaultLevelCount;
+        int levelCount = CDLODSettings.DefaultLevelCount;
         //int leafNodeSize = Settings.DefaultLeafNodeSize;
-        int leafNodeSize = Settings.DefaultLeafNodeSize * 2;
-        int patchResolution = Settings.DefaultPatchResolution;
+        int leafNodeSize = CDLODSettings.DefaultLeafNodeSize * 2;
+        int patchResolution = CDLODSettings.DefaultPatchResolution;
         //int patchResolution = Settings.DefaultPatchResolution * 2;
         //float patchScale = Settings.DefaultPatchScale;
         float patchScale = 16 * 2;
         //float heightScale = Settings.DefaultHeightScale;
-        float heightScale = Settings.DefaultHeightScale * 4;
+        float heightScale = CDLODSettings.DefaultHeightScale * 4;
         //float heightScale = Settings.DefaultHeightScale * 16;
 
-        int finestNodeSize = DefaultVisibleRanges.DefaultFinestNodeSize;
-        float detailBalance = DefaultVisibleRanges.DefaultDetailBalance;
+        int finestNodeSize = CDLODDefaultVisibleRanges.DefaultFinestNodeSize;
+        float detailBalance = CDLODDefaultVisibleRanges.DefaultDetailBalance;
         int loadThreadCount = PartitionLoadQueue.DefaultThreadCount;
         int initialPartitionPoolCapacity = 20;
         int maxPartitionPoolCapacity = 100;
@@ -77,7 +77,7 @@ namespace TiledTerrainDemo
 
         PartitionManager partitionManager;
 
-        Settings settings = Settings.Default;
+        CDLODSettings settings = CDLODSettings.Default;
 
         DemoPartitionContext partitionContext;
 
@@ -177,7 +177,7 @@ namespace TiledTerrainDemo
             settings.HeightMapHeight = heightMapHeight;
             settings.HeightMapOverlapSize = heightMapOverlapSize;
 
-            var visibleRanges = new DefaultVisibleRanges(settings);
+            var visibleRanges = new CDLODDefaultVisibleRanges(settings);
             visibleRanges.FinestNodeSize = finestNodeSize;
             visibleRanges.DetailBalance = detailBalance;
             visibleRanges.Initialize();

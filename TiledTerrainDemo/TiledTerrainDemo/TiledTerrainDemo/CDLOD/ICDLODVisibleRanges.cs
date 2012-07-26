@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace TiledTerrainDemo.CDLOD
 {
-    public interface IVisibleRanges
+    public interface ICDLODVisibleRanges
     {
         int Count { get; }
 

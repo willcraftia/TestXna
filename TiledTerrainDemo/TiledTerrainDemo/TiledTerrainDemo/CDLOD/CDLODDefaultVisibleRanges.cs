@@ -6,13 +6,13 @@ using System;
 
 namespace TiledTerrainDemo.CDLOD
 {
-    public sealed class DefaultVisibleRanges : IVisibleRanges
+    public sealed class CDLODDefaultVisibleRanges : ICDLODVisibleRanges
     {
         public const int DefaultFinestNodeSize = 3;
 
         public const float DefaultDetailBalance = 2;
 
-        Settings settings;
+        CDLODSettings settings;
 
         float[] ranges;
 
@@ -30,7 +30,7 @@ namespace TiledTerrainDemo.CDLOD
             get { return ranges[level]; }
         }
 
-        public DefaultVisibleRanges(Settings settings)
+        public CDLODDefaultVisibleRanges(CDLODSettings settings)
         {
             this.settings = settings;
 

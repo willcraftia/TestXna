@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace TiledTerrainDemo.CDLOD
 {
-    public struct SelectedNode
+    public struct CDLODSelectedNode
     {
         public int X;
 

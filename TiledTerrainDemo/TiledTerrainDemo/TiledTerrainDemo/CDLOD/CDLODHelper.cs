@@ -6,7 +6,7 @@ using System;
 
 namespace TiledTerrainDemo.CDLOD
 {
-    public static class Helper
+    public static class CDLODHelper
     {
         public static bool IsPowOf2(int value)
         {

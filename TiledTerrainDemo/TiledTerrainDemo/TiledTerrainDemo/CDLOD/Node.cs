@@ -60,7 +60,7 @@ namespace TiledTerrainDemo.CDLOD
             get { return level; }
         }
 
-        public Node(int x, int y, int size, ref Settings settings)
+        public Node(int x, int y, int size, ref CDLODSettings settings)
         {
             this.x = x;
             this.y = y;
@@ -92,7 +92,7 @@ namespace TiledTerrainDemo.CDLOD
             }
         }
 
-        public void Build(IHeightMapSource heightMap)
+        public void Build(ICDLODHeightMap heightMap)
         {
             if (level == 0)
             {
@@ -130,7 +130,7 @@ namespace TiledTerrainDemo.CDLOD
             }
         }
 
-        public bool Select(Selection selection, bool parentCompletelyInFrustum, bool ignoreVisibilityCheck)
+        public bool Select(CDLODSelection selection, bool parentCompletelyInFrustum, bool ignoreVisibilityCheck)
         {
             BoundingBox boundingBox;
             GetBoundingBox(ref selection.TerrainOffset, selection.Settings.PatchScale, selection.Settings.HeightScale, out boundingBox);
@@ -206,7 +206,7 @@ namespace TiledTerrainDemo.CDLOD
             return true;
         }
 
-        bool PreSelect(Selection selection, bool parentCompletelyInFrustum)
+        bool PreSelect(CDLODSelection selection, bool parentCompletelyInFrustum)
         {
             BoundingBox boundingBox;
             GetBoundingBox(ref selection.TerrainOffset, selection.Settings.PatchScale, selection.Settings.HeightScale, out boundingBox);

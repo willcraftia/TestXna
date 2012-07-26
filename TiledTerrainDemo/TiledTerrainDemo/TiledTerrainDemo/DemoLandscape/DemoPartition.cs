@@ -15,11 +15,11 @@ namespace TiledTerrainDemo.DemoLandscape
     {
         DemoPartitionContext context;
 
-        Settings settings;
+        CDLODSettings settings;
 
         DemoHeightMapSource heightMap;
 
-        Terrain terrain;
+        CDLODTerrain terrain;
 
         public DemoPartition(DemoPartitionContext context)
         {
@@ -32,7 +32,7 @@ namespace TiledTerrainDemo.DemoLandscape
             heightMap = new DemoHeightMapSource(context.GraphicsDevice, settings);
             heightMap.NoiseSource = context.Noise;
 
-            terrain = new Terrain(context.Settings);
+            terrain = new CDLODTerrain(context.Settings);
             terrain.HeightMap = heightMap;
         }
 

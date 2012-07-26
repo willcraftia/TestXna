@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace TiledTerrainDemo.CDLOD
 {
-    public sealed class OriginalVisibleRanges : IVisibleRanges
+    public sealed class CDLODOriginalVisibleRanges : ICDLODVisibleRanges
     {
         public const float DefaultMaxVisibleDistance = 20000;
 
@@ -29,7 +29,7 @@ namespace TiledTerrainDemo.CDLOD
             get { return ranges[level]; }
         }
 
-        public OriginalVisibleRanges(int levelCount)
+        public CDLODOriginalVisibleRanges(int levelCount)
         {
             MaxVisibleDistance = DefaultMaxVisibleDistance;
             DetailBalance = DefaultDetailBalance;

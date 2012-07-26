@@ -7,13 +7,13 @@ using Microsoft.Xna.Framework;
 
 namespace TiledTerrainDemo.CDLOD
 {
-    public sealed class MorphConsts
+    public sealed class CDLODMorphConsts
     {
         public const float MorphStartRatio = 0.66f;
 
         const float errorFudge = 0.01f;
 
-        public static void Create(IVisibleRanges visibleRanges, out Vector2[] results)
+        public static void Create(ICDLODVisibleRanges visibleRanges, out Vector2[] results)
         {
             results = new Vector2[visibleRanges.Count];
 

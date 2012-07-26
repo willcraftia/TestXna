@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TiledTerrainDemo.CDLOD
 {
-    public sealed class Selection
+    public sealed class CDLODSelection
     {
         public const int MaxSelectedNodeCount = 500;
 
@@ -22,23 +22,23 @@ namespace TiledTerrainDemo.CDLOD
 
         public Texture2D HeightMapTexture;
 
-        public Settings Settings;
+        public CDLODSettings Settings;
 
-        SelectedNode[] selectedNodes;
+        CDLODSelectedNode[] selectedNodes;
 
-        public IVisibleRanges VisibleRanges { get; private set; }
+        public ICDLODVisibleRanges VisibleRanges { get; private set; }
 
         public BoundingFrustum Frustum { get; private set; }
 
         public int SelectedNodeCount { get; private set; }
 
-        public Selection(Settings settings, IVisibleRanges visibleRanges)
+        public CDLODSelection(CDLODSettings settings, ICDLODVisibleRanges visibleRanges)
         {
             Settings = settings;
             VisibleRanges = visibleRanges;
 
             Frustum = new BoundingFrustum(Matrix.Identity);
-            selectedNodes = new SelectedNode[MaxSelectedNodeCount];
+            selectedNodes = new CDLODSelectedNode[MaxSelectedNodeCount];
         }
 
         public void Prepare()
@@ -58,7 +58,7 @@ namespace TiledTerrainDemo.CDLOD
             SelectedNodeCount = 0;
         }
 
-        public void GetSelectedNode(int index, out SelectedNode selectedNode)
+        public void GetSelectedNode(int index, out CDLODSelectedNode selectedNode)
         {
             selectedNode = selectedNodes[index];
         }
@@ -72,7 +72,7 @@ namespace TiledTerrainDemo.CDLOD
         {
             if (MaxSelectedNodeCount <= SelectedNodeCount) return;
 
-            selectedNodes[SelectedNodeCount++] = new SelectedNode
+            selectedNodes[SelectedNodeCount++] = new CDLODSelectedNode
             {
                 X = node.X,
                 Y = node.Y,

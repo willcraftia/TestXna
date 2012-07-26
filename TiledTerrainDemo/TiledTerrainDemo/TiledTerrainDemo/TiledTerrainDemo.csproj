@@ -110,23 +110,23 @@
     <Compile Include="Cameras\FreeView.cs" />
     <Compile Include="Cameras\FreeViewInput.cs" />
     <Compile Include="DemoLandscape\BoundingBoxDrawer.cs" />
-    <Compile Include="CDLOD\DefaultVisibleRanges.cs" />
-    <Compile Include="CDLOD\Helper.cs" />
-    <Compile Include="CDLOD\IHeightMapSource.cs" />
-    <Compile Include="CDLOD\IVisibleRanges.cs" />
-    <Compile Include="CDLOD\MorphConsts.cs" />
+    <Compile Include="CDLOD\CDLODDefaultVisibleRanges.cs" />
+    <Compile Include="CDLOD\CDLODHelper.cs" />
+    <Compile Include="CDLOD\ICDLODHeightMap.cs" />
+    <Compile Include="CDLOD\ICDLODVisibleRanges.cs" />
+    <Compile Include="CDLOD\CDLODMorphConsts.cs" />
     <Compile Include="CDLOD\Node.cs" />
-    <Compile Include="CDLOD\OriginalVisibleRanges.cs" />
+    <Compile Include="CDLOD\CDLODOriginalVisibleRanges.cs" />
     <Compile Include="CDLOD\PatchInstanceVertex.cs" />
     <Compile Include="CDLOD\PatchMesh.cs" />
     <Compile Include="CDLOD\QuadTree.cs" />
-    <Compile Include="CDLOD\SelectedNode.cs" />
-    <Compile Include="CDLOD\Selection.cs" />
-    <Compile Include="CDLOD\Settings.cs" />
-    <Compile Include="CDLOD\Terrain.cs" />
+    <Compile Include="CDLOD\CDLODSelectedNode.cs" />
+    <Compile Include="CDLOD\CDLODSelection.cs" />
+    <Compile Include="CDLOD\CDLODSettings.cs" />
+    <Compile Include="CDLOD\CDLODTerrain.cs" />
     <Compile Include="DemoLandscape\HeightColor.cs" />
     <Compile Include="DemoLandscape\TerrainEffect.cs" />
-    <Compile Include="CDLOD\TerrainRenderer.cs" />
+    <Compile Include="CDLOD\CDLODTerrainRenderer.cs" />
     <Compile Include="DemoLandscape\DemoTerrainRenderer.cs" />
     <Compile Include="CDLOD\VertexPosition.cs" />
     <Compile Include="DemoLandscape\DemoHeightMapSource.cs" />
@@ -165,6 +165,10 @@
     <ProjectReference Include="..\..\..\Framework.Noise\Framework.Noise\Framework.Noise.csproj">
       <Project>{B25CD185-A331-406B-86D4-5EC24459B387}</Project>
       <Name>Framework.Noise</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Framework.Terrain\Framework.Terrain\Framework.Terrain.csproj">
+      <Project>{A7C24D5C-A14B-4944-A5F4-BEFBF754B621}</Project>
+      <Name>Framework.Terrain</Name>
     </ProjectReference>
     <ProjectReference Include="..\TiledTerrainDemoContent\TiledTerrainDemoContent.contentproj">
       <Name>TiledTerrainDemoContent</Name>

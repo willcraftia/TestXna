@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace TiledTerrainDemo.CDLOD
 {
-    public struct Settings
+    public struct CDLODSettings
     {
         public const int MaxLevelCount = 15;
 
@@ -43,11 +43,11 @@ namespace TiledTerrainDemo.CDLOD
 
         public int HeightMapOverlapSize;
 
-        public static Settings Default
+        public static CDLODSettings Default
         {
             get
             {
-                return new Settings
+                return new CDLODSettings
                 {
                     LeafNodeSize = DefaultLeafNodeSize,
                     LevelCount = DefaultLevelCount,

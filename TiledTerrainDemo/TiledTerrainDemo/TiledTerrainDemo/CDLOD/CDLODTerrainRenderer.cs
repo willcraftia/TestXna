@@ -9,11 +9,11 @@ using TiledTerrainDemo.Framework.Graphics;
 
 namespace TiledTerrainDemo.CDLOD
 {
-    public sealed class TerrainRenderer : IDisposable
+    public sealed class CDLODTerrainRenderer : IDisposable
     {
-        Settings settings;
+        CDLODSettings settings;
 
-        PatchInstanceVertex[] instances = new PatchInstanceVertex[Selection.MaxSelectedNodeCount];
+        PatchInstanceVertex[] instances = new PatchInstanceVertex[CDLODSelection.MaxSelectedNodeCount];
 
         /// <summary>
         /// The vertex buffer to populate instances.
@@ -32,7 +32,7 @@ namespace TiledTerrainDemo.CDLOD
 
         public GraphicsDevice GraphicsDevice { get; private set; }
 
-        public Settings Settings
+        public CDLODSettings Settings
         {
             get { return settings; }
         }
@@ -42,21 +42,21 @@ namespace TiledTerrainDemo.CDLOD
             get { return patchMesh; }
         }
 
-        public TerrainRenderer(GraphicsDevice graphicsDevice, Settings settings)
+        public CDLODTerrainRenderer(GraphicsDevice graphicsDevice, CDLODSettings settings)
         {
             if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
 
             GraphicsDevice = graphicsDevice;
             this.settings = settings;
 
-            instanceVertexBuffer = new WritableVertexBuffer<PatchInstanceVertex>(GraphicsDevice, Selection.MaxSelectedNodeCount * 2);
+            instanceVertexBuffer = new WritableVertexBuffer<PatchInstanceVertex>(GraphicsDevice, CDLODSelection.MaxSelectedNodeCount * 2);
 
             // TODO: I want to change a patch resolution at runtime.
             // patchGridSize = leafNodeSize * patchResolution;
             patchMesh = new PatchMesh(GraphicsDevice, settings.PatchGridSize);
         }
 
-        public void Draw(GameTime gameTime, Effect effect, Selection selection)
+        public void Draw(GameTime gameTime, Effect effect, CDLODSelection selection)
         {
             if (selection.SelectedNodeCount == 0) return;
 
@@ -91,7 +91,7 @@ namespace TiledTerrainDemo.CDLOD
 
         bool disposed;
 
-        ~TerrainRenderer()
+        ~CDLODTerrainRenderer()
         {
             Dispose(false);
         }
