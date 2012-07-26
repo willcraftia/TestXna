@@ -107,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MidpointDisplacement.cs" />
     <Compile Include="QuadMesh.cs" />
     <Compile Include="GradientColorCollection.cs" />
     <Compile Include="HeightMapImageBuilder.cs" />
