@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 #endregion
 
-namespace Willcraftia.Framework.Noise
+namespace Willcraftia.Xna.Framework.Noise
 {
     /// <summary>
     /// The class generates Perlin noise.

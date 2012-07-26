@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 #endregion
 
-namespace Willcraftia.Framework.Noise
+namespace Willcraftia.Xna.Framework.Noise
 {
     public sealed class Voronoi : IModule
     {
@@ -23,7 +23,7 @@ namespace Willcraftia.Framework.Noise
 
         VoronoiType voronoiType = VoronoiType.First;
 
-        MetricsDelegate metrics = Willcraftia.Framework.Noise.Metrics.Squared;
+        MetricsDelegate metrics = Willcraftia.Xna.Framework.Noise.Metrics.Squared;
 
         public int Seed
         {

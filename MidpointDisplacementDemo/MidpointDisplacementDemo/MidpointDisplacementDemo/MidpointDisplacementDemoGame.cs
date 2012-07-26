@@ -5,8 +5,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Willcraftia.Framework.Terrain;
-using Willcraftia.Framework.Terrain.Helpers;
+using Willcraftia.Xna.Framework.Terrain;
+using Willcraftia.Xna.Framework.Terrain.Helpers;
 
 #endregion
 

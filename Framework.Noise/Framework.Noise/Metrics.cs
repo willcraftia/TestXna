@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace Willcraftia.Framework.Noise
+namespace Willcraftia.Xna.Framework.Noise
 {
     // for voronoi.
     public static class Metrics

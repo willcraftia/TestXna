@@ -2,8 +2,8 @@
 
 using System;
 using Microsoft.Xna.Framework;
-using Willcraftia.Framework.Noise;
-using Willcraftia.Framework.Terrain;
+using Willcraftia.Xna.Framework.Noise;
+using Willcraftia.Xna.Framework.Terrain;
 
 #endregion
 

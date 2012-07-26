@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace Willcraftia.Framework.Noise
+namespace Willcraftia.Xna.Framework.Noise
 {
     public delegate float SampleSourceDelegate(float x, float y, float z);
 }

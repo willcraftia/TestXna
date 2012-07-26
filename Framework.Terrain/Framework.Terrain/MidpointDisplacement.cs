@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace Willcraftia.Framework.Terrain
+namespace Willcraftia.Xna.Framework.Terrain
 {
     public sealed class MidpointDisplacement
     {

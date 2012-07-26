@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 #endregion
 
-namespace Willcraftia.Framework.Terrain.Helpers
+namespace Willcraftia.Xna.Framework.Terrain.Helpers
 {
     public sealed class HeightMapImageBuilder
     {

@@ -1,7 +1,7 @@
 ﻿#region Using
 
 using System;
-using Willcraftia.Framework.Terrain;
+using Willcraftia.Xna.Framework.Terrain;
 
 #endregion
 

@@ -1,7 +1,7 @@
 ﻿#region Using
 
 using System;
-using Willcraftia.Framework.Noise;
+using Willcraftia.Xna.Framework.Noise;
 
 #endregion
 

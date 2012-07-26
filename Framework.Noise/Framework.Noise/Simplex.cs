@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace Willcraftia.Framework.Noise
+namespace Willcraftia.Xna.Framework.Noise
 {
     /// <summary>
     /// The class generates Simplex noise.
