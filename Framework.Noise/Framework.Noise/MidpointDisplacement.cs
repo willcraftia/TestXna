@@ -5,7 +5,7 @@ using Willcraftia.Framework.Noise;
 
 #endregion
 
-namespace PerlinNoiseDemo
+namespace Willcraftia.Framework.Noise
 {
     public sealed class MidpointDisplacement
     {

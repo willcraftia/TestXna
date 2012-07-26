@@ -74,7 +74,7 @@ namespace PerlinNoiseDemo
 
         NoiseMapBuilder noiseMapBuilder = new NoiseMapBuilder();
 
-        MidpointDisplacement md = new MidpointDisplacement();
+        MidpointDisplacement midpointDisplacement = new MidpointDisplacement();
 
         HeightMapImageBuilder heightMapImageBuilder = new HeightMapImageBuilder();
 
@@ -141,7 +141,7 @@ namespace PerlinNoiseDemo
             //heightMapImageBuilder.GradientColors.Add(0.7500f, 210, 113, 98);
             //heightMapImageBuilder.GradientColors.Add(1.0000f, 255, 176, 192);
 
-            md.Seed = 300;
+            midpointDisplacement.Seed = 300;
 
             base.Initialize();
         }
@@ -167,10 +167,10 @@ namespace PerlinNoiseDemo
                     //noiseMapBuilder.Build();
 
                     // Midpoint displacemenet.
-                    md.Destination = heightMap;
-                    md.BoundX = i * (heightMapSize - 1);
-                    md.BoundY = j * (heightMapSize - 1);
-                    md.Build();
+                    midpointDisplacement.Destination = heightMap;
+                    midpointDisplacement.BoundX = i * (heightMapSize - 1);
+                    midpointDisplacement.BoundY = j * (heightMapSize - 1);
+                    midpointDisplacement.Build();
 
                     Console.WriteLine("[{0}, {1}]", NoiseHelper.Min(heightMap), NoiseHelper.Max(heightMap));
 
