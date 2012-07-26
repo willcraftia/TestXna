@@ -1,7 +1,7 @@
 ﻿#region Using
 
 using System;
-using TiledTerrainDemo.Landscape;
+using Willcraftia.Xna.Framework.Landscape;
 
 #endregion
 

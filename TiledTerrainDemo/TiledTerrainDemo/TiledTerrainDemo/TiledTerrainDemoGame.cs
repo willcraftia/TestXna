@@ -10,10 +10,10 @@ using Willcraftia.Xna.Framework;
 using Willcraftia.Xna.Framework.Cameras;
 using Willcraftia.Xna.Framework.Debug;
 using Willcraftia.Xna.Framework.Graphics;
+using Willcraftia.Xna.Framework.Landscape;
 using Willcraftia.Xna.Framework.Terrain.CDLOD;
 using TiledTerrainDemo.Cameras;
 using TiledTerrainDemo.DemoLandscape;
-using TiledTerrainDemo.Landscape;
 
 #endregion
 
@@ -47,7 +47,7 @@ namespace TiledTerrainDemo
 
         int finestNodeSize = CDLODDefaultVisibleRanges.DefaultFinestNodeSize;
         float detailBalance = CDLODDefaultVisibleRanges.DefaultDetailBalance;
-        int loadThreadCount = PartitionLoadQueue.DefaultThreadCount;
+        int loadThreadCount = 4;
         int initialPartitionPoolCapacity = 20;
         int maxPartitionPoolCapacity = 100;
 

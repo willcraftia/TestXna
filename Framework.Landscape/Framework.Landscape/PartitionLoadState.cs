@@ -6,7 +6,7 @@ using System;
 
 namespace Willcraftia.Xna.Framework.Landscape
 {
-    public enum PartitionLoadState
+    internal enum PartitionLoadState
     {
         None,
         Loaded,

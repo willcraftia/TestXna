@@ -55,9 +55,9 @@ namespace Willcraftia.Xna.Framework.Landscape
         }
 
         // Don't set a value into this property in subclasses.
-        public PartitionLoadState LoadState { get; set; }
+        internal PartitionLoadState LoadState { get; set; }
 
-        public void Initialize(int x, int y, float width, float height)
+        internal void Initialize(int x, int y, float width, float height)
         {
             this.x = x;
             this.y = y;
@@ -70,7 +70,7 @@ namespace Willcraftia.Xna.Framework.Landscape
             position.Y = y * height;
         }
 
-        public float CalculateEyeDistanceSquared(ref Vector3 eyePosition)
+        internal float CalculateEyeDistanceSquared(ref Vector3 eyePosition)
         {
             var center = new Vector3
             {

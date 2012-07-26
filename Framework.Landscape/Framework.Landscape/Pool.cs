@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Willcraftia.Xna.Framework.Landscape
 {
-    public sealed class Pool<T> where T : class
+    internal sealed class Pool<T> where T : class
     {
         public const int DefaultInitialCapacity = 10;
 

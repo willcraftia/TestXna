@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework;
 
 namespace Willcraftia.Xna.Framework.Landscape
 {
-    public sealed class PartitionLoadQueue
+    internal sealed class PartitionLoadQueue
     {
         #region PartitionInfo
 

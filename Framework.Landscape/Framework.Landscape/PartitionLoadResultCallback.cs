@@ -6,5 +6,5 @@ using System;
 
 namespace Willcraftia.Xna.Framework.Landscape
 {
-    public delegate void PartitionLoadResultCallback(Partition partition);
+    internal delegate void PartitionLoadResultCallback(Partition partition);
 }

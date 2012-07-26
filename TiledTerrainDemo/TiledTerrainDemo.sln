@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Terrain.CDLOD", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoFramework", "..\DemoFramework\DemoFramework\DemoFramework.csproj", "{E60A4536-A0D7-4242-AC07-BCE790BCA71E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Landscape", "..\Framework.Landscape\Framework.Landscape\Framework.Landscape.csproj", "{389CB9BA-D9BD-4116-B6E5-4166F9191B9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -41,6 +43,10 @@ Global
 		{E60A4536-A0D7-4242-AC07-BCE790BCA71E}.Debug|x86.Build.0 = Debug|x86
 		{E60A4536-A0D7-4242-AC07-BCE790BCA71E}.Release|x86.ActiveCfg = Release|x86
 		{E60A4536-A0D7-4242-AC07-BCE790BCA71E}.Release|x86.Build.0 = Release|x86
+		{389CB9BA-D9BD-4116-B6E5-4166F9191B9E}.Debug|x86.ActiveCfg = Debug|x86
+		{389CB9BA-D9BD-4116-B6E5-4166F9191B9E}.Debug|x86.Build.0 = Debug|x86
+		{389CB9BA-D9BD-4116-B6E5-4166F9191B9E}.Release|x86.ActiveCfg = Release|x86
+		{389CB9BA-D9BD-4116-B6E5-4166F9191B9E}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
