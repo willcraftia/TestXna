@@ -11,6 +11,7 @@ using Willcraftia.Xna.Framework.Cameras;
 using Willcraftia.Xna.Framework.Debug;
 using Willcraftia.Xna.Framework.Graphics;
 using Willcraftia.Xna.Framework.Landscape;
+using Willcraftia.Xna.Framework.Noise;
 using Willcraftia.Xna.Framework.Terrain.CDLOD;
 using TiledTerrainDemo.Cameras;
 using TiledTerrainDemo.DemoLandscape;
@@ -82,6 +83,56 @@ namespace TiledTerrainDemo
         DemoPartitionContext partitionContext;
 
         DemoPartitionFactory partitionFactory;
+
+        // noise parameters for debug.
+        int noiseSeed = 300;
+
+        #region Noise and fractal test
+
+        ClassicPerlin classicPerlin = new ClassicPerlin();
+        Perlin perlin = new Perlin();
+        Simplex simplex = new Simplex();
+
+        PerlinFractal perlinFractal = new PerlinFractal();
+
+        // Musgrave fractal.
+        SumFractal sumFractal = new SumFractal();
+        Multifractal multifractal = new Multifractal();
+        Heterofractal heterofractal = new Heterofractal();
+        HybridMultifractal hybridMultifractal = new HybridMultifractal();
+        RidgedMultifractal ridgedMultifractal = new RidgedMultifractal();
+        SinFractal sinFractal = new SinFractal();
+        // ---
+
+        Billow billow = new Billow();
+
+        #endregion
+
+        #region Voronoi test
+
+        Voronoi voronoi = new Voronoi();
+
+        #endregion
+
+        #region Noise combination test
+
+        RidgedMultifractal mountainTerrain = new RidgedMultifractal();
+        Billow baseFlatTerrain = new Billow();
+        ScaleBias flatTerrain = new ScaleBias();
+        Select terrainSelector = new Select();
+        PerlinFractal terrainType = new PerlinFractal();
+        Turbulence perturbTerrain = new Turbulence();
+        ScaleBias finalTerrain = new ScaleBias();
+
+        #endregion
+
+        #region Recording
+
+        Perlin recNoise = new Perlin();
+        SumFractal recBaseTerrain = new SumFractal();
+        ScaleBias recFinalTerrain = new ScaleBias();
+
+        #endregion
 
         #region Debug
 
@@ -182,9 +233,81 @@ namespace TiledTerrainDemo
             visibleRanges.DetailBalance = detailBalance;
             visibleRanges.Initialize();
 
+            #region Noise and fractal test
+
+            classicPerlin.Seed = noiseSeed;
+            classicPerlin.Reseed();
+            perlin.Seed = noiseSeed;
+            perlin.Reseed();
+            simplex.Seed = noiseSeed;
+            simplex.Reseed();
+
+            //var noise = perlinNoise;
+            var noise = perlin;
+            //var noise = simplexNoise;
+            //var noise = voronoi;
+
+            perlinFractal.Source = noise.Sample;
+            sumFractal.Source = noise.Sample;
+            multifractal.Source = noise.Sample;
+            heterofractal.Source = noise.Sample;
+            hybridMultifractal.Source = noise.Sample;
+            ridgedMultifractal.Source = noise.Sample;
+            sinFractal.Source = noise.Sample;
+            billow.Source = noise.Sample;
+
+            #endregion
+
+            #region Vorononi test
+
+            voronoi.Seed = noiseSeed;
+            voronoi.Frequency = 1;
+            voronoi.VoronoiType = VoronoiType.First;
+            voronoi.Metrics = Metrics.Squared;
+            //voronoi.DistanceEnabled = true;
+
+            #endregion
+
+            #region Noise combination test
+
+            var testBaseNoise = perlin;
+
+            mountainTerrain.Source = testBaseNoise.Sample;
+            baseFlatTerrain.Source = testBaseNoise.Sample;
+            baseFlatTerrain.Frequency = 2.0f;
+            flatTerrain.Source = baseFlatTerrain.Sample;
+            flatTerrain.Scale = 0.525f;
+            flatTerrain.Bias = -0.75f;
+            terrainType.Source = testBaseNoise.Sample;
+            terrainSelector.Controller = terrainType.Sample;
+            terrainSelector.Source0 = (x, y, z) => { return mountainTerrain.Sample(x, y, z) * 1.25f - 1; };
+            terrainSelector.Source1 = flatTerrain.Sample;
+            terrainSelector.LowerBound = 0;
+            terrainSelector.UpperBound = 1000;
+            terrainSelector.EdgeFalloff = 0.125f;
+            perturbTerrain.Source = terrainSelector.Sample;
+            perturbTerrain.Frequency = 4;
+            perturbTerrain.Power = 0.125f;
+            finalTerrain.Source = perturbTerrain.Sample;
+            finalTerrain.Bias = 0.8f;
+
+            #endregion
+
+            #region Recording
+
+            recNoise.Seed = noiseSeed;
+            recBaseTerrain.Source = recNoise.Sample;
+            recBaseTerrain.OctaveCount = 7;
+            recFinalTerrain.Source = recBaseTerrain.Sample;
+            recFinalTerrain.Scale = 2.5f;
+
+            #endregion
+
+            SampleSourceDelegate finalNoiseSource = recFinalTerrain.Sample;
+
             partitionContext = new DemoPartitionContext(
                 GraphicsDevice, Content, settings, visibleRanges,
-                noiseSampleX, noiseSampleY, noiseSampleWidth, noiseSampleHeight);
+                finalNoiseSource, noiseSampleX, noiseSampleY, noiseSampleWidth, noiseSampleHeight);
             partitionContext.TerrainRenderer.FogEnabled = true;
             partitionContext.TerrainRenderer.FogStart = fogStart;
             partitionContext.TerrainRenderer.FogEnd = fogEnd;
@@ -224,7 +347,8 @@ namespace TiledTerrainDemo
             if (!IsActive) return;
 
             var keyboardState = Keyboard.GetState();
-            if (keyboardState.IsKeyDown(Keys.Escape)) Exit();
+            if (keyboardState.IsKeyDown(Keys.Escape))
+                Exit();
 
             viewInput.Update(gameTime);
 

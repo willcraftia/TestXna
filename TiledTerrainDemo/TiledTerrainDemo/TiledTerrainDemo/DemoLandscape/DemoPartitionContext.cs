@@ -15,56 +15,6 @@ namespace TiledTerrainDemo.DemoLandscape
     {
         CDLODSettings settings;
 
-        // noise parameters for debug.
-        int noiseSeed = 300;
-
-        #region Noise and fractal test
-
-        ClassicPerlin classicPerlin = new ClassicPerlin();
-        Perlin perlin = new Perlin();
-        Simplex simplex = new Simplex();
-
-        PerlinFractal perlinFractal = new PerlinFractal();
-
-        // Musgrave fractal.
-        SumFractal sumFractal = new SumFractal();
-        Multifractal multifractal = new Multifractal();
-        Heterofractal heterofractal = new Heterofractal();
-        HybridMultifractal hybridMultifractal = new HybridMultifractal();
-        RidgedMultifractal ridgedMultifractal = new RidgedMultifractal();
-        SinFractal sinFractal = new SinFractal();
-        // ---
-
-        Billow billow = new Billow();
-
-        #endregion
-
-        #region Voronoi test
-
-        Voronoi voronoi = new Voronoi();
-
-        #endregion
-
-        #region Noise combination test
-
-        RidgedMultifractal mountainTerrain = new RidgedMultifractal();
-        Billow baseFlatTerrain = new Billow();
-        ScaleBias flatTerrain = new ScaleBias();
-        Select terrainSelector = new Select();
-        PerlinFractal terrainType = new PerlinFractal();
-        Turbulence perturbTerrain = new Turbulence();
-        ScaleBias finalTerrain = new ScaleBias();
-
-        #endregion
-
-        #region Recording
-
-        Perlin recNoise = new Perlin();
-        SumFractal recBaseTerrain = new SumFractal();
-        ScaleBias recFinalTerrain = new ScaleBias();
-
-        #endregion
-
         public GraphicsDevice GraphicsDevice { get; private set; }
 
         public ContentManager Content { get; private set; }
@@ -76,6 +26,8 @@ namespace TiledTerrainDemo.DemoLandscape
         public float NoiseWidth { get; private set; }
 
         public float NoiseHeight { get; private set; }
+
+        public SampleSourceDelegate NoiseSource { get; private set; }
 
         public CDLODSettings Settings
         {
@@ -96,86 +48,17 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public DemoPartitionContext(
             GraphicsDevice graphicsDevice, ContentManager content, CDLODSettings settings,
-            ICDLODVisibleRanges visibleRanges,
+            ICDLODVisibleRanges visibleRanges, SampleSourceDelegate noiseSource,
             float noiseMinX, float noiseMinY, float noiseWidth, float noiseHeight)
         {
             GraphicsDevice = graphicsDevice;
             Content = content;
             this.settings = settings;
+            NoiseSource = noiseSource;
             NoiseMinX = noiseMinX;
             NoiseMinY = noiseMinY;
             NoiseWidth = noiseWidth;
             NoiseHeight = noiseHeight;
-
-            #region Noise and fractal test
-
-            classicPerlin.Seed = noiseSeed;
-            classicPerlin.Reseed();
-            perlin.Seed = noiseSeed;
-            perlin.Reseed();
-            simplex.Seed = noiseSeed;
-            simplex.Reseed();
-
-            //var noise = perlinNoise;
-            var noise = perlin;
-            //var noise = simplexNoise;
-            //var noise = voronoi;
-
-            perlinFractal.Source = noise.Sample;
-            sumFractal.Source = noise.Sample;
-            multifractal.Source = noise.Sample;
-            heterofractal.Source = noise.Sample;
-            hybridMultifractal.Source = noise.Sample;
-            ridgedMultifractal.Source = noise.Sample;
-            sinFractal.Source = noise.Sample;
-            billow.Source = noise.Sample;
-
-            #endregion
-
-            #region Vorononi test
-
-            voronoi.Seed = noiseSeed;
-            voronoi.Frequency = 1;
-            voronoi.VoronoiType = VoronoiType.First;
-            voronoi.Metrics = Metrics.Squared;
-            //voronoi.DistanceEnabled = true;
-
-            #endregion
-
-            #region Noise combination test
-
-            var testBaseNoise = perlin;
-
-            mountainTerrain.Source = testBaseNoise.Sample;
-            baseFlatTerrain.Source = testBaseNoise.Sample;
-            baseFlatTerrain.Frequency = 2.0f;
-            flatTerrain.Source = baseFlatTerrain.Sample;
-            flatTerrain.Scale = 0.525f;
-            flatTerrain.Bias = -0.75f;
-            terrainType.Source = testBaseNoise.Sample;
-            terrainSelector.Controller = terrainType.Sample;
-            terrainSelector.Source0 = (x, y, z) => { return mountainTerrain.Sample(x, y, z) * 1.25f - 1; };
-            terrainSelector.Source1 = flatTerrain.Sample;
-            terrainSelector.LowerBound = 0;
-            terrainSelector.UpperBound = 1000;
-            terrainSelector.EdgeFalloff = 0.125f;
-            perturbTerrain.Source = terrainSelector.Sample;
-            perturbTerrain.Frequency = 4;
-            perturbTerrain.Power = 0.125f;
-            finalTerrain.Source = perturbTerrain.Sample;
-            finalTerrain.Bias = 0.8f;
-
-            #endregion
-
-            #region Recording
-
-            recNoise.Seed = noiseSeed;
-            recBaseTerrain.Source = recNoise.Sample;
-            recBaseTerrain.OctaveCount = 7;
-            recFinalTerrain.Source = recBaseTerrain.Sample;
-            recFinalTerrain.Scale = 2.5f;
-
-            #endregion
 
             TerrainRenderer = new DemoTerrainRenderer(GraphicsDevice, Content, settings);
             TerrainRenderer.InitializeMorphConsts(visibleRanges);
@@ -198,26 +81,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public float Noise(float x, float y, float z)
         {
-            //return perlin.Sample(x, y, z);
-            //return simplex.Sample(x, y, z);
-            //return voronoi.Sample(x, y, z);
-            //return sumFractal.Sample(x, y, z) * 2.5f + 0.3f;
-            // take down.
-            //return multifractal.Sample(x, y, z) - 1;
-            // take down.
-            //return heterofractal.Sample(x, y, z) - 1;
-            // take down.
-            //return hybridMultifractal.Sample(x, y, z) - 1;
-            // take down.
-            //return ridgedMultifractal.Sample(x, y, z) - 1;
-            //return sinFractal.Sample(x, y, z);
-            //return billow.Sample(x, y, z);
-
-            // Noise combination test.
-            //return finalTerrain.Sample(x, y, z);
-
-            // for recoding.
-            return recFinalTerrain.Sample(x, y, z);
+            return NoiseSource(x, y, z);
         }
     }
 }
