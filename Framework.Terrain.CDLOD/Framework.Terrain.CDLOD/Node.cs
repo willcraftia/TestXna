@@ -92,14 +92,14 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
             }
         }
 
-        public void Build(ICDLODHeightMap heightMap)
+        public void Build(IMap heightMap)
         {
             if (level == 0)
             {
                 // a leaf node.
                 int limitX = Math.Min(heightMap.Width, x + size + 1);
                 int limitY = Math.Min(heightMap.Height, y + size + 1);
-                heightMap.GetAreaMinMaxHeight(x, y, limitX - x, limitY - y, out minHeight, out maxHeight);
+                heightMap.MinMax(x, y, limitX - x, limitY - y, out minHeight, out maxHeight);
             }
             else
             {

@@ -11,7 +11,7 @@ namespace Willcraftia.Xna.Framework.Noise
     {
         SampleSourceDelegate source;
 
-        INoiseMap destination;
+        IMap destination;
 
         Bounds bounds = Bounds.One;
 
@@ -23,7 +23,7 @@ namespace Willcraftia.Xna.Framework.Noise
             set { source = value; }
         }
 
-        public INoiseMap Destination
+        public IMap Destination
         {
             get { return destination; }
             set { destination = value; }

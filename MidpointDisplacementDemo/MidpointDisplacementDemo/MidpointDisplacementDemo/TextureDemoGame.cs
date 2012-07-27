@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Willcraftia.Xna.Framework;
 using Willcraftia.Xna.Framework.Terrain;
 using Willcraftia.Xna.Framework.Terrain.Helpers;
 
@@ -30,7 +31,7 @@ namespace MidpointDisplacementDemo
 
         GraphicsDeviceManager graphics;
 
-        HeightMap heightMap = new HeightMap(Size, Size);
+        Map heightMap = new Map(Size, Size);
 
         MidpointDisplacement md = new MidpointDisplacement();
 
@@ -86,8 +87,6 @@ namespace MidpointDisplacementDemo
                     md.BoundX = i * (heightMap.Width - 1);
                     md.BoundY = j * (heightMap.Height - 1);
                     md.Build();
-
-                    Console.WriteLine("[{0}, {1}]", heightMap.Min(), heightMap.Max());
 
                     textures[i, j] = new Texture2D(GraphicsDevice, Size, Size, false, SurfaceFormat.Color);
                     imageBuilder.Source = heightMap;

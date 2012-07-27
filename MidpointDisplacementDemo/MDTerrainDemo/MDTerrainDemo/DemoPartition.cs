@@ -3,6 +3,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Willcraftia.Xna.Framework;
 using Willcraftia.Xna.Framework.Landscape;
 using Willcraftia.Xna.Framework.Terrain;
 using Willcraftia.Xna.Framework.Terrain.CDLOD;
@@ -17,7 +18,7 @@ namespace MDTerrainDemo
 
         CDLODSettings settings;
 
-        MDHeightMap heightMap;
+        Map heightMap;
 
         CDLODTerrain terrain;
 
@@ -34,7 +35,7 @@ namespace MDTerrainDemo
 
             settings = context.Settings;
 
-            heightMap = new MDHeightMap(context.GraphicsDevice, settings);
+            heightMap = new Map(settings.HeightMapWidth, settings.HeightMapHeight);
 
             terrain = new CDLODTerrain(context.Settings);
             terrain.HeightMap = heightMap;
@@ -71,6 +72,8 @@ namespace MDTerrainDemo
             md.BoundX = X * (settings.HeightMapWidth - 1);
             md.BoundY = Y * (settings.HeightMapHeight - 1);
             md.Build();
+
+            Erosion.Erode(heightMap, 0.5f, 5);
 
             texture.SetData(heightMap.Values);
 

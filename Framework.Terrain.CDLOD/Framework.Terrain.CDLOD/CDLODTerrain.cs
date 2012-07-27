@@ -15,7 +15,7 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
 
         QuadTree quadTree;
 
-        public ICDLODHeightMap HeightMap { get; set; }
+        public IMap HeightMap { get; set; }
 
         public CDLODTerrain(CDLODSettings settings)
         {

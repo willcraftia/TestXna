@@ -14,7 +14,7 @@ namespace Willcraftia.Xna.Framework.Terrain
 
         float hurst = DefaultHurst;
 
-        IWritableHeightMap destination;
+        IMap destination;
 
         int boundX;
 
@@ -32,7 +32,7 @@ namespace Willcraftia.Xna.Framework.Terrain
             set { hurst = value; }
         }
 
-        public IWritableHeightMap Destination
+        public IMap Destination
         {
             get { return destination; }
             set { destination = value; }

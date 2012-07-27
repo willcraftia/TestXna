@@ -99,7 +99,6 @@
     <Compile Include="Heterofractal.cs" />
     <Compile Include="HybridMultifractal.cs" />
     <Compile Include="IModule.cs" />
-    <Compile Include="INoiseMap.cs" />
     <Compile Include="Metrics.cs" />
     <Compile Include="MetricsDelegate.cs" />
     <Compile Include="Multifractal.cs" />
@@ -119,6 +118,12 @@
     <Compile Include="Turbulence.cs" />
     <Compile Include="Voronoi.cs" />
     <Compile Include="VoronoiType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\DemoFramework\DemoFramework\DemoFramework.csproj">
+      <Project>{E60A4536-A0D7-4242-AC07-BCE790BCA71E}</Project>
+      <Name>DemoFramework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />

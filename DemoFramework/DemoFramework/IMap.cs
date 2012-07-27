@@ -4,14 +4,14 @@ using System;
 
 #endregion
 
-namespace Willcraftia.Xna.Framework.Terrain
+namespace Willcraftia.Xna.Framework
 {
-    public interface IHeightMap
+    public interface IMap
     {
         int Width { get; }
 
         int Height { get; }
 
-        float this[int x, int y] { get; }
+        float this[int x, int y] { get; set; }
     }
 }

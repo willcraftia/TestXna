@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Willcraftia.Xna.Framework;
 using Willcraftia.Xna.Framework.Noise;
 using Willcraftia.Xna.Framework.Terrain;
 using Willcraftia.Xna.Framework.Terrain.Helpers;
@@ -72,7 +73,7 @@ namespace PerlinNoiseDemo
 
         IModule finalModule;
 
-        HeightMap heightMap = new HeightMap(Size, Size);
+        Map heightMap = new Map(Size, Size);
 
         NoiseMapBuilder noiseMapBuilder = new NoiseMapBuilder();
 
@@ -160,8 +161,6 @@ namespace PerlinNoiseDemo
                     noiseMapBuilder.Destination = heightMap;
                     noiseMapBuilder.Bounds = new Bounds { X = i, Y = j, Width = 1, Height = 1 };
                     noiseMapBuilder.Build();
-
-                    Console.WriteLine("[{0}, {1}]", heightMap.Min(), heightMap.Max());
 
                     textures[i, j] = new Texture2D(GraphicsDevice, Size, Size, false, SurfaceFormat.Color);
                     imageBuilder.Source = heightMap;

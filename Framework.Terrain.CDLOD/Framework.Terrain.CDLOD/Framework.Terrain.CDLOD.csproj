@@ -101,7 +101,6 @@
     <Compile Include="CDLODSettings.cs" />
     <Compile Include="CDLODTerrain.cs" />
     <Compile Include="CDLODTerrainRenderer.cs" />
-    <Compile Include="ICDLODHeightMap.cs" />
     <Compile Include="ICDLODVisibleRanges.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="PatchInstanceVertex.cs" />

@@ -107,7 +107,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HeightMap.cs" />
     <Compile Include="QuadMesh.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
@@ -119,6 +118,10 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\DemoFramework\DemoFramework\DemoFramework.csproj">
+      <Project>{E60A4536-A0D7-4242-AC07-BCE790BCA71E}</Project>
+      <Name>DemoFramework</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Framework.Noise\Framework.Noise\Framework.Noise.csproj">
       <Project>{B25CD185-A331-406B-86D4-5EC24459B387}</Project>
       <Name>Framework.Noise</Name>
