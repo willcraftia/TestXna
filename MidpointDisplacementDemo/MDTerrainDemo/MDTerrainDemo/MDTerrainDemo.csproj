@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{B999BA0E-F8BF-4DC6-8316-64E8217DD540}</ProjectGuid>
+    <ProjectGuid>{8298FC80-E8CA-460E-9943-AE71B64CB855}</ProjectGuid>
     <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MidpointDisplacementDemo</RootNamespace>
-    <AssemblyName>MidpointDisplacementDemo</AssemblyName>
+    <RootNamespace>MDTerrainDemo</RootNamespace>
+    <AssemblyName>MDTerrainDemo</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
     <XnaProfile>HiDef</XnaProfile>
-    <XnaCrossPlatformGroupID>a83bb425-9272-488c-b2be-1476bb6cd16d</XnaCrossPlatformGroupID>
+    <XnaCrossPlatformGroupID>82005a7b-f0a6-4196-9c19-a946246bbfc2</XnaCrossPlatformGroupID>
     <XnaOutputType>Game</XnaOutputType>
     <ApplicationIcon>Game.ico</ApplicationIcon>
     <Thumbnail>GameThumbnail.png</Thumbnail>
@@ -107,23 +107,44 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HeightMap.cs" />
+    <Compile Include="BoundingBoxDrawer.cs" />
+    <Compile Include="DemoPartition.cs" />
+    <Compile Include="DemoPartitionContext.cs" />
+    <Compile Include="DemoPartitionFactory.cs" />
+    <Compile Include="DemoTerrainRenderer.cs" />
+    <Compile Include="FreeView.cs" />
+    <Compile Include="FreeViewInput.cs" />
+    <Compile Include="HeightColor.cs" />
+    <Compile Include="HeightColorCollection.cs" />
+    <Compile Include="MDHeightMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="TextureDemoGame.cs" />
-    <Compile Include="QuadMesh.cs" />
+    <Compile Include="TerrainDemoGame.cs" />
+    <Compile Include="TerrainEffect.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\DemoFramework\DemoFramework\DemoFramework.csproj">
+      <Project>{E60A4536-A0D7-4242-AC07-BCE790BCA71E}</Project>
+      <Name>DemoFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Framework.Landscape\Framework.Landscape\Framework.Landscape.csproj">
+      <Project>{389CB9BA-D9BD-4116-B6E5-4166F9191B9E}</Project>
+      <Name>Framework.Landscape</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Framework.Terrain.CDLOD\Framework.Terrain.CDLOD\Framework.Terrain.CDLOD.csproj">
+      <Project>{0B753DED-6698-4FF3-AA08-28FDBC2B91EA}</Project>
+      <Name>Framework.Terrain.CDLOD</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Framework.Terrain\Framework.Terrain\Framework.Terrain.csproj">
       <Project>{A7C24D5C-A14B-4944-A5F4-BEFBF754B621}</Project>
       <Name>Framework.Terrain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MidpointDisplacementDemoContent\MidpointDisplacementDemoContent.contentproj">
-      <Name>MidpointDisplacementDemoContent</Name>
+    <ProjectReference Include="..\MDTerrainDemoContent\MDTerrainDemoContent.contentproj">
+      <Name>MDTerrainDemoContent</Name>
       <XnaReferenceType>Content</XnaReferenceType>
     </ProjectReference>
   </ItemGroup>

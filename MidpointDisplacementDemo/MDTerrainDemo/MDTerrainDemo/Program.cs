@@ -1,6 +1,6 @@
 using System;
 
-namespace MidpointDisplacementDemo
+namespace MDTerrainDemo
 {
 #if WINDOWS || XBOX
     static class Program
@@ -10,7 +10,7 @@ namespace MidpointDisplacementDemo
         /// </summary>
         static void Main(string[] args)
         {
-            using (TextureDemoGame game = new TextureDemoGame())
+            using (TerrainDemoGame game = new TerrainDemoGame())
             {
                 game.Run();
             }

@@ -12,7 +12,7 @@ using Willcraftia.Xna.Framework.Terrain.Helpers;
 
 namespace MidpointDisplacementDemo
 {
-    public class MidpointDisplacementDemoGame : Game
+    public class TextureDemoGame : Game
     {
         public const int Size = 256 + 1;
 
@@ -25,6 +25,8 @@ namespace MidpointDisplacementDemo
         public const int CountY = 5;
 
         public const int Seed = 300;
+
+        public const float Hurst = 0.8f;
 
         GraphicsDeviceManager graphics;
 
@@ -42,7 +44,7 @@ namespace MidpointDisplacementDemo
 
         Matrix[,] transforms = new Matrix[CountX, CountY];
 
-        public MidpointDisplacementDemoGame()
+        public TextureDemoGame()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -51,6 +53,7 @@ namespace MidpointDisplacementDemo
         protected override void Initialize()
         {
             md.Seed = Seed;
+            md.Hurst = Hurst;
 
             imageBuilder.GradientColors.Add(-1.0000f, 0, 0, 128);
             imageBuilder.GradientColors.Add(-0.2500f, 0, 0, 255);
