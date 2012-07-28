@@ -106,7 +106,7 @@ namespace TiledTerrainDemo.DemoLandscape
             };
 
             builder.Build();
-            Erosion.Erode(this, 0.3f, 5);
+            Erosion.ErodeThermal(this, 0.05f, 10);
 
             textureDirty = true;
         }
