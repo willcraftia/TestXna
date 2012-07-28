@@ -6,7 +6,7 @@ using System;
 
 namespace Willcraftia.Xna.Framework
 {
-    public static class MapExtension
+    public static class IMapExtension
     {
         public static float Min(this IMap map)
         {
