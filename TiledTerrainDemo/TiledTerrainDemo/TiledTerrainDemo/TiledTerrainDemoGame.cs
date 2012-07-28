@@ -305,6 +305,14 @@ namespace TiledTerrainDemo
 
             SampleSourceDelegate finalNoiseSource = recFinalTerrain.Sample;
 
+            //var thermalErosion0 = new ThermalErosion();
+            //thermalErosion0.Source = sumFractal.Sample;
+            //var thermalErosion1 = new ThermalErosion();
+            //thermalErosion1.Source = thermalErosion0.Sample;
+            //var thermalErosion2 = new ThermalErosion();
+            //thermalErosion2.Source = thermalErosion1.Sample;
+            //SampleSourceDelegate finalNoiseSource = thermalErosion2.Sample;
+
             partitionContext = new DemoPartitionContext(
                 GraphicsDevice, Content, settings, visibleRanges,
                 finalNoiseSource, noiseSampleX, noiseSampleY, noiseSampleWidth, noiseSampleHeight);
