@@ -4,6 +4,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Willcraftia.Xna.Framework;
+using Willcraftia.Xna.Framework.Graphics;
 using Willcraftia.Xna.Framework.Noise;
 using Willcraftia.Xna.Framework.Terrain;
 using Willcraftia.Xna.Framework.Terrain.CDLOD;
@@ -12,11 +13,11 @@ using Willcraftia.Xna.Framework.Terrain.CDLOD;
 
 namespace TiledTerrainDemo.DemoLandscape
 {
-    public sealed class NoiseHeightMap : IMap, IDisposable
+    public sealed class NoiseHeightMap : IMap<float>, IDisposable
     {
         NoiseMapBuilder builder = new NoiseMapBuilder();
 
-        Map noiseMap;
+        Map<float> noiseMap;
 
         int width;
 
@@ -26,9 +27,11 @@ namespace TiledTerrainDemo.DemoLandscape
 
         Bounds bounds;
 
-        Texture2D texture;
+        //Texture2D texture;
+        FlipTexture2D flipTexture;
 
-        bool textureDirty;
+        // TODO
+        public bool textureDirty;
 
         public GraphicsDevice GraphicsDevice { get; set; }
 
@@ -86,7 +89,8 @@ namespace TiledTerrainDemo.DemoLandscape
             get
             {
                 RefreshTexture();
-                return texture;
+                //return texture;
+                return flipTexture.Texture;
             }
         }
 
@@ -97,10 +101,11 @@ namespace TiledTerrainDemo.DemoLandscape
             height = settings.HeightMapHeight;
             overlapSize = settings.HeightMapOverlapSize;
 
-            noiseMap = new Map(width + 2 * overlapSize, height + 2 * overlapSize);
+            noiseMap = new Map<float>(width + 2 * overlapSize, height + 2 * overlapSize);
             builder.Destination = noiseMap;
 
-            texture = new Texture2D(graphicsDevice, noiseMap.Width, noiseMap.Height, false, SurfaceFormat.Single);
+            //texture = new Texture2D(graphicsDevice, noiseMap.Width, noiseMap.Height, false, SurfaceFormat.Single);
+            flipTexture = new FlipTexture2D(graphicsDevice, noiseMap.Width, noiseMap.Height, false, SurfaceFormat.Single);
         }
 
         public void Build()
@@ -126,7 +131,9 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             if (!textureDirty) return;
 
-            texture.SetData(noiseMap.Values);
+            flipTexture.Flip();
+            //texture.SetData(noiseMap.Values);
+            flipTexture.Texture.SetData(noiseMap.Values);
 
             textureDirty = false;
         }
@@ -151,7 +158,7 @@ namespace TiledTerrainDemo.DemoLandscape
             if (disposed) return;
 
             if (disposing)
-                texture.Dispose();
+                flipTexture.Dispose();
 
             disposed = true;
         }

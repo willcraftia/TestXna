@@ -8,13 +8,13 @@ namespace Willcraftia.Xna.Framework.Terrain
 {
     public static class Erosion
     {
-        public static void ErodeThermal(IMap map, float talus, int iterations)
+        public static void ErodeThermal(IMap<float> map, float talus, int iterations)
         {
             for (int iteration = 0; iteration < iterations; iteration++)
             {
-                for (int y = 2; y < map.Height - 4; y++)
+                for (int y = 1; y < map.Height - 2; y++)
                 {
-                    for (int x = 2; x < map.Width - 4; x++)
+                    for (int x = 1; x < map.Width - 2; x++)
                     {
                         var h = map[x, y];
                         var h1 = map[x, y + 1];

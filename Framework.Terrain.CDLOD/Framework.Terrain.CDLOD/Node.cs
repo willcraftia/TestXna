@@ -92,7 +92,7 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
             }
         }
 
-        public void Build(IMap heightMap)
+        public void Build(IMap<float> heightMap)
         {
             if (level == 0)
             {

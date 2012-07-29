@@ -73,7 +73,7 @@ namespace PerlinNoiseDemo
 
         IModule finalModule;
 
-        Map heightMap = new Map(Size, Size);
+        Map<float> heightMap = new Map<float>(Size, Size);
 
         NoiseMapBuilder noiseMapBuilder = new NoiseMapBuilder();
 

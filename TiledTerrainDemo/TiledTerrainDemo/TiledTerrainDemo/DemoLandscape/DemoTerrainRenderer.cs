@@ -216,8 +216,9 @@ namespace TiledTerrainDemo.DemoLandscape
                 }
             }
 
-            // unbind the height map texture.
-            effect.HeightMap = null;
+            // Unbind textures!!
+            //effect.HeightMap = null;
+            //effect.NormalMap = null;
         }
 
         #region IDisposable

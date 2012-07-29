@@ -29,7 +29,7 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
                     topNodes[x, y] = new Node(x * topNodeSize, y * topNodeSize, topNodeSize, ref settings);
         }
 
-        public void Build(IMap heightMap)
+        public void Build(IMap<float> heightMap)
         {
             for (int y = 0; y < topNodeCountY; y++)
                 for (int x = 0; x < topNodeCountX; x++)

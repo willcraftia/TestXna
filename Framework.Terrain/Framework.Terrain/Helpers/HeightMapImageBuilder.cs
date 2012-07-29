@@ -39,7 +39,7 @@ namespace Willcraftia.Xna.Framework.Terrain.Helpers
             get { return gradientColors; }
         }
 
-        public IMap Source { get; set; }
+        public IMap<float> Source { get; set; }
 
         public Texture2D Destination { get; set; }
 

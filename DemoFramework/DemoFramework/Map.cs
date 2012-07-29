@@ -9,9 +9,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Willcraftia.Xna.Framework
 {
-    public sealed class Map : IMap
+    public class Map<T> : IMap<T>
     {
-        public readonly float[] Values;
+        public readonly T[] Values;
 
         int width;
 
@@ -27,7 +27,7 @@ namespace Willcraftia.Xna.Framework
             get { return height; }
         }
 
-        public float this[int x, int y]
+        public T this[int x, int y]
         {
             get { return Values[x + y * width]; }
             set { Values[x + y * width] = value; }
@@ -41,7 +41,7 @@ namespace Willcraftia.Xna.Framework
             this.width = width;
             this.height = height;
 
-            Values = new float[width * height];
+            Values = new T[width * height];
         }
     }
 }

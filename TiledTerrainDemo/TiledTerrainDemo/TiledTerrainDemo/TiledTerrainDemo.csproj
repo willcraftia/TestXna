@@ -111,6 +111,7 @@
     <Compile Include="Cameras\FreeViewInput.cs" />
     <Compile Include="DemoLandscape\BoundingBoxDrawer.cs" />
     <Compile Include="DemoLandscape\HeightColor.cs" />
+    <Compile Include="DemoLandscape\NormalMap.cs" />
     <Compile Include="DemoLandscape\TerrainEffect.cs" />
     <Compile Include="DemoLandscape\DemoTerrainRenderer.cs" />
     <Compile Include="DemoLandscape\NoiseHeightMap.cs" />

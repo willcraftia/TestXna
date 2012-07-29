@@ -50,7 +50,7 @@ float4 HeightColors[MAX_HEIGHT_COLOR_COUNT];
 float HeightColorPositions[MAX_HEIGHT_COLOR_COUNT];
 
 texture HeightMap;
-sampler HeightMapSampler  = sampler_state
+sampler HeightMapSampler /*: register(s1)*/ = sampler_state
 {
     Texture = <HeightMap>;
     AddressU = Clamp;
@@ -61,7 +61,7 @@ sampler HeightMapSampler  = sampler_state
 };
 
 texture NormalMap;
-sampler NormalMapSampler  = sampler_state
+sampler NormalMapSampler /*: register(s2)*/  = sampler_state
 {
     Texture = <NormalMap>;
     AddressU = Clamp;
@@ -94,16 +94,16 @@ struct VS_OUTPUT
 //-----------------------------------------------------------------------------
 float2 CalculateGlobalUV(float4 vertex)
 {
-/*  REFERENCE:
-
-    float2 globalUV = vertex.xz / TerrainScale.xz;
-    float2 actualSize = HeightMapSize - 2 * HeightMapOverlapSize;
-    float2 worldToTexCoord = (actualSize - 1) * HeightMapTexelSize;
-    globalUV *= worldToTexCoord;
-    globalUV += (HeightMapOverlapSize + 0.5) * HeightMapTexelSize;
-
-    therefore:
-*/
+/*
+    // REFERENCE:
+    //
+    // float2 globalUV = vertex.xz / TerrainScale.xz;
+    // float2 actualSize = HeightMapSize - 2 * HeightMapOverlapSize;
+    // float2 worldToTexCoord = (actualSize - 1) * HeightMapTexelSize;
+    // globalUV *= worldToTexCoord;
+    // globalUV += (HeightMapOverlapSize + 0.5) * HeightMapTexelSize;
+    //
+    // therefore:
 
     float2 globalUV = vertex.xz * InverseTerrainScale.xz;
     float2 overlapTexelSize = HeightMapOverlapSize * HeightMapTexelSize;
@@ -121,6 +121,14 @@ float2 CalculateGlobalUV(float4 vertex)
     globalUV += overlapTexelSize + 0.5 * HeightMapTexelSize;
 
     return globalUV;
+*/
+
+float2 globalUV = vertex.xz * InverseTerrainScale.xz;
+float2 worldToTexCoord = (HeightMapSize - 1) * HeightMapTexelSize;
+globalUV *= worldToTexCoord;
+globalUV += 0.5 * HeightMapTexelSize;
+//return globalUV;
+return vertex.xz * InverseTerrainScale.xz;
 }
 
 float2 MorphVertex(float4 position, float2 vertex, float4 quadScale, float morphLerpK)
@@ -218,10 +226,6 @@ VS_OUTPUT VS(
 //-----------------------------------------------------------------------------
 float3 GetNormal(float2 texCoord)
 {
-/*    float3 normal = tex2D(NormalMapSampler, float4(texCoord, 0, 0));
-    normal.xy = normal.xy * 2 - 1;
-    normal.z = sqrt(1 - normal.x * normal.x - normal.y * normal.y);
-    return normal;*/
     float3 normal = tex2D(NormalMapSampler, float4(texCoord, 0, 0));
     normal = normal * 2 - 1;
     return normalize(normal);
@@ -252,6 +256,9 @@ float4 WhiteSolidPS(VS_OUTPUT input) : COLOR0
         float3 N = GetNormal(input.TexCoord);
         float3 light = CalculateLight(E, N);
         color.rgb *= light;
+
+//color.rgb = N * 0.5 + 0.5;
+color.rgb = N;
     }
 
     color.rgb = lerp(color.rgb, FogColor, input.FogFactor);

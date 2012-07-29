@@ -241,12 +241,15 @@ namespace Willcraftia.Xna.Framework.Landscape
 
         void LoadResultCallback(Partition partition)
         {
+            // mark.
+            partition.LoadState = PartitionLoadState.Loaded;
+
             int x = partition.X;
             int y = partition.Y;
 
             foreach (var p in partitions)
             {
-                if (p.LoadState != PartitionLoadState.Loaded)
+                if (p.LoadState != PartitionLoadState.Loaded || p == partition)
                     continue;
 
                 bool isNeighbor = false;
@@ -262,9 +265,6 @@ namespace Willcraftia.Xna.Framework.Landscape
                 if (isNeighbor)
                     p.NeighborLoaded(partition);
             }
-
-            // mark.
-            partition.LoadState = PartitionLoadState.Loaded;
         }
     }
 }

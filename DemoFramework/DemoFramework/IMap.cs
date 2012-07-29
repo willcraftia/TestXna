@@ -6,12 +6,12 @@ using System;
 
 namespace Willcraftia.Xna.Framework
 {
-    public interface IMap
+    public interface IMap<T>
     {
         int Width { get; }
 
         int Height { get; }
 
-        float this[int x, int y] { get; set; }
+        T this[int x, int y] { get; set; }
     }
 }

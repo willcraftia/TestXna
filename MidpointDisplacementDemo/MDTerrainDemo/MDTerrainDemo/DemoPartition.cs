@@ -18,7 +18,7 @@ namespace MDTerrainDemo
 
         CDLODSettings settings;
 
-        Map heightMap;
+        Map<float> heightMap;
 
         CDLODTerrain terrain;
 
@@ -35,7 +35,7 @@ namespace MDTerrainDemo
 
             settings = context.Settings;
 
-            heightMap = new Map(settings.HeightMapWidth, settings.HeightMapHeight);
+            heightMap = new Map<float>(settings.HeightMapWidth, settings.HeightMapHeight);
 
             terrain = new CDLODTerrain(context.Settings);
             terrain.HeightMap = heightMap;
@@ -73,7 +73,7 @@ namespace MDTerrainDemo
             md.BoundY = Y * (settings.HeightMapHeight - 1);
             md.Build();
 
-            Erosion.Erode(heightMap, 0.5f, 5);
+            Erosion.ErodeThermal(heightMap, 0.5f, 5);
 
             texture.SetData(heightMap.Values);
 

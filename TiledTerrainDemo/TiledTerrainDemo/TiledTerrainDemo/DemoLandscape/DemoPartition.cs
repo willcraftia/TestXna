@@ -21,13 +21,9 @@ namespace TiledTerrainDemo.DemoLandscape
 
         NoiseHeightMap heightMap;
 
-        Rgba64[] normalMap;
+        NormalMap normalMap;
 
         CDLODTerrain terrain;
-
-        Texture2D normalMapTexture;
-
-        bool normalMapDirty;
 
         public DemoPartition(DemoPartitionContext context)
         {
@@ -40,9 +36,7 @@ namespace TiledTerrainDemo.DemoLandscape
             heightMap = new NoiseHeightMap(context.GraphicsDevice, settings);
             heightMap.NoiseSource = context.Noise;
 
-            normalMap = new Rgba64[settings.HeightMapWidth * settings.HeightMapHeight];
-            normalMapTexture = new Texture2D(
-                context.GraphicsDevice, settings.HeightMapWidth, settings.HeightMapHeight, false, SurfaceFormat.Rgba64);
+            normalMap = new NormalMap(context.GraphicsDevice, settings.HeightMapWidth, settings.HeightMapHeight);
 
             terrain = new CDLODTerrain(context.Settings);
             terrain.HeightMap = heightMap;
@@ -57,14 +51,12 @@ namespace TiledTerrainDemo.DemoLandscape
                 if (n.X == X - 1)
                 {
                     // Left
-                    for (int y = 0; y < settings.HeightMapHeight; y++)
-                        MergeHeight(heightMap, 0, y, n.heightMap, settings.HeightMapWidth - 1, y);
+                    MergeLeftNeighbor(n);
                 }
                 else if (n.X == X + 1)
                 {
                     // Right
-                    for (int y = 0; y < settings.HeightMapHeight; y++)
-                        MergeHeight(heightMap, settings.HeightMapWidth - 1, y, n.heightMap, 0, y);
+                    MergeRightNeighbor(n);
                 }
                 else
                 {
@@ -76,14 +68,12 @@ namespace TiledTerrainDemo.DemoLandscape
                 if (n.Y == Y - 1)
                 {
                     // Top
-                    for (int x = 0; x < settings.HeightMapWidth; x++)
-                        MergeHeight(heightMap, x, 0, n.heightMap, x, settings.HeightMapHeight - 1);
+                    MergeTopNeighbor(n);
                 }
                 else if (n.Y == Y + 1)
                 {
                     // Bottom
-                    for (int x = 0; x < settings.HeightMapWidth; x++)
-                        MergeHeight(heightMap, x, settings.HeightMapHeight - 1, n.heightMap, x, 0);
+                    MergeBottomNeighbor(n);
                 }
                 else
                 {
@@ -95,16 +85,179 @@ namespace TiledTerrainDemo.DemoLandscape
                 throw new InvalidOperationException("The specified partition is not a neighbor.");
             }
 
+            heightMap.textureDirty = true;
+            normalMap.textureDirty = true;
+
+            //heightMap.RefreshTexture();
+            //normalMap.RefreshTexture();
+
             base.NeighborLoaded(neighbor);
         }
 
-        void MergeHeight(IMap map0, int x0, int y0, IMap map1, int x1, int y1)
+        void MergeHeight(IMap<float> map0, int x0, int y0, IMap<float> map1, int x1, int y1)
         {
             var h0 = map0[x0, y0];
             var h1 = map1[x1, y1];
             var h = (h0 + h1) * 0.5f;
             map0[x0, y0] = h;
             map1[x1, y1] = h;
+            //map1[x1, y1] = map0[x0, y0];
+        }
+
+        void MergeLeftNeighbor(DemoPartition partition)
+        {
+            var amplitude = settings.HeightScale;
+            var rightIndex = settings.HeightMapWidth - 1;
+
+            for (int y = 0; y < settings.HeightMapHeight; y++)
+            {
+                MergeHeight(heightMap, 0, y, partition.heightMap, rightIndex, y);
+            }
+            for (int y = 0; y < settings.HeightMapHeight; y++)
+            {
+                var h0 = heightMap[0, y - 1] * amplitude;
+                var h1 = heightMap[0, y + 1] * amplitude;
+                var h2 = partition.heightMap[rightIndex - 1, y] * amplitude;
+                var h3 = heightMap[0 + 1, y] * amplitude;
+
+                var d0 = new Vector3(0, 1, h1 - h0);
+                var d1 = new Vector3(1, 0, h3 - h2);
+                d0.Normalize();
+                d1.Normalize();
+
+                Vector3 normal;
+                Vector3.Cross(ref d0, ref d1, out normal);
+                normal.Normalize();
+
+                // [-1, 1] -> [0, 1]
+                normal.X = normal.X * 0.5f + 0.5f;
+                normal.Y = normal.Y * 0.5f + 0.5f;
+                normal.Z = normal.Z * 0.5f + 0.5f;
+
+                var n = new Rgba64(normal.X, normal.Y, normal.Z, 0);
+                normalMap[0, y] = n;
+                partition.normalMap[rightIndex, y] = n;
+
+                //normalMap[0, y] = new Rgba64(1, 0, 0, 0);
+                //partition.normalMap[rightIndex, y] = new Rgba64(1, 1, 1, 0);
+            }
+        }
+
+        void MergeRightNeighbor(DemoPartition partition)
+        {
+            var amplitude = settings.HeightScale;
+            var rightIndex = settings.HeightMapWidth - 1;
+
+            for (int y = 0; y < settings.HeightMapHeight; y++)
+            {
+                MergeHeight(heightMap, rightIndex, y, partition.heightMap, 0, y);
+            }
+            for (int y = 0; y < settings.HeightMapHeight; y++)
+            {
+                var h0 = heightMap[rightIndex, y - 1] * amplitude;
+                var h1 = heightMap[rightIndex, y + 1] * amplitude;
+                var h2 = heightMap[rightIndex - 1, y] * amplitude;
+                var h3 = partition.heightMap[0 + 1, y] * amplitude;
+
+                var d0 = new Vector3(0, 1, h1 - h0);
+                var d1 = new Vector3(1, 0, h3 - h2);
+                d0.Normalize();
+                d1.Normalize();
+
+                Vector3 normal;
+                Vector3.Cross(ref d0, ref d1, out normal);
+                normal.Normalize();
+
+                // [-1, 1] -> [0, 1]
+                normal.X = normal.X * 0.5f + 0.5f;
+                normal.Y = normal.Y * 0.5f + 0.5f;
+                normal.Z = normal.Z * 0.5f + 0.5f;
+
+                var n = new Rgba64(normal.X, normal.Y, normal.Z, 0);
+                normalMap[rightIndex, y] = n;
+                partition.normalMap[0, y] = n;
+
+                //normalMap[rightIndex, y] = new Rgba64(0, 1, 0, 0);
+                //partition.normalMap[0, y] = new Rgba64(1, 1, 1, 0);
+            }
+        }
+
+        void MergeTopNeighbor(DemoPartition partition)
+        {
+            var amplitude = settings.HeightScale;
+            var bottomIndex = settings.HeightMapHeight - 1;
+
+            for (int x = 0; x < settings.HeightMapWidth; x++)
+            {
+                MergeHeight(heightMap, x, 0, partition.heightMap, x, bottomIndex);
+            }
+            for (int x = 0; x < settings.HeightMapWidth; x++)
+            {
+                var h0 = partition.heightMap[x, bottomIndex - 1] * amplitude;
+                var h1 = heightMap[x, 0 + 1] * amplitude;
+                var h2 = heightMap[x - 1, 0] * amplitude;
+                var h3 = heightMap[x + 1, 0] * amplitude;
+
+                var d0 = new Vector3(0, 1, h1 - h0);
+                var d1 = new Vector3(1, 0, h3 - h2);
+                d0.Normalize();
+                d1.Normalize();
+
+                Vector3 normal;
+                Vector3.Cross(ref d0, ref d1, out normal);
+                normal.Normalize();
+
+                // [-1, 1] -> [0, 1]
+                normal.X = normal.X * 0.5f + 0.5f;
+                normal.Y = normal.Y * 0.5f + 0.5f;
+                normal.Z = normal.Z * 0.5f + 0.5f;
+
+                var n = new Rgba64(normal.X, normal.Y, normal.Z, 0);
+                normalMap[x, 0] = n;
+                partition.normalMap[x, bottomIndex] = n;
+
+                //normalMap[x, 0] = new Rgba64(0, 0, 1, 0);
+                //partition.normalMap[x, bottomIndex] = new Rgba64(1, 1, 1, 0);
+            }
+        }
+
+        void MergeBottomNeighbor(DemoPartition partition)
+        {
+            var amplitude = settings.HeightScale;
+            var bottomIndex = settings.HeightMapHeight - 1;
+
+            for (int x = 0; x < settings.HeightMapWidth; x++)
+            {
+                MergeHeight(heightMap, x, bottomIndex, partition.heightMap, x, 0);
+            }
+            for (int x = 0; x < settings.HeightMapWidth; x++)
+            {
+                var h0 = heightMap[x, bottomIndex - 1] * amplitude;
+                var h1 = partition.heightMap[x, 0 + 1] * amplitude;
+                var h2 = heightMap[x - 1, bottomIndex] * amplitude;
+                var h3 = heightMap[x + 1, bottomIndex] * amplitude;
+
+                var d0 = new Vector3(0, 1, h1 - h0);
+                var d1 = new Vector3(1, 0, h3 - h2);
+                d0.Normalize();
+                d1.Normalize();
+
+                Vector3 normal;
+                Vector3.Cross(ref d0, ref d1, out normal);
+                normal.Normalize();
+
+                // [-1, 1] -> [0, 1]
+                normal.X = normal.X * 0.5f + 0.5f;
+                normal.Y = normal.Y * 0.5f + 0.5f;
+                normal.Z = normal.Z * 0.5f + 0.5f;
+
+                var n = new Rgba64(normal.X, normal.Y, normal.Z, 0);
+                normalMap[x, bottomIndex] = n;
+                partition.normalMap[x, 0] = n;
+
+                //normalMap[x, bottomIndex] = new Rgba64(1, 1, 0, 0);
+                //partition.normalMap[x, 0] = new Rgba64(1, 1, 1, 0);
+            }
         }
 
         public override void Draw(GameTime gameTime)
@@ -115,15 +268,10 @@ namespace TiledTerrainDemo.DemoLandscape
             // select.
             terrain.Select(context.Selection);
 
-            // set the height map texture.
+            // set height map texture.
             context.Selection.HeightMapTexture = heightMap.Texture;
-
-            if (normalMapDirty)
-            {
-                normalMapTexture.SetData(normalMap);
-                normalMapDirty = false;
-            }
-            context.Selection.NormalMapTexture = normalMapTexture;
+            // set normal map texture.
+            context.Selection.NormalMapTexture = normalMap.Texture;
 
             #region Debug
 
@@ -147,7 +295,8 @@ namespace TiledTerrainDemo.DemoLandscape
             };
             heightMap.Build();
 
-            BuildNormalMap();
+            // Build the normal map.
+            normalMap.Build(heightMap, settings.HeightScale);
 
             // Build the terrain.
             terrain.Build();
@@ -155,47 +304,12 @@ namespace TiledTerrainDemo.DemoLandscape
             base.LoadContentOverride();
         }
 
-        void BuildNormalMap()
-        {
-            var heightScale = settings.HeightScale;
-            // todo: 名前が悪い。Patch scale を意味した値ではない。
-            var patchScale = settings.PatchScale;
-
-            for (int y = 0; y < heightMap.Height; y++)
-            {
-                for (int x = 0; x < heightMap.Width; x++)
-                {
-                    var n = heightMap[x, y - 1] * heightScale;
-                    var s = heightMap[x, y + 1] * heightScale;
-                    var e = heightMap[x - 1, y] * heightScale;
-                    var w = heightMap[x + 1, y] * heightScale;
-
-                    var sn = new Vector3(0, 2 * patchScale, s - n);
-                    var ew = new Vector3(2 * patchScale, 0, e - w);
-                    sn.Normalize();
-                    ew.Normalize();
-
-                    Vector3 normal;
-                    Vector3.Cross(ref sn, ref ew, out normal);
-                    normal.Normalize();
-
-                    // [-1, 1] -> [0, 1]
-                    normal.X = normal.X * 0.5f + 0.5f;
-                    normal.Y = normal.Y * 0.5f + 0.5f;
-                    normal.Z = normal.Z * 0.5f + 0.5f;
-
-                    normalMap[x + y * heightMap.Width] = new Rgba64(normal.X, normal.Y, normal.Z, 0);
-                }
-            }
-
-            normalMapDirty = true;
-        }
-
         protected override void DisposeOverride(bool disposing)
         {
             if (disposing)
             {
                 heightMap.Dispose();
+                normalMap.Dispose();
             }
 
             base.DisposeOverride(disposing);

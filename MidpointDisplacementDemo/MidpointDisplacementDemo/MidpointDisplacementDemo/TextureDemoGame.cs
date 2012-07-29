@@ -31,7 +31,7 @@ namespace MidpointDisplacementDemo
 
         GraphicsDeviceManager graphics;
 
-        Map heightMap = new Map(Size, Size);
+        Map<float> heightMap = new Map<float>(Size, Size);
 
         MidpointDisplacement md = new MidpointDisplacement();
 

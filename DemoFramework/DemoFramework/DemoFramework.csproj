@@ -100,11 +100,12 @@
     <Compile Include="Debug\DebugLayout.cs" />
     <Compile Include="Debug\DebugVerticalAlignment.cs" />
     <Compile Include="Debug\FpsCounter.cs" />
+    <Compile Include="Graphics\FlipTexture2D.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Graphics\Texture2DHelper.cs" />
     <Compile Include="Graphics\WritableVertexBuffer.cs" />
     <Compile Include="IMap.cs" />
-    <Compile Include="IMapExtension.cs" />
+    <Compile Include="FloatMapExtension.cs" />
     <Compile Include="Projection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringBuilderExtension.cs" />

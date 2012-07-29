@@ -24,6 +24,8 @@ namespace TiledTerrainDemo
     {
         //int heightMapWidth = 256 * 4 + 1;
         //int heightMapHeight = 256 * 4 + 1;
+        //int heightMapWidth = 256 * 2 + 1;
+        //int heightMapHeight = 256 * 2 + 1;
         int heightMapWidth = 256 * 1 + 1;
         int heightMapHeight = 256 * 1 + 1;
         //int heightMapOverlapSize = 1;
@@ -39,13 +41,14 @@ namespace TiledTerrainDemo
         int levelCount = CDLODSettings.DefaultLevelCount;
         //int leafNodeSize = Settings.DefaultLeafNodeSize;
         int leafNodeSize = CDLODSettings.DefaultLeafNodeSize * 2;
+        //int patchResolution = CDLODSettings.DefaultPatchResolution;
         int patchResolution = CDLODSettings.DefaultPatchResolution * 2;
-        //int patchResolution = Settings.DefaultPatchResolution * 2;
-        //float patchScale = Settings.DefaultPatchScale;
+        //float patchScale = CDLODSettings.DefaultPatchScale;
         float patchScale = 16 * 2;
-        //float heightScale = Settings.DefaultHeightScale;
+        //float heightScale = CDLODSettings.DefaultHeightScale;
         float heightScale = CDLODSettings.DefaultHeightScale * 4;
-        //float heightScale = Settings.DefaultHeightScale * 16;
+        //float heightScale = CDLODSettings.DefaultHeightScale * 8;
+        //float heightScale = CDLODSettings.DefaultHeightScale * 16;
 
         int finestNodeSize = CDLODDefaultVisibleRanges.DefaultFinestNodeSize;
         float detailBalance = CDLODDefaultVisibleRanges.DefaultDetailBalance;
@@ -313,14 +316,6 @@ namespace TiledTerrainDemo
 
             SampleSourceDelegate finalNoiseSource = recFinalTerrain.Sample;
 
-            //var thermalErosion0 = new ThermalErosion();
-            //thermalErosion0.Source = sumFractal.Sample;
-            //var thermalErosion1 = new ThermalErosion();
-            //thermalErosion1.Source = thermalErosion0.Sample;
-            //var thermalErosion2 = new ThermalErosion();
-            //thermalErosion2.Source = thermalErosion1.Sample;
-            //SampleSourceDelegate finalNoiseSource = thermalErosion2.Sample;
-
             partitionContext = new DemoPartitionContext(
                 GraphicsDevice, Content, settings, visibleRanges,
                 finalNoiseSource, noiseSampleX, noiseSampleY, noiseSampleWidth, noiseSampleHeight);
@@ -337,7 +332,8 @@ namespace TiledTerrainDemo
                 initialPartitionPoolCapacity, maxPartitionPoolCapacity);
             partitionManager.PartitionWidth = terrainScale.X;
             partitionManager.PartitionHeight = terrainScale.Z;
-            partitionManager.ActivationRange = terrainScale.X * 3.0f;
+            partitionManager.ActivationRange = terrainScale.X * 4.0f;
+            //partitionManager.ActivationRange = terrainScale.X * 2.0f;
             partitionManager.DeactivationRange = partitionManager.ActivationRange * 1.5f;
             partitionManager.EyePosition = view.Position;
 
