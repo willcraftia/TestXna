@@ -77,6 +77,18 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public bool LightEnabled { get; set; }
 
+        public Vector3 LightDirection
+        {
+            get { return lightDirection; }
+            set
+            {
+                lightDirection = value;
+
+                if (lightDirection.X != 0 || lightDirection.Y != 0 || lightDirection.Z != 0)
+                    lightDirection.Normalize();
+            }
+        }
+
         public DemoTerrainRenderer(GraphicsDevice graphicsDevice, ContentManager content, CDLODSettings settings)
         {
             GraphicsDevice = graphicsDevice;
@@ -148,6 +160,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
             // per a selection (a terrain).
             effect.HeightMap = selection.HeightMapTexture;
+            effect.NormalMap = selection.NormalMapTexture;
             effect.Projection = selection.Projection;
             effect.EyePosition = eyePosition;
             effect.TerrainEyePosition = terrainEyePosition;

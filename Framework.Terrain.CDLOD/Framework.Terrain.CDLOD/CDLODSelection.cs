@@ -22,6 +22,8 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
 
         public Texture2D HeightMapTexture;
 
+        public Texture2D NormalMapTexture;
+
         public CDLODSettings Settings;
 
         CDLODSelectedNode[] selectedNodes;

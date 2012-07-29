@@ -102,6 +102,8 @@ namespace Willcraftia.Xna.Framework.Landscape
             UnloadContentOverride();
         }
 
+        public virtual void NeighborLoaded(Partition neighbor) { }
+
         public abstract void Draw(GameTime gameTime);
 
         protected virtual void LoadContentOverride() { }

@@ -26,7 +26,8 @@ namespace TiledTerrainDemo
         //int heightMapHeight = 256 * 4 + 1;
         int heightMapWidth = 256 * 1 + 1;
         int heightMapHeight = 256 * 1 + 1;
-        int heightMapOverlapSize = 1;
+        //int heightMapOverlapSize = 1;
+        int heightMapOverlapSize = 0;
         float noiseSampleX = 0;
         float noiseSampleY = 0;
         //float noiseSampleWidth = 12;
@@ -38,7 +39,7 @@ namespace TiledTerrainDemo
         int levelCount = CDLODSettings.DefaultLevelCount;
         //int leafNodeSize = Settings.DefaultLeafNodeSize;
         int leafNodeSize = CDLODSettings.DefaultLeafNodeSize * 2;
-        int patchResolution = CDLODSettings.DefaultPatchResolution;
+        int patchResolution = CDLODSettings.DefaultPatchResolution * 2;
         //int patchResolution = Settings.DefaultPatchResolution * 2;
         //float patchScale = Settings.DefaultPatchScale;
         float patchScale = 16 * 2;
@@ -134,6 +135,9 @@ namespace TiledTerrainDemo
 
         #endregion
 
+        Vector3 midnightSunDirection = new Vector3(0, -1, 1);
+        Vector3 sunRotationAxis;
+
         #region Debug
 
         string helpMessage =
@@ -195,8 +199,8 @@ namespace TiledTerrainDemo
             viewInput.MoveVelocity = moveVelocity;
             viewInput.DashFactor = dashFactor;
 
-            //view.Position = new Vector3(50, 30, 50);
-            view.Position = new Vector3(-150000.0f, 30, -150000.0f);
+            view.Position = new Vector3(50, 30, 50);
+            //view.Position = new Vector3(-150000.0f, 30, -150000.0f);
             view.Yaw(MathHelper.PiOver4 * 5);
             view.Update();
 
@@ -213,6 +217,10 @@ namespace TiledTerrainDemo
             //fpsCounter.Enabled = false;
             //fpsCounter.Visible = false;
             Components.Add(fpsCounter);
+
+            midnightSunDirection.Normalize();
+            var right = Vector3.Cross(midnightSunDirection, Vector3.Up);
+            sunRotationAxis = Vector3.Cross(right, midnightSunDirection);
 
             base.Initialize();
         }
@@ -401,7 +409,20 @@ namespace TiledTerrainDemo
             partitionManager.EyePosition = view.Position;
             partitionManager.Update(gameTime);
 
+            var worldTime = GetWorldTime(gameTime);
+            var lightTransform = Matrix.CreateFromAxisAngle(sunRotationAxis, MathHelper.TwoPi * worldTime);
+            var sunDirection = Vector3.Transform(midnightSunDirection, lightTransform);
+            sunDirection.Normalize();
+
+            partitionContext.TerrainRenderer.LightDirection = -sunDirection;
+
             base.Update(gameTime);
+        }
+
+        float GetWorldTime(GameTime gameTime)
+        {
+            const float timeScale = 0.1f;
+            return (float) gameTime.TotalGameTime.TotalSeconds * timeScale;
         }
 
         protected override void Draw(GameTime gameTime)

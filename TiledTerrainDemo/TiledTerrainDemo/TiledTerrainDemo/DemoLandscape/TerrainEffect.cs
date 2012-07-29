@@ -52,8 +52,6 @@ namespace TiledTerrainDemo.DemoLandscape
 
         EffectParameter heightMapTexelSize;
 
-        EffectParameter twoHeightMapTexelSize;
-
         EffectParameter heightMapOverlapSize;
 
         EffectParameter halfPatchGridSize;
@@ -61,6 +59,8 @@ namespace TiledTerrainDemo.DemoLandscape
         EffectParameter twoOverPatchGridSize;
 
         EffectParameter heightMap;
+
+        EffectParameter normalMap;
 
         EffectParameter heightColorCount;
 
@@ -193,6 +193,12 @@ namespace TiledTerrainDemo.DemoLandscape
             set { heightMap.SetValue(value); }
         }
 
+        public Texture2D NormalMap
+        {
+            get { return normalMap.GetValueTexture2D(); }
+            set { normalMap.SetValue(value); }
+        }
+
         public float PatchGridSize
         {
             get { return patchGridSizeValue; }
@@ -259,8 +265,6 @@ namespace TiledTerrainDemo.DemoLandscape
                 Y = 1 / size.Y
             };
             heightMapTexelSize.SetValue(texelSize);
-            // 2 * texelSize
-            twoHeightMapTexelSize.SetValue(2 * texelSize);
 
             // overlapSize
             heightMapOverlapSize.SetValue(overlapSize);
@@ -295,13 +299,13 @@ namespace TiledTerrainDemo.DemoLandscape
             heightMapSize = BackingEffect.Parameters["HeightMapSize"];
             twoHeightMapSize = BackingEffect.Parameters["TwoHeightMapSize"];
             heightMapTexelSize = BackingEffect.Parameters["HeightMapTexelSize"];
-            twoHeightMapTexelSize = BackingEffect.Parameters["TwoHeightMapTexelSize"];
             heightMapOverlapSize = BackingEffect.Parameters["HeightMapOverlapSize"];
 
             halfPatchGridSize = BackingEffect.Parameters["HalfPatchGridSize"];
             twoOverPatchGridSize = BackingEffect.Parameters["TwoOverPatchGridSize"];
 
             heightMap = BackingEffect.Parameters["HeightMap"];
+            normalMap = BackingEffect.Parameters["NormalMap"];
 
             heightColorCount = BackingEffect.Parameters["HeightColorCount"];
             heightColors = BackingEffect.Parameters["HeightColors"];

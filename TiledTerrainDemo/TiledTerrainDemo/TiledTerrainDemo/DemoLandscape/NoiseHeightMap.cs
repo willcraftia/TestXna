@@ -60,12 +60,23 @@ namespace TiledTerrainDemo.DemoLandscape
             {
                 x += overlapSize;
                 y += overlapSize;
+
+                // Clamp.
+                if (x < 0) return 0;
+                if (noiseMap.Width <= x) return 1;
+                if (y < 0) return 0;
+                if (noiseMap.Height <= y) return 1;
+
                 return noiseMap[x, y];
             }
             set
             {
                 x += overlapSize;
                 y += overlapSize;
+
+                if (x < 0 || noiseMap.Width <= x || y < 0 || noiseMap.Height <= y)
+                    return;
+
                 noiseMap[x, y] = value;
             }
         }
@@ -106,7 +117,7 @@ namespace TiledTerrainDemo.DemoLandscape
             };
 
             builder.Build();
-            //Erosion.ErodeThermal(this, 0.05f, 10);
+            Erosion.ErodeThermal(this, 0.05f, 10);
 
             textureDirty = true;
         }

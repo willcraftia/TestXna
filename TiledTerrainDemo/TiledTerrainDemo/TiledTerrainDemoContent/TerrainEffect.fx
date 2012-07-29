@@ -37,7 +37,6 @@ float2 TwoHeightMapSize;
 // x = 1 / textureWidth
 // y = 1 / textureHeight
 float2 HeightMapTexelSize;
-float2 TwoHeightMapTexelSize;
 float HeightMapOverlapSize;
 
 // [g_gridDim.y] on the original code.
@@ -61,6 +60,17 @@ sampler HeightMapSampler  = sampler_state
     MipFilter = None;
 };
 
+texture NormalMap;
+sampler NormalMapSampler  = sampler_state
+{
+    Texture = <NormalMap>;
+    AddressU = Clamp;
+    AddressV = Clamp;
+    MinFilter = Linear;
+    MagFilter = Linear;
+    MipFilter = None;
+};
+
 //=============================================================================
 // Structure
 //-----------------------------------------------------------------------------
@@ -72,7 +82,6 @@ struct VS_INPUT
 struct VS_OUTPUT
 {
     float4 Position : POSITION0;
-    float3 Normal : NORMAL0;
     float2 TexCoord : TEXCOORD0;
     float3 EyeDirection : TEXCOORD1;
     float FogFactor : TEXCOORD2;
@@ -141,21 +150,6 @@ float SampleHeightMap(float2 uv)
     return lerp( tA, tB, f.y );
 }
 
-float3 CalculateNormal(float2 texCoord)
-{
-    float n = SampleHeightMap(texCoord + float2(0, -HeightMapTexelSize.y));
-    float s = SampleHeightMap(texCoord + float2(0,  HeightMapTexelSize.y));
-    float e = SampleHeightMap(texCoord + float2(-HeightMapTexelSize.x, 0));
-    float w = SampleHeightMap(texCoord + float2( HeightMapTexelSize.x, 0));
-
-    float3 sn = float3(0, (s - n), TwoHeightMapTexelSize.y);
-    float3 ew = float3(TwoHeightMapTexelSize.x, (e - w), 0);
-    sn = normalize(sn);
-    ew = normalize(ew);
-
-    return cross(sn, ew);
-}
-
 float CalculateFogFactor(float d)
 {
     return clamp((d - FogStart) / (FogEnd - FogStart), 0, 1) * FogEnabled;
@@ -210,7 +204,6 @@ VS_OUTPUT VS(
     float4x4 viewProjection = mul(TerrainView, Projection);
     output.Position = mul(vertex, viewProjection);
     output.TexCoord = globalUV;
-    output.Normal = CalculateNormal(globalUV);
 
     output.FogFactor = CalculateFogFactor(eyeDistance);
 
@@ -223,6 +216,17 @@ VS_OUTPUT VS(
 //=============================================================================
 // Pixel shader helper
 //-----------------------------------------------------------------------------
+float3 GetNormal(float2 texCoord)
+{
+/*    float3 normal = tex2D(NormalMapSampler, float4(texCoord, 0, 0));
+    normal.xy = normal.xy * 2 - 1;
+    normal.z = sqrt(1 - normal.x * normal.x - normal.y * normal.y);
+    return normal;*/
+    float3 normal = tex2D(NormalMapSampler, float4(texCoord, 0, 0));
+    normal = normal * 2 - 1;
+    return normalize(normal);
+}
+
 float3 CalculateLight(float3 E, float3 N)
 {
     float3 diffuse = AmbientLightColor;
@@ -245,7 +249,7 @@ float4 WhiteSolidPS(VS_OUTPUT input) : COLOR0
     if (LightEnabled)
     {
         float3 E = normalize(input.EyeDirection);
-        float3 N = normalize(input.Normal);
+        float3 N = GetNormal(input.TexCoord);
         float3 light = CalculateLight(E, N);
         color.rgb *= light;
     }
@@ -288,7 +292,7 @@ float4 HeightColorPS(VS_OUTPUT input) : COLOR0
     if (LightEnabled)
     {
         float3 E = normalize(input.EyeDirection);
-        float3 N = normalize(input.Normal);
+        float3 N = GetNormal(input.TexCoord);
         float3 light = CalculateLight(E, N);
         color.rgb *= light;
     }
