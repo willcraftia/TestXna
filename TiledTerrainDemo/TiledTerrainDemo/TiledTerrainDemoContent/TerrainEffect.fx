@@ -72,7 +72,7 @@ struct VS_INPUT
 struct VS_OUTPUT
 {
     float4 Position : POSITION0;
-    float4 Normal : NORMAL0;
+    float3 Normal : NORMAL0;
     float2 TexCoord : TEXCOORD0;
     float3 EyeDirection : TEXCOORD1;
     float FogFactor : TEXCOORD2;
@@ -141,25 +141,19 @@ float SampleHeightMap(float2 uv)
     return lerp( tA, tB, f.y );
 }
 
-float4 CalculateNormal(float2 texCoord)
+float3 CalculateNormal(float2 texCoord)
 {
-    // From http://graphics.ethz.ch/teaching/gamelab11/course_material/lecture06/XNA_Shaders_Terrain.pdf
-    float n = SampleHeightMap(texCoord + float2(0, -HeightMapTexelSize.x));
-    float s = SampleHeightMap(texCoord + float2(0,  HeightMapTexelSize.x));
-    float e = SampleHeightMap(texCoord + float2(-HeightMapTexelSize.y, 0));
-    float w = SampleHeightMap(texCoord + float2( HeightMapTexelSize.y, 0));
+    float n = SampleHeightMap(texCoord + float2(0, -HeightMapTexelSize.y));
+    float s = SampleHeightMap(texCoord + float2(0,  HeightMapTexelSize.y));
+    float e = SampleHeightMap(texCoord + float2(-HeightMapTexelSize.x, 0));
+    float w = SampleHeightMap(texCoord + float2( HeightMapTexelSize.x, 0));
 
-    float3 sn = float3(0, (s - n) * TerrainScale.y, -TwoHeightMapTexelSize.y);
-    float3 ew = float3(-TwoHeightMapTexelSize.x, (e - w) * TerrainScale.y, 0);
-    sn *= TwoHeightMapSize.y;
-    ew *= TwoHeightMapSize.x;
+    float3 sn = float3(0, (s - n), TwoHeightMapTexelSize.y);
+    float3 ew = float3(TwoHeightMapTexelSize.x, (e - w), 0);
     sn = normalize(sn);
     ew = normalize(ew);
 
-    float4 normal = float4(normalize(cross(sn, ew)), 1);
-    normal.x = -normal.x;
-
-    return normal;
+    return cross(sn, ew);
 }
 
 float CalculateFogFactor(float d)
@@ -250,9 +244,8 @@ float4 WhiteSolidPS(VS_OUTPUT input) : COLOR0
 
     if (LightEnabled)
     {
-        float3 normal = input.Normal.xyz;
         float3 E = normalize(input.EyeDirection);
-        float3 N = normalize(input.Normal.xyz);
+        float3 N = normalize(input.Normal);
         float3 light = CalculateLight(E, N);
         color.rgb *= light;
     }
@@ -294,9 +287,8 @@ float4 HeightColorPS(VS_OUTPUT input) : COLOR0
 
     if (LightEnabled)
     {
-        float3 normal = input.Normal.xyz;
         float3 E = normalize(input.EyeDirection);
-        float3 N = normalize(input.Normal.xyz);
+        float3 N = normalize(input.Normal);
         float3 light = CalculateLight(E, N);
         color.rgb *= light;
     }
