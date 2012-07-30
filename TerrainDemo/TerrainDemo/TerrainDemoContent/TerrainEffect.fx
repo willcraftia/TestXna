@@ -103,10 +103,7 @@ struct VS_OUTPUT
 //-----------------------------------------------------------------------------
 float2 CalculateGlobalUV(float4 vertex)
 {
-    float2 globalUV = vertex.xz / TerrainScale.xz;
-    globalUV *= SamplerWorldToTextureScale;
-    globalUV += HeightMapTexelSize * 0.5;
-    return globalUV;
+    return vertex.xz / TerrainScale.xz;
 }
 
 float2 MorphVertex(float4 position, float2 vertex, float4 quadScale, float morphLerpK)
@@ -138,23 +135,17 @@ float SampleHeightMap(float2 uv)
 
 float4 CalculateNormal(float2 texCoord)
 {
-    // From http://graphics.ethz.ch/teaching/gamelab11/course_material/lecture06/XNA_Shaders_Terrain.pdf
-    float n = SampleHeightMap(texCoord + float2(0, -HeightMapTexelSize.x));
-    float s = SampleHeightMap(texCoord + float2(0,  HeightMapTexelSize.x));
-    float e = SampleHeightMap(texCoord + float2(-HeightMapTexelSize.y, 0));
-    float w = SampleHeightMap(texCoord + float2( HeightMapTexelSize.y, 0));
+    float n = SampleHeightMap(texCoord + float2(0, -HeightMapTexelSize.y));
+    float s = SampleHeightMap(texCoord + float2(0,  HeightMapTexelSize.y));
+    float e = SampleHeightMap(texCoord + float2(-HeightMapTexelSize.x, 0));
+    float w = SampleHeightMap(texCoord + float2( HeightMapTexelSize.x, 0));
 
-    float3 sn = float3(0, (s - n) * TerrainScale.y, -TwoHeightMapTexelSize.y);
-    float3 ew = float3(-TwoHeightMapTexelSize.x, (e - w) * TerrainScale.y, 0);
-    sn *= TwoHeightMapSize.y;
-    ew *= TwoHeightMapSize.x;
+    float3 sn = float3(0, 1, (s - n) * TerrainScale.y);
+    float3 ew = float3(1, 0, (e - w) * TerrainScale.y);
     sn = normalize(sn);
     ew = normalize(ew);
 
-    float4 normal = float4(normalize(cross(sn, ew)), 1);
-    normal.x = -normal.x;
-
-    return normal;
+    return float4(normalize(cross(sn, ew)), 1);
 }
 
 //=============================================================================
