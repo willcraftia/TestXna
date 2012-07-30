@@ -10,7 +10,6 @@
 //-----------------------------------------------------------------------------
 //float4x4 View;
 float4x4 Projection;
-float3 EyePosition;
 
 bool LightEnabled;
 float3 AmbientLightColor;
@@ -220,8 +219,6 @@ float4 WhiteSolidPS(VS_OUTPUT input) : COLOR0
         float3 N = GetNormal(input.TexCoord);
         float3 light = CalculateLight(E, N);
         color.rgb *= light;
-
-        //color.rgb = N;
     }
 
     color.rgb = lerp(color.rgb, FogColor, input.FogFactor);

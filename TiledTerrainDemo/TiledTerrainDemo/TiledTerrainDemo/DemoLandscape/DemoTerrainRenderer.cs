@@ -160,7 +160,6 @@ namespace TiledTerrainDemo.DemoLandscape
             effect.HeightMap = selection.HeightMapTexture;
             effect.NormalMap = selection.NormalMapTexture;
             effect.Projection = selection.Projection;
-            effect.EyePosition = eyePosition;
             effect.TerrainEyePosition = terrainEyePosition;
             effect.TerrainView = terrainView;
 

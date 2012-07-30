@@ -16,8 +16,6 @@ namespace TiledTerrainDemo.DemoLandscape
 
         EffectParameter projection;
 
-        EffectParameter eyePosition;
-
         EffectParameter lightEnabled;
 
         EffectParameter ambientLightColor;
@@ -74,12 +72,6 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             get { return projection.GetValueMatrix(); }
             set { projection.SetValue(value); }
-        }
-
-        public Vector3 EyePosition
-        {
-            get { return eyePosition.GetValueVector3(); }
-            set { eyePosition.SetValue(value); }
         }
 
         public bool LightEnabled
@@ -269,7 +261,6 @@ namespace TiledTerrainDemo.DemoLandscape
         void CacheEffectParameters()
         {
             projection = BackingEffect.Parameters["Projection"];
-            eyePosition = BackingEffect.Parameters["EyePosition"];
 
             lightEnabled = BackingEffect.Parameters["LightEnabled"];
             ambientLightColor = BackingEffect.Parameters["AmbientLightColor"];
