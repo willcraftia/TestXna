@@ -254,9 +254,6 @@ namespace TiledTerrainDemo.DemoLandscape
                 var n = new Rgba64(normal.X, normal.Y, normal.Z, 0);
                 normalMap[x, bottomIndex] = n;
                 partition.normalMap[x, 0] = n;
-
-                //normalMap[x, bottomIndex] = new Rgba64(1, 1, 0, 0);
-                //partition.normalMap[x, 0] = new Rgba64(1, 1, 1, 0);
             }
         }
 

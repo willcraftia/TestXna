@@ -41,8 +41,6 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
 
         public int HeightMapHeight;
 
-        public int HeightMapOverlapSize;
-
         public static CDLODSettings Default
         {
             get
@@ -55,8 +53,7 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
                     PatchScale = DefaultPatchScale,
                     HeightScale = DefaultHeightScale,
                     HeightMapWidth = DefaultHeightMapWidth,
-                    HeightMapHeight = DefaultHeightMapHeight,
-                    HeightMapOverlapSize = DefaultHeightMapOverlapSize
+                    HeightMapHeight = DefaultHeightMapHeight
                 };
             }
         }

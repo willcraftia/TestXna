@@ -102,7 +102,7 @@ namespace TiledTerrainDemo.DemoLandscape
             effect.LevelCount = settings.LevelCount;
             effect.TerrainScale = settings.TerrainScale;
             effect.PatchGridSize = renderer.PatchGridSize;
-            effect.SetHeightMapInfo(settings.HeightMapWidth, settings.HeightMapHeight, settings.HeightMapOverlapSize);
+            effect.SetHeightMapInfo(settings.HeightMapWidth, settings.HeightMapHeight);
 
             lightDirection = new Vector3(0, -1, -1);
             lightDirection.Normalize();

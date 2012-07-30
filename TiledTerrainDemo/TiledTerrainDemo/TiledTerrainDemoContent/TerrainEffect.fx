@@ -37,7 +37,6 @@ float2 TwoHeightMapSize;
 // x = 1 / textureWidth
 // y = 1 / textureHeight
 float2 HeightMapTexelSize;
-float HeightMapOverlapSize;
 
 // [g_gridDim.y] on the original code.
 float HalfPatchGridSize;
@@ -50,7 +49,7 @@ float4 HeightColors[MAX_HEIGHT_COLOR_COUNT];
 float HeightColorPositions[MAX_HEIGHT_COLOR_COUNT];
 
 texture HeightMap;
-sampler HeightMapSampler /*: register(s1)*/ = sampler_state
+sampler HeightMapSampler = sampler_state
 {
     Texture = <HeightMap>;
     AddressU = Clamp;
@@ -61,7 +60,7 @@ sampler HeightMapSampler /*: register(s1)*/ = sampler_state
 };
 
 texture NormalMap;
-sampler NormalMapSampler /*: register(s2)*/  = sampler_state
+sampler NormalMapSampler = sampler_state
 {
     Texture = <NormalMap>;
     AddressU = Clamp;
@@ -94,41 +93,7 @@ struct VS_OUTPUT
 //-----------------------------------------------------------------------------
 float2 CalculateGlobalUV(float4 vertex)
 {
-/*
-    // REFERENCE:
-    //
-    // float2 globalUV = vertex.xz / TerrainScale.xz;
-    // float2 actualSize = HeightMapSize - 2 * HeightMapOverlapSize;
-    // float2 worldToTexCoord = (actualSize - 1) * HeightMapTexelSize;
-    // globalUV *= worldToTexCoord;
-    // globalUV += (HeightMapOverlapSize + 0.5) * HeightMapTexelSize;
-    //
-    // therefore:
-
-    float2 globalUV = vertex.xz * InverseTerrainScale.xz;
-    float2 overlapTexelSize = HeightMapOverlapSize * HeightMapTexelSize;
-
-    // REFERENCE:
-    //    float2 actualSize = HeightMapSize - 2 * HeightMapOverlapSize;
-    //    float2 worldToTexCoord = (actualSize - 1) * HeightMapTexelSize;
-    // therefore:
-    float2 worldToTexCoord = 1 - 2 * overlapTexelSize - HeightMapTexelSize;
-    globalUV *= worldToTexCoord;
-
-    // REFERENCE:
-    //    globalUV += HeightMapTexelSize * HeightMapOverlapSize + HeightMapTexelSize * 0.5;
-    // therefore:
-    globalUV += overlapTexelSize + 0.5 * HeightMapTexelSize;
-
-    return globalUV;
-*/
-
-float2 globalUV = vertex.xz * InverseTerrainScale.xz;
-float2 worldToTexCoord = (HeightMapSize - 1) * HeightMapTexelSize;
-globalUV *= worldToTexCoord;
-globalUV += 0.5 * HeightMapTexelSize;
-//return globalUV;
-return vertex.xz * InverseTerrainScale.xz;
+    return vertex.xz * InverseTerrainScale.xz;
 }
 
 float2 MorphVertex(float4 position, float2 vertex, float4 quadScale, float morphLerpK)
@@ -257,8 +222,7 @@ float4 WhiteSolidPS(VS_OUTPUT input) : COLOR0
         float3 light = CalculateLight(E, N);
         color.rgb *= light;
 
-//color.rgb = N * 0.5 + 0.5;
-color.rgb = N;
+        //color.rgb = N;
     }
 
     color.rgb = lerp(color.rgb, FogColor, input.FogFactor);

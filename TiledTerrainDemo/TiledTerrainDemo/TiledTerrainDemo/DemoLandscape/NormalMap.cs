@@ -13,7 +13,6 @@ namespace TiledTerrainDemo.DemoLandscape
 {
     public sealed class NormalMap : Map<Rgba64>, IDisposable
     {
-        //Texture2D texture;
         FlipTexture2D flipTexture;
 
         // TODO
@@ -24,7 +23,6 @@ namespace TiledTerrainDemo.DemoLandscape
             get
             {
                 RefreshTexture();
-                //return texture;
                 return flipTexture.Texture;
             }
         }
@@ -32,7 +30,6 @@ namespace TiledTerrainDemo.DemoLandscape
         public NormalMap(GraphicsDevice graphicsDevice, int width, int height)
             : base(width, height)
         {
-            //texture = new Texture2D(graphicsDevice, width, height, false, SurfaceFormat.Rgba64);
             flipTexture = new FlipTexture2D(graphicsDevice, width, height, false, SurfaceFormat.Rgba64);
         }
 
@@ -64,8 +61,6 @@ namespace TiledTerrainDemo.DemoLandscape
                     normal.Y = normal.Y * 0.5f + 0.5f;
                     normal.Z = normal.Z * 0.5f + 0.5f;
 
-                    //normal = Vector3.Zero;
-
                     Values[x + y * Width] = new Rgba64(normal.X, normal.Y, normal.Z, 0);
                 }
             }
@@ -78,7 +73,6 @@ namespace TiledTerrainDemo.DemoLandscape
             if (!textureDirty) return;
 
             flipTexture.Flip();
-            //texture.SetData(Values);
             flipTexture.Texture.SetData(Values);
 
             textureDirty = false;

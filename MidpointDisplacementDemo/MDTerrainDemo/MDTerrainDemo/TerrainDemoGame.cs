@@ -163,7 +163,6 @@ namespace MDTerrainDemo
             settings.HeightScale = heightScale;
             settings.HeightMapWidth = heightMapWidth;
             settings.HeightMapHeight = heightMapHeight;
-            settings.HeightMapOverlapSize = 0;
 
             var visibleRanges = new CDLODDefaultVisibleRanges(settings);
             visibleRanges.FinestNodeSize = finestNodeSize;
@@ -298,9 +297,7 @@ namespace MDTerrainDemo
             sb.AppendNumber(graphics.PreferredBackBufferWidth).Append('x');
             sb.AppendNumber(graphics.PreferredBackBufferHeight).AppendLine();
             sb.Append("Height map: ");
-            sb.AppendNumber(heightMapWidth).Append('x').Append(heightMapHeight).Append(" ");
-            sb.Append("(overlap ");
-            sb.AppendNumber(settings.HeightMapOverlapSize).Append(")").AppendLine();
+            sb.AppendNumber(heightMapWidth).Append('x').Append(heightMapHeight).AppendLine();
             sb.Append("Level count: ");
             sb.AppendNumber(settings.LevelCount).Append(", ");
             sb.Append("Leaf node size: ");

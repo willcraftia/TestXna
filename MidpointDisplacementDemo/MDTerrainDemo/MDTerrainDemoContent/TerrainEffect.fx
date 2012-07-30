@@ -22,7 +22,6 @@ float FogStart;
 float FogEnd;
 float3 FogColor;
 
-//float3 TerrainOffset;
 // eye position in terrain space.
 float3 TerrainEyePosition;
 float4x4 TerrainView;
@@ -38,7 +37,6 @@ float2 TwoHeightMapSize;
 // y = 1 / textureHeight
 float2 HeightMapTexelSize;
 float2 TwoHeightMapTexelSize;
-float HeightMapOverlapSize;
 
 // [g_gridDim.y] on the original code.
 float HalfPatchGridSize;
@@ -51,7 +49,7 @@ float4 HeightColors[MAX_HEIGHT_COLOR_COUNT];
 float HeightColorPositions[MAX_HEIGHT_COLOR_COUNT];
 
 texture HeightMap;
-sampler HeightMapSampler  = sampler_state
+sampler HeightMapSampler = sampler_state
 {
     Texture = <HeightMap>;
     AddressU = Clamp;
@@ -85,33 +83,7 @@ struct VS_OUTPUT
 //-----------------------------------------------------------------------------
 float2 CalculateGlobalUV(float4 vertex)
 {
-/*  REFERENCE:
-
-    float2 globalUV = vertex.xz / TerrainScale.xz;
-    float2 actualSize = HeightMapSize - 2 * HeightMapOverlapSize;
-    float2 worldToTexCoord = (actualSize - 1) * HeightMapTexelSize;
-    globalUV *= worldToTexCoord;
-    globalUV += (HeightMapOverlapSize + 0.5) * HeightMapTexelSize;
-
-    therefore:
-*/
-
-    float2 globalUV = vertex.xz * InverseTerrainScale.xz;
-    float2 overlapTexelSize = HeightMapOverlapSize * HeightMapTexelSize;
-
-    // REFERENCE:
-    //    float2 actualSize = HeightMapSize - 2 * HeightMapOverlapSize;
-    //    float2 worldToTexCoord = (actualSize - 1) * HeightMapTexelSize;
-    // therefore:
-    float2 worldToTexCoord = 1 - 2 * overlapTexelSize - HeightMapTexelSize;
-    globalUV *= worldToTexCoord;
-
-    // REFERENCE:
-    //    globalUV += HeightMapTexelSize * HeightMapOverlapSize + HeightMapTexelSize * 0.5;
-    // therefore:
-    globalUV += overlapTexelSize + 0.5 * HeightMapTexelSize;
-
-    return globalUV;
+    return vertex.xz * InverseTerrainScale.xz;
 }
 
 float2 MorphVertex(float4 position, float2 vertex, float4 quadScale, float morphLerpK)
@@ -143,23 +115,17 @@ float SampleHeightMap(float2 uv)
 
 float4 CalculateNormal(float2 texCoord)
 {
-    // From http://graphics.ethz.ch/teaching/gamelab11/course_material/lecture06/XNA_Shaders_Terrain.pdf
-    float n = SampleHeightMap(texCoord + float2(0, -HeightMapTexelSize.x));
-    float s = SampleHeightMap(texCoord + float2(0,  HeightMapTexelSize.x));
-    float e = SampleHeightMap(texCoord + float2(-HeightMapTexelSize.y, 0));
-    float w = SampleHeightMap(texCoord + float2( HeightMapTexelSize.y, 0));
+    float n = SampleHeightMap(texCoord + float2(0, -HeightMapTexelSize.y));
+    float s = SampleHeightMap(texCoord + float2(0,  HeightMapTexelSize.y));
+    float e = SampleHeightMap(texCoord + float2(-HeightMapTexelSize.x, 0));
+    float w = SampleHeightMap(texCoord + float2( HeightMapTexelSize.x, 0));
 
-    float3 sn = float3(0, (s - n) * TerrainScale.y, -TwoHeightMapTexelSize.y);
-    float3 ew = float3(-TwoHeightMapTexelSize.x, (e - w) * TerrainScale.y, 0);
-    sn *= TwoHeightMapSize.y;
-    ew *= TwoHeightMapSize.x;
+    float3 sn = float3(0, 1, (s - n) * TerrainScale.y);
+    float3 ew = float3(1, 0, (e - w) * TerrainScale.y);
     sn = normalize(sn);
     ew = normalize(ew);
 
-    float4 normal = float4(normalize(cross(sn, ew)), 1);
-    normal.x = -normal.x;
-
-    return normal;
+    return float4(normalize(cross(sn, ew)), 1);
 }
 
 float CalculateFogFactor(float d)

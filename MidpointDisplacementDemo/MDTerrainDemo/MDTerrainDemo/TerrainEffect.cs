@@ -54,8 +54,6 @@ namespace MDTerrainDemo
 
         EffectParameter twoHeightMapTexelSize;
 
-        EffectParameter heightMapOverlapSize;
-
         EffectParameter halfPatchGridSize;
 
         EffectParameter twoOverPatchGridSize;
@@ -182,11 +180,6 @@ namespace MDTerrainDemo
             get { return heightMapSize.GetValueVector2(); }
         }
 
-        public float HeightMapOverlapSize
-        {
-            get { return heightMapOverlapSize.GetValueSingle(); }
-        }
-
         public Texture2D HeightMap
         {
             get { return heightMap.GetValueTexture2D(); }
@@ -244,10 +237,10 @@ namespace MDTerrainDemo
             CacheEffectTequniques();
         }
 
-        public void SetHeightMapInfo(float width, float height, float overlapSize)
+        public void SetHeightMapInfo(float width, float height)
         {
             // heightMapSize
-            var size = new Vector2(width + 2 * overlapSize, height + 2 * overlapSize);
+            var size = new Vector2(width, height);
             heightMapSize.SetValue(size);
             // 2 * heightMapSize
             twoHeightMapSize.SetValue(2 * size);
@@ -261,9 +254,6 @@ namespace MDTerrainDemo
             heightMapTexelSize.SetValue(texelSize);
             // 2 * texelSize
             twoHeightMapTexelSize.SetValue(2 * texelSize);
-
-            // overlapSize
-            heightMapOverlapSize.SetValue(overlapSize);
         }
 
         /// <summary>
@@ -296,7 +286,6 @@ namespace MDTerrainDemo
             twoHeightMapSize = BackingEffect.Parameters["TwoHeightMapSize"];
             heightMapTexelSize = BackingEffect.Parameters["HeightMapTexelSize"];
             twoHeightMapTexelSize = BackingEffect.Parameters["TwoHeightMapTexelSize"];
-            heightMapOverlapSize = BackingEffect.Parameters["HeightMapOverlapSize"];
 
             halfPatchGridSize = BackingEffect.Parameters["HalfPatchGridSize"];
             twoOverPatchGridSize = BackingEffect.Parameters["TwoOverPatchGridSize"];

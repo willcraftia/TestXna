@@ -23,11 +23,8 @@ namespace TiledTerrainDemo.DemoLandscape
 
         int height;
 
-        int overlapSize;
-
         Bounds bounds;
 
-        //Texture2D texture;
         FlipTexture2D flipTexture;
 
         // TODO
@@ -61,9 +58,6 @@ namespace TiledTerrainDemo.DemoLandscape
         {
             get
             {
-                x += overlapSize;
-                y += overlapSize;
-
                 // Clamp.
                 if (x < 0) return 0;
                 if (noiseMap.Width <= x) return 1;
@@ -74,10 +68,9 @@ namespace TiledTerrainDemo.DemoLandscape
             }
             set
             {
-                x += overlapSize;
-                y += overlapSize;
-
-                if (x < 0 || noiseMap.Width <= x || y < 0 || noiseMap.Height <= y)
+                // Clamp.
+                if (x < 0 || noiseMap.Width <= x ||
+                    y < 0 || noiseMap.Height <= y)
                     return;
 
                 noiseMap[x, y] = value;
@@ -89,7 +82,6 @@ namespace TiledTerrainDemo.DemoLandscape
             get
             {
                 RefreshTexture();
-                //return texture;
                 return flipTexture.Texture;
             }
         }
@@ -99,13 +91,11 @@ namespace TiledTerrainDemo.DemoLandscape
             GraphicsDevice = graphicsDevice;
             width = settings.HeightMapWidth;
             height = settings.HeightMapHeight;
-            overlapSize = settings.HeightMapOverlapSize;
 
-            noiseMap = new Map<float>(width + 2 * overlapSize, height + 2 * overlapSize);
+            noiseMap = new Map<float>(width, height);
             builder.Destination = noiseMap;
 
-            //texture = new Texture2D(graphicsDevice, noiseMap.Width, noiseMap.Height, false, SurfaceFormat.Single);
-            flipTexture = new FlipTexture2D(graphicsDevice, noiseMap.Width, noiseMap.Height, false, SurfaceFormat.Single);
+            flipTexture = new FlipTexture2D(graphicsDevice, width, height, false, SurfaceFormat.Single);
         }
 
         public void Build()
@@ -115,10 +105,10 @@ namespace TiledTerrainDemo.DemoLandscape
 
             builder.Bounds = new Bounds
             {
-                X = bounds.X - dx * overlapSize,
-                Y = bounds.Y - dy * overlapSize,
-                Width = bounds.Width + dx + (2 * dx * overlapSize),
-                Height = bounds.Height + dy + (2 * dy * overlapSize)
+                X = bounds.X,
+                Y = bounds.Y,
+                Width = bounds.Width + dx,
+                Height = bounds.Height + dy
             };
 
             builder.Build();
@@ -132,7 +122,6 @@ namespace TiledTerrainDemo.DemoLandscape
             if (!textureDirty) return;
 
             flipTexture.Flip();
-            //texture.SetData(noiseMap.Values);
             flipTexture.Texture.SetData(noiseMap.Values);
 
             textureDirty = false;
