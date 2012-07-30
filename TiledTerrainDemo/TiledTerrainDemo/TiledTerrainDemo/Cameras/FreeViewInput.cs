@@ -42,7 +42,6 @@ namespace TiledTerrainDemo.Cameras
         {
             var deltaTime = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
-            // 姿勢はマウス操作で変更する。
             var mouseState = Mouse.GetState();
             if (InitialMousePositionX != mouseState.X ||
                 InitialMousePositionY != mouseState.Y)
@@ -57,12 +56,11 @@ namespace TiledTerrainDemo.Cameras
                 ResetMousePosition();
             }
 
-            // 移動はキーボード操作で行う。
             var moveDirection = Vector3.Zero;
             var keyboardState = Keyboard.GetState();
             var distance = MoveVelocity * deltaTime;
-            
-            // Shift で加速。
+
+            // accelerate.
             if (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
                 distance *= DashFactor;
 

@@ -175,9 +175,27 @@ namespace TiledTerrainDemo.DemoLandscape
             set { morphConsts.SetValue(value); }
         }
 
+        /// <summary>
+        /// X = the width of a height map.
+        /// Y = the height of a height map.
+        /// </summary>
         public Vector2 HeightMapSize
         {
             get { return heightMapSize.GetValueVector2(); }
+            set
+            {
+                heightMapSize.SetValue(value);
+                // 2 * heightMapSize
+                twoHeightMapSize.SetValue(2 * value);
+
+                // texelSize
+                var texelSize = new Vector2
+                {
+                    X = 1 / value.X,
+                    Y = 1 / value.Y
+                };
+                heightMapTexelSize.SetValue(texelSize);
+            }
         }
 
         public Texture2D HeightMap
@@ -224,6 +242,8 @@ namespace TiledTerrainDemo.DemoLandscape
 
         public EffectTechnique WhiteSolidTequnique { get; private set; }
 
+        public EffectTechnique NormalTequnique { get; private set; }
+
         public EffectTechnique HeightColorTequnique { get; private set; }
 
         public EffectTechnique WireframeTequnique { get; private set; }
@@ -241,23 +261,6 @@ namespace TiledTerrainDemo.DemoLandscape
 
             CacheEffectParameters();
             CacheEffectTequniques();
-        }
-
-        public void SetHeightMapInfo(float width, float height)
-        {
-            // heightMapSize
-            var size = new Vector2(width, height);
-            heightMapSize.SetValue(size);
-            // 2 * heightMapSize
-            twoHeightMapSize.SetValue(2 * size);
-
-            // texelSize
-            var texelSize = new Vector2
-            {
-                X = 1 / size.X,
-                Y = 1 / size.Y
-            };
-            heightMapTexelSize.SetValue(texelSize);
         }
 
         /// <summary>
@@ -307,6 +310,7 @@ namespace TiledTerrainDemo.DemoLandscape
         void CacheEffectTequniques()
         {
             WhiteSolidTequnique = BackingEffect.Techniques["WhiteSolid"];
+            NormalTequnique = BackingEffect.Techniques["Normal"];
             HeightColorTequnique = BackingEffect.Techniques["HeightColor"];
             WireframeTequnique = BackingEffect.Techniques["Wireframe"];
         }

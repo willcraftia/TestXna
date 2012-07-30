@@ -37,8 +37,8 @@ namespace TiledTerrainDemo
 
         // CDLOD settings for debug.
         int levelCount = CDLODSettings.DefaultLevelCount;
-        //int leafNodeSize = Settings.DefaultLeafNodeSize;
-        int leafNodeSize = CDLODSettings.DefaultLeafNodeSize * 2;
+        int leafNodeSize = CDLODSettings.DefaultLeafNodeSize;
+        //int leafNodeSize = CDLODSettings.DefaultLeafNodeSize * 2;
         //int patchResolution = CDLODSettings.DefaultPatchResolution;
         int patchResolution = CDLODSettings.DefaultPatchResolution * 2;
         //float patchScale = CDLODSettings.DefaultPatchScale;
@@ -144,11 +144,12 @@ namespace TiledTerrainDemo
         string helpMessage =
             "[F1] Help\r\n" +
             "[F2] Node bounding box\r\n" +
-            "[F3] White solid\r\n" +
-            "[F4] Height color\r\n" +
-            "[F5] Wireframe\r\n" +
-            "[F6] Light\r\n" +
-            "[F7] Fog\r\n" +
+            "[F3] Wireframe\r\n" +
+            "[F4] Light\r\n" +
+            "[F5] Fog\r\n" +
+            "[F9] Height color\r\n" +
+            "[F10] Normal\r\n" +
+            "[F11] White solid\r\n" +
             "[w][s][a][d][q][z] Movement\r\n" +
             "[Mouse] Camera orientation\r\n" +
             "[PageUp][PageDown] Move velocity";
@@ -378,19 +379,22 @@ namespace TiledTerrainDemo
                 partitionContext.TerrainRenderer.NodeBoundingBoxVisible = !partitionContext.TerrainRenderer.NodeBoundingBoxVisible;
 
             if (keyboardState.IsKeyUp(Keys.F3) && lastKeyboardState.IsKeyDown(Keys.F3))
-                partitionContext.TerrainRenderer.WhiteSolidVisible = !partitionContext.TerrainRenderer.WhiteSolidVisible;
-
-            if (keyboardState.IsKeyUp(Keys.F4) && lastKeyboardState.IsKeyDown(Keys.F4))
-                partitionContext.TerrainRenderer.HeightColorVisible = !partitionContext.TerrainRenderer.HeightColorVisible;
-
-            if (keyboardState.IsKeyUp(Keys.F5) && lastKeyboardState.IsKeyDown(Keys.F5))
                 partitionContext.TerrainRenderer.WireframeVisible = !partitionContext.TerrainRenderer.WireframeVisible;
 
-            if (keyboardState.IsKeyUp(Keys.F6) && lastKeyboardState.IsKeyDown(Keys.F6))
+            if (keyboardState.IsKeyUp(Keys.F4) && lastKeyboardState.IsKeyDown(Keys.F4))
                 partitionContext.TerrainRenderer.LightEnabled = !partitionContext.TerrainRenderer.LightEnabled;
 
-            if (keyboardState.IsKeyUp(Keys.F7) && lastKeyboardState.IsKeyDown(Keys.F7))
+            if (keyboardState.IsKeyUp(Keys.F5) && lastKeyboardState.IsKeyDown(Keys.F5))
                 partitionContext.TerrainRenderer.FogEnabled = !partitionContext.TerrainRenderer.FogEnabled;
+
+            if (keyboardState.IsKeyUp(Keys.F9) && lastKeyboardState.IsKeyDown(Keys.F9))
+                partitionContext.TerrainRenderer.RenderMode = TerrainRenderMode.HeightColor;
+
+            if (keyboardState.IsKeyUp(Keys.F10) && lastKeyboardState.IsKeyDown(Keys.F10))
+                partitionContext.TerrainRenderer.RenderMode = TerrainRenderMode.Normal;
+
+            if (keyboardState.IsKeyUp(Keys.F11) && lastKeyboardState.IsKeyDown(Keys.F11))
+                partitionContext.TerrainRenderer.RenderMode = TerrainRenderMode.WhiteSolid;
 
             #endregion
 

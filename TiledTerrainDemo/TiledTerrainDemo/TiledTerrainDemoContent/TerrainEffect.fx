@@ -22,7 +22,6 @@ float FogStart;
 float FogEnd;
 float3 FogColor;
 
-//float3 TerrainOffset;
 // eye position in terrain space.
 float3 TerrainEyePosition;
 float4x4 TerrainView;
@@ -230,6 +229,16 @@ float4 WhiteSolidPS(VS_OUTPUT input) : COLOR0
     return color;
 }
 
+float4 NormalPS(VS_OUTPUT input) : COLOR0
+{
+    float3 N = GetNormal(input.TexCoord);
+    float4 color = float4(N, 1);
+
+    color.rgb = lerp(color.rgb, FogColor, input.FogFactor);
+
+    return color;
+}
+
 float4 HeightColorPS(VS_OUTPUT input) : COLOR0
 {
     float4 color = float4(0, 0, 0, 1);
@@ -289,6 +298,17 @@ technique WhiteSolid
         CullMode = CCW;
         VertexShader = compile vs_3_0 VS();
         PixelShader = compile ps_3_0 WhiteSolidPS();
+    }
+}
+
+technique Normal
+{
+    pass P0
+    {
+        FillMode = SOLID;
+        CullMode = CCW;
+        VertexShader = compile vs_3_0 VS();
+        PixelShader = compile ps_3_0 NormalPS();
     }
 }
 

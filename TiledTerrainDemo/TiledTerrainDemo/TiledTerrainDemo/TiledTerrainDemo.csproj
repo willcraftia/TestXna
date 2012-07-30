@@ -110,6 +110,7 @@
     <Compile Include="Cameras\FreeView.cs" />
     <Compile Include="Cameras\FreeViewInput.cs" />
     <Compile Include="DemoLandscape\BoundingBoxDrawer.cs" />
+    <Compile Include="DemoLandscape\TerrainRenderMode.cs" />
     <Compile Include="DemoLandscape\HeightColor.cs" />
     <Compile Include="DemoLandscape\NormalMap.cs" />
     <Compile Include="DemoLandscape\TerrainEffect.cs" />

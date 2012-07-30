@@ -67,9 +67,7 @@ namespace TiledTerrainDemo.DemoLandscape
             set { fogColor = value; }
         }
 
-        public bool WhiteSolidVisible { get; set; }
-
-        public bool HeightColorVisible { get; set; }
+        public TerrainRenderMode RenderMode { get; set; }
 
         public bool WireframeVisible { get; set; }
 
@@ -102,7 +100,7 @@ namespace TiledTerrainDemo.DemoLandscape
             effect.LevelCount = settings.LevelCount;
             effect.TerrainScale = settings.TerrainScale;
             effect.PatchGridSize = renderer.PatchGridSize;
-            effect.SetHeightMapInfo(settings.HeightMapWidth, settings.HeightMapHeight);
+            effect.HeightMapSize = new Vector2(settings.HeightMapWidth, settings.HeightMapHeight);
 
             lightDirection = new Vector3(0, -1, -1);
             lightDirection.Normalize();
@@ -112,7 +110,7 @@ namespace TiledTerrainDemo.DemoLandscape
             debugEffect.AmbientLightColor = Vector3.One;
             debugEffect.VertexColorEnabled = true;
 
-            HeightColorVisible = true;
+            RenderMode = TerrainRenderMode.HeightColor;
             LightEnabled = true;
         }
 
@@ -176,19 +174,20 @@ namespace TiledTerrainDemo.DemoLandscape
             effect.FogEnd = FogEnd;
             effect.FogColor = fogColor;
 
-            // WhiteSolid tequnique
-            if (WhiteSolidVisible)
+            switch (RenderMode)
             {
-                sourceEffect.CurrentTechnique = effect.WhiteSolidTequnique;
-                renderer.Draw(gameTime, sourceEffect, selection);
+                case TerrainRenderMode.WhiteSolid:
+                    sourceEffect.CurrentTechnique = effect.WhiteSolidTequnique;
+                    break;
+                case TerrainRenderMode.Normal:
+                    sourceEffect.CurrentTechnique = effect.NormalTequnique;
+                    break;
+                case TerrainRenderMode.HeightColor:
+                default:
+                    sourceEffect.CurrentTechnique = effect.HeightColorTequnique;
+                    break;
             }
-
-            // HeightColor tequnique
-            if (HeightColorVisible)
-            {
-                sourceEffect.CurrentTechnique = effect.HeightColorTequnique;
-                renderer.Draw(gameTime, sourceEffect, selection);
-            }
+            renderer.Draw(gameTime, sourceEffect, selection);
 
             // Wireframe tequnique
             if (WireframeVisible)
@@ -215,10 +214,6 @@ namespace TiledTerrainDemo.DemoLandscape
                     boundingBoxDrawer.Draw(ref box, debugEffect, ref debugLevelColors[level]);
                 }
             }
-
-            // Unbind textures!!
-            //effect.HeightMap = null;
-            //effect.NormalMap = null;
         }
 
         #region IDisposable

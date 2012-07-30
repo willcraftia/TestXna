@@ -11,11 +11,6 @@ namespace TiledTerrainDemo.Cameras
 {
     public sealed class FreeView : ViewBase
     {
-        const float twoPi = 2 * MathHelper.Pi;
-
-        /// <summary>
-        /// カメラの姿勢。
-        /// </summary>
         Vector3 orientation = Vector3.Zero;
 
         Vector3 position = Vector3.Zero;
@@ -23,8 +18,8 @@ namespace TiledTerrainDemo.Cameras
         Matrix inverseMatrix;
 
         /// <summary>
-        /// カメラの姿勢を取得します。
-        /// ベクトルの X 要素は pitch、Y 要素は yaw、Z 要素は roll を表します。
+        /// The orientation of the camera.
+        /// X = pitch, Y = yaw, Z = roll.
         /// </summary>
         public Vector3 Orientation
         {
@@ -75,7 +70,7 @@ namespace TiledTerrainDemo.Cameras
             if (amount == 0) return;
 
             orientation.Y += amount;
-            orientation.Y %= twoPi;
+            orientation.Y %= MathHelper.TwoPi;
             MatrixDirty = true;
         }
 
@@ -84,7 +79,7 @@ namespace TiledTerrainDemo.Cameras
             if (amount == 0) return;
 
             orientation.X += amount;
-            orientation.X %= twoPi;
+            orientation.X %= MathHelper.TwoPi;
             MatrixDirty = true;
         }
 
@@ -93,7 +88,7 @@ namespace TiledTerrainDemo.Cameras
             if (amount == 0) return;
 
             orientation.Z += amount;
-            orientation.Z %= twoPi;
+            orientation.Z %= MathHelper.TwoPi;
             MatrixDirty = true;
         }
 
