@@ -68,6 +68,69 @@ sampler NormalMapSampler = sampler_state
     MipFilter = None;
 };
 
+texture DiffuseMap0;
+sampler DiffuseMap0Sampler = sampler_state
+{
+    Texture = <DiffuseMap0>;
+    AddressU = Wrap;
+    AddressV = Wrap;
+//    MaxAnisotropy = 16;
+    MaxAnisotropy = 4;
+    MinFilter = Anisotropic;
+//    MinFilter = Linear;
+    MagFilter = Linear;
+    MipFilter = Linear;
+};
+
+texture DiffuseMap1;
+sampler DiffuseMap1Sampler = sampler_state
+{
+    Texture = <DiffuseMap1>;
+    AddressU = Wrap;
+    AddressV = Wrap;
+//    MaxAnisotropy = 16;
+    MaxAnisotropy = 4;
+    MinFilter = Anisotropic;
+//    MinFilter = Linear;
+    MagFilter = Linear;
+    MipFilter = Linear;
+};
+
+texture DiffuseMap2;
+sampler DiffuseMap2Sampler = sampler_state
+{
+    Texture = <DiffuseMap2>;
+    AddressU = Wrap;
+    AddressV = Wrap;
+//    MaxAnisotropy = 16;
+    MaxAnisotropy = 4;
+    MinFilter = Anisotropic;
+//    MinFilter = Linear;
+    MagFilter = Linear;
+    MipFilter = Linear;
+};
+
+texture DiffuseMap3;
+sampler DiffuseMap3Sampler = sampler_state
+{
+    Texture = <DiffuseMap3>;
+    AddressU = Wrap;
+    AddressV = Wrap;
+//    MaxAnisotropy = 16;
+    MaxAnisotropy = 4;
+    MinFilter = Anisotropic;
+//    MinFilter = Linear;
+    MagFilter = Linear;
+    MipFilter = Linear;
+};
+
+float3 DiffuseRange0;
+float3 DiffuseRange1;
+float3 DiffuseRange2;
+float3 DiffuseRange3;
+
+float DiffuseMapScale;
+
 //=============================================================================
 // Structure
 //-----------------------------------------------------------------------------
@@ -284,6 +347,44 @@ float4 WireframePS(VS_OUTPUT input) : COLOR0
     return float4(0, 0, 0, 1);
 }
 
+float4 GetDiffuseMapColor(float height, sampler diffuseMapSampler, float3 diffuseRange, float2 texCoord)
+{
+    texCoord *= DiffuseMapScale;
+
+    float rangeMin = diffuseRange.x;
+    float rangeMax = diffuseRange.y;
+    float range = diffuseRange.z;
+    float weight = saturate((range - abs(height - rangeMax)) / range);
+
+    return weight * tex2D(diffuseMapSampler, texCoord);
+}
+
+float4 TexturePS(VS_OUTPUT input) : COLOR0
+{
+    float4 color = float4(0, 0, 0, 1);
+
+    float h = input.Height;
+    h *= TerrainScale.y;
+
+    color += GetDiffuseMapColor(h, DiffuseMap0Sampler, DiffuseRange0, input.TexCoord);
+    color += GetDiffuseMapColor(h, DiffuseMap1Sampler, DiffuseRange1, input.TexCoord);
+    color += GetDiffuseMapColor(h, DiffuseMap2Sampler, DiffuseRange2, input.TexCoord);
+    color += GetDiffuseMapColor(h, DiffuseMap3Sampler, DiffuseRange3, input.TexCoord);
+    color.a = 1;
+
+    if (LightEnabled)
+    {
+        float3 E = normalize(input.EyeDirection);
+        float3 N = GetNormal(input.TexCoord);
+        float3 light = CalculateLight(E, N);
+        color.rgb *= light;
+    }
+
+    color.rgb = lerp(color.rgb, FogColor, input.FogFactor);
+
+    return color;
+}
+
 //=============================================================================
 // Technique
 //-----------------------------------------------------------------------------
@@ -328,5 +429,16 @@ technique Wireframe
         CullMode = CCW;
         VertexShader = compile vs_3_0 VS();
         PixelShader = compile ps_3_0 WireframePS();
+    }
+}
+
+technique Texture
+{
+    pass P0
+    {
+        FillMode = SOLID;
+        CullMode = CCW;
+        VertexShader = compile vs_3_0 VS();
+        PixelShader = compile ps_3_0 TexturePS();
     }
 }

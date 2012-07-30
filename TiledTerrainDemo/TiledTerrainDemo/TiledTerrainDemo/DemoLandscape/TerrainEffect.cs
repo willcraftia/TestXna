@@ -64,6 +64,18 @@ namespace TiledTerrainDemo.DemoLandscape
 
         EffectParameter heightColorPositions;
 
+        EffectParameter diffuseMap0;
+        EffectParameter diffuseMap1;
+        EffectParameter diffuseMap2;
+        EffectParameter diffuseMap3;
+
+        EffectParameter diffuseRange0;
+        EffectParameter diffuseRange1;
+        EffectParameter diffuseRange2;
+        EffectParameter diffuseRange3;
+
+        EffectParameter diffuseMapScale;
+
         float patchGridSizeValue;
 
         public Effect BackingEffect { get; private set; }
@@ -232,6 +244,60 @@ namespace TiledTerrainDemo.DemoLandscape
             set { heightColorPositions.SetValue(value); }
         }
 
+        public Texture2D DiffuseMap0
+        {
+            get { return diffuseMap0.GetValueTexture2D(); }
+            set { diffuseMap0.SetValue(value); }
+        }
+
+        public Texture2D DiffuseMap1
+        {
+            get { return diffuseMap1.GetValueTexture2D(); }
+            set { diffuseMap1.SetValue(value); }
+        }
+
+        public Texture2D DiffuseMap2
+        {
+            get { return diffuseMap2.GetValueTexture2D(); }
+            set { diffuseMap2.SetValue(value); }
+        }
+
+        public Texture2D DiffuseMap3
+        {
+            get { return diffuseMap3.GetValueTexture2D(); }
+            set { diffuseMap3.SetValue(value); }
+        }
+
+        public Vector3 DiffuseRange0
+        {
+            get { return diffuseRange0.GetValueVector3(); }
+            set { diffuseRange0.SetValue(value); }
+        }
+
+        public Vector3 DiffuseRange1
+        {
+            get { return diffuseRange1.GetValueVector3(); }
+            set { diffuseRange1.SetValue(value); }
+        }
+
+        public Vector3 DiffuseRange2
+        {
+            get { return diffuseRange2.GetValueVector3(); }
+            set { diffuseRange2.SetValue(value); }
+        }
+
+        public Vector3 DiffuseRange3
+        {
+            get { return diffuseRange3.GetValueVector3(); }
+            set { diffuseRange3.SetValue(value); }
+        }
+
+        public float DiffuseMapScale
+        {
+            get { return diffuseMapScale.GetValueSingle(); }
+            set { diffuseMapScale.SetValue(value); }
+        }
+
         public EffectTechnique WhiteSolidTequnique { get; private set; }
 
         public EffectTechnique NormalTequnique { get; private set; }
@@ -239,6 +305,8 @@ namespace TiledTerrainDemo.DemoLandscape
         public EffectTechnique HeightColorTequnique { get; private set; }
 
         public EffectTechnique WireframeTequnique { get; private set; }
+
+        public EffectTechnique TextureTequnique { get; private set; }
 
         /// <summary>
         /// If not share a backing effect, clone it before specifing to this constructor.
@@ -253,6 +321,26 @@ namespace TiledTerrainDemo.DemoLandscape
 
             CacheEffectParameters();
             CacheEffectTequniques();
+        }
+
+        public void SetDiffuseRange0(float min, float max)
+        {
+            diffuseRange0.SetValue(new Vector3(min, max, max - min));
+        }
+
+        public void SetDiffuseRange1(float min, float max)
+        {
+            diffuseRange1.SetValue(new Vector3(min, max, max - min));
+        }
+
+        public void SetDiffuseRange2(float min, float max)
+        {
+            diffuseRange2.SetValue(new Vector3(min, max, max - min));
+        }
+
+        public void SetDiffuseRange3(float min, float max)
+        {
+            diffuseRange3.SetValue(new Vector3(min, max, max - min));
         }
 
         /// <summary>
@@ -293,6 +381,17 @@ namespace TiledTerrainDemo.DemoLandscape
             heightColorCount = BackingEffect.Parameters["HeightColorCount"];
             heightColors = BackingEffect.Parameters["HeightColors"];
             heightColorPositions = BackingEffect.Parameters["HeightColorPositions"];
+
+            diffuseMap0 = BackingEffect.Parameters["DiffuseMap0"];
+            diffuseMap1 = BackingEffect.Parameters["DiffuseMap1"];
+            diffuseMap2 = BackingEffect.Parameters["DiffuseMap2"];
+            diffuseMap3 = BackingEffect.Parameters["DiffuseMap3"];
+            diffuseRange0 = BackingEffect.Parameters["DiffuseRange0"];
+            diffuseRange1 = BackingEffect.Parameters["DiffuseRange1"];
+            diffuseRange2 = BackingEffect.Parameters["DiffuseRange2"];
+            diffuseRange3 = BackingEffect.Parameters["DiffuseRange3"];
+
+            diffuseMapScale = BackingEffect.Parameters["DiffuseMapScale"];
         }
 
         /// <summary>
@@ -304,6 +403,7 @@ namespace TiledTerrainDemo.DemoLandscape
             NormalTequnique = BackingEffect.Techniques["Normal"];
             HeightColorTequnique = BackingEffect.Techniques["HeightColor"];
             WireframeTequnique = BackingEffect.Techniques["Wireframe"];
+            TextureTequnique = BackingEffect.Techniques["Texture"];
         }
     }
 }

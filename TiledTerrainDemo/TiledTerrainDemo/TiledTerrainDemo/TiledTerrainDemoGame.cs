@@ -150,6 +150,7 @@ namespace TiledTerrainDemo
             "[F9] Height color\r\n" +
             "[F10] Normal\r\n" +
             "[F11] White solid\r\n" +
+            "[F12] Texture\r\n" +
             "[w][s][a][d][q][z] Movement\r\n" +
             "[Mouse] Camera orientation\r\n" +
             "[PageUp][PageDown] Move velocity";
@@ -396,6 +397,9 @@ namespace TiledTerrainDemo
             if (keyboardState.IsKeyUp(Keys.F11) && lastKeyboardState.IsKeyDown(Keys.F11))
                 partitionContext.TerrainRenderer.RenderMode = TerrainRenderMode.WhiteSolid;
 
+            if (keyboardState.IsKeyUp(Keys.F12) && lastKeyboardState.IsKeyDown(Keys.F12))
+                partitionContext.TerrainRenderer.RenderMode = TerrainRenderMode.Texture;
+
             #endregion
 
             lastKeyboardState = keyboardState;
@@ -406,19 +410,19 @@ namespace TiledTerrainDemo
             partitionManager.EyePosition = view.Position;
             partitionManager.Update(gameTime);
 
-            var worldTime = GetWorldTime(gameTime);
-            var lightTransform = Matrix.CreateFromAxisAngle(sunRotationAxis, MathHelper.TwoPi * worldTime);
-            var sunDirection = Vector3.Transform(midnightSunDirection, lightTransform);
-            sunDirection.Normalize();
+            //var worldTime = GetWorldTime(gameTime);
+            //var lightTransform = Matrix.CreateFromAxisAngle(sunRotationAxis, MathHelper.TwoPi * worldTime);
+            //var sunDirection = Vector3.Transform(midnightSunDirection, lightTransform);
+            //sunDirection.Normalize();
 
-            partitionContext.TerrainRenderer.LightDirection = -sunDirection;
+            //partitionContext.TerrainRenderer.LightDirection = -sunDirection;
 
             base.Update(gameTime);
         }
 
         float GetWorldTime(GameTime gameTime)
         {
-            const float timeScale = 0.1f;
+            const float timeScale = 0.05f;
             return (float) gameTime.TotalGameTime.TotalSeconds * timeScale;
         }
 

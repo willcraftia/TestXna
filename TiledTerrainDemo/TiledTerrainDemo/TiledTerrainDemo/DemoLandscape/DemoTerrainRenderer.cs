@@ -101,6 +101,15 @@ namespace TiledTerrainDemo.DemoLandscape
             effect.TerrainScale = settings.TerrainScale;
             effect.PatchGridSize = renderer.PatchGridSize;
             effect.HeightMapSize = new Vector2(settings.HeightMapWidth, settings.HeightMapHeight);
+            effect.DiffuseMap0 = Content.Load<Texture2D>("Textures/DiffuseMap0");
+            effect.DiffuseMap1 = Content.Load<Texture2D>("Textures/DiffuseMap1");
+            effect.DiffuseMap2 = Content.Load<Texture2D>("Textures/DiffuseMap2");
+            effect.DiffuseMap3 = Content.Load<Texture2D>("Textures/DiffuseMap3");
+            effect.SetDiffuseRange0(-settings.HeightScale * 1.5f, -settings.HeightScale * 0.5f);
+            effect.SetDiffuseRange1(-settings.HeightScale * 0.5f, 0);
+            effect.SetDiffuseRange2(0, settings.HeightScale * 0.5f);
+            effect.SetDiffuseRange3(settings.HeightScale * 0.5f, settings.HeightScale * 1.5f);
+            effect.DiffuseMapScale = settings.MapScale;
 
             lightDirection = new Vector3(0, -1, -1);
             lightDirection.Normalize();
@@ -175,6 +184,9 @@ namespace TiledTerrainDemo.DemoLandscape
 
             switch (RenderMode)
             {
+                case TerrainRenderMode.Texture:
+                    sourceEffect.CurrentTechnique = effect.TextureTequnique;
+                    break;
                 case TerrainRenderMode.WhiteSolid:
                     sourceEffect.CurrentTechnique = effect.WhiteSolidTequnique;
                     break;

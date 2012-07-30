@@ -10,6 +10,7 @@ namespace TiledTerrainDemo.DemoLandscape
     {
         HeightColor,
         Normal,
-        WhiteSolid
+        WhiteSolid,
+        Texture
     }
 }
