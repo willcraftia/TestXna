@@ -88,9 +88,9 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
         internal void GetPatchInstanceVertex(int index, out PatchInstanceVertex instance)
         {
             instance = new PatchInstanceVertex();
-            instance.Offset.X = selectedNodes[index].X * Settings.PatchScale;
-            instance.Offset.Y = selectedNodes[index].Y * Settings.PatchScale;
-            instance.Scale = selectedNodes[index].Size * Settings.PatchScale;
+            instance.Offset.X = selectedNodes[index].X * Settings.MapScale;
+            instance.Offset.Y = selectedNodes[index].Y * Settings.MapScale;
+            instance.Scale = selectedNodes[index].Size * Settings.MapScale;
             instance.Level = selectedNodes[index].Level;
         }
     }

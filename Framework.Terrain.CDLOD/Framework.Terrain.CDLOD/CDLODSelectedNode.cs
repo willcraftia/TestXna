@@ -21,17 +21,17 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
 
         public int Level;
 
-        public void GetBoundingBox(ref Vector3 terrainOffset, float patchScale, float heightScale, out BoundingBox boundingBox)
+        public void GetBoundingBox(ref Vector3 terrainOffset, float mapScale, float heightScale, out BoundingBox boundingBox)
         {
             boundingBox = new BoundingBox();
 
-            boundingBox.Min.X = X * patchScale + terrainOffset.X;
+            boundingBox.Min.X = X * mapScale + terrainOffset.X;
             boundingBox.Min.Y = MinHeight * heightScale + terrainOffset.Y;
-            boundingBox.Min.Z = Y * patchScale + terrainOffset.Z;
+            boundingBox.Min.Z = Y * mapScale + terrainOffset.Z;
 
-            boundingBox.Max.X = (X + Size) * patchScale + terrainOffset.X;
+            boundingBox.Max.X = (X + Size) * mapScale + terrainOffset.X;
             boundingBox.Max.Y = MaxHeight * heightScale + terrainOffset.Y;
-            boundingBox.Max.Z = (Y + Size) * patchScale + terrainOffset.Z;
+            boundingBox.Max.Z = (Y + Size) * mapScale + terrainOffset.Z;
         }
     }
 }

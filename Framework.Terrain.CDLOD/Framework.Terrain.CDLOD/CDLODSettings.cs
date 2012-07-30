@@ -17,7 +17,7 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
 
         public const int DefaultPatchResolution = 2;
 
-        public const float DefaultPatchScale = 2;
+        public const float DefaultMapScale = 2;
 
         public const float DefaultHeightScale = 255;
 
@@ -33,7 +33,7 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
 
         public int PatchResolution;
 
-        public float PatchScale;
+        public float MapScale;
 
         public float HeightScale;
 
@@ -50,7 +50,7 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
                     LeafNodeSize = DefaultLeafNodeSize,
                     LevelCount = DefaultLevelCount,
                     PatchResolution = DefaultPatchResolution,
-                    PatchScale = DefaultPatchScale,
+                    MapScale = DefaultMapScale,
                     HeightScale = DefaultHeightScale,
                     HeightMapWidth = DefaultHeightMapWidth,
                     HeightMapHeight = DefaultHeightMapHeight
@@ -64,9 +64,9 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
             {
                 return new Vector3
                 {
-                    X = (HeightMapWidth - 1) * PatchScale,
+                    X = (HeightMapWidth - 1) * MapScale,
                     Y = HeightScale,
-                    Z = (HeightMapHeight - 1) * PatchScale
+                    Z = (HeightMapHeight - 1) * MapScale
                 };
             }
         }

@@ -44,7 +44,7 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
             float near = 0;
             float lastRange = near;
             float currentDetailBalance = 1;
-            float section = FinestNodeSize * settings.LeafNodeSize * settings.PatchScale;
+            float section = FinestNodeSize * settings.LeafNodeSize * settings.MapScale;
             for (int i = 0; i < ranges.Length; i++)
             {
                 ranges[i] = lastRange + section * currentDetailBalance;

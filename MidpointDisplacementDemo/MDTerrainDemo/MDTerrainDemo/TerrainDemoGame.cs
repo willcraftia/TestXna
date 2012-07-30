@@ -24,12 +24,12 @@ namespace MDTerrainDemo
 
         // CDLOD settings for debug.
         int levelCount = CDLODSettings.DefaultLevelCount;
-        //int leafNodeSize = Settings.DefaultLeafNodeSize;
+        //int leafNodeSize = CDLODSettings.DefaultLeafNodeSize;
         int leafNodeSize = CDLODSettings.DefaultLeafNodeSize * 2;
         int patchResolution = CDLODSettings.DefaultPatchResolution;
         //int patchResolution = CDLODSettings.DefaultPatchResolution * 2;
-        //float patchScale = CDLODSettings.DefaultPatchScale;
-        float patchScale = 16 * 2;
+        //float mapScale = CDLODSettings.DefaultPatchScale;
+        float mapScale = 16 * 2;
         //float heightScale = CDLODSettings.DefaultHeightScale;
         //float heightScale = CDLODSettings.DefaultHeightScale * 4;
         float heightScale = CDLODSettings.DefaultHeightScale * 16;
@@ -159,7 +159,7 @@ namespace MDTerrainDemo
             settings.LevelCount = levelCount;
             settings.LeafNodeSize = leafNodeSize;
             settings.PatchResolution = patchResolution;
-            settings.PatchScale = patchScale;
+            settings.MapScale = mapScale;
             settings.HeightScale = heightScale;
             settings.HeightMapWidth = heightMapWidth;
             settings.HeightMapHeight = heightMapHeight;
@@ -303,9 +303,11 @@ namespace MDTerrainDemo
             sb.Append("Leaf node size: ");
             sb.AppendNumber(settings.LeafNodeSize).AppendLine();
             sb.Append("Patch resolution: ");
-            sb.AppendNumber(settings.PatchResolution).Append(", ");
-            sb.Append("Patch Scale: ");
-            sb.AppendNumber(settings.PatchScale).AppendLine();
+            sb.AppendNumber(settings.PatchResolution).AppendLine();
+            sb.Append("Map scale: ");
+            sb.AppendNumber(settings.MapScale).Append(", ");
+            sb.Append("Height scale: ");
+            sb.AppendNumber(settings.HeightScale).AppendLine();
             sb.Append("Top node size: ");
             sb.AppendNumber(settings.TopNodeSize).AppendLine();
             sb.Append("Far plane distance: ");

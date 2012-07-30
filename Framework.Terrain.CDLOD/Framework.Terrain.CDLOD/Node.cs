@@ -133,7 +133,7 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
         public bool Select(CDLODSelection selection, bool parentCompletelyInFrustum, bool ignoreVisibilityCheck)
         {
             BoundingBox boundingBox;
-            GetBoundingBox(ref selection.TerrainOffset, selection.Settings.PatchScale, selection.Settings.HeightScale, out boundingBox);
+            GetBoundingBox(ref selection.TerrainOffset, selection.Settings.MapScale, selection.Settings.HeightScale, out boundingBox);
 
             ContainmentType containmentType = ContainmentType.Contains;
             if (!parentCompletelyInFrustum)
@@ -209,7 +209,7 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
         bool PreSelect(CDLODSelection selection, bool parentCompletelyInFrustum)
         {
             BoundingBox boundingBox;
-            GetBoundingBox(ref selection.TerrainOffset, selection.Settings.PatchScale, selection.Settings.HeightScale, out boundingBox);
+            GetBoundingBox(ref selection.TerrainOffset, selection.Settings.MapScale, selection.Settings.HeightScale, out boundingBox);
 
             // do not check the intersection between AABB and the view frustum.
 
@@ -221,33 +221,33 @@ namespace Willcraftia.Xna.Framework.Terrain.CDLOD
             return true;
         }
 
-        void GetBoundingBox(ref Vector3 terrainOffset, float patchScale, float heightScale, out BoundingBox boundingBox)
+        void GetBoundingBox(ref Vector3 terrainOffset, float mapScale, float heightScale, out BoundingBox boundingBox)
         {
             boundingBox = new BoundingBox();
 
-            boundingBox.Min.X = x * patchScale + terrainOffset.X;
+            boundingBox.Min.X = x * mapScale + terrainOffset.X;
             boundingBox.Min.Y = minHeight * heightScale + terrainOffset.Y;
-            boundingBox.Min.Z = y * patchScale + terrainOffset.Z;
+            boundingBox.Min.Z = y * mapScale + terrainOffset.Z;
             
-            boundingBox.Max.X = (x + size) * patchScale + terrainOffset.X;
+            boundingBox.Max.X = (x + size) * mapScale + terrainOffset.X;
             boundingBox.Max.Y = maxHeight * heightScale + terrainOffset.Y;
-            boundingBox.Max.Z = (y + size) * patchScale + terrainOffset.Z;
+            boundingBox.Max.Z = (y + size) * mapScale + terrainOffset.Z;
         }
 
         // TODO: I want to use the intersection between an AABB and a frustum.
-        void GetBoundingSphere(ref Vector3 terrainOffset, float patchScale, float heightScale, out BoundingSphere sphere)
+        void GetBoundingSphere(ref Vector3 terrainOffset, float mapScale, float heightScale, out BoundingSphere sphere)
         {
             var min = new Vector3
             {
-                X = x * patchScale + terrainOffset.X,
+                X = x * mapScale + terrainOffset.X,
                 Y = minHeight * heightScale + terrainOffset.Y,
-                Z = y * patchScale + terrainOffset.Z
+                Z = y * mapScale + terrainOffset.Z
             };
             var max = new Vector3
             {
-                X = (x + size) * patchScale + terrainOffset.X,
+                X = (x + size) * mapScale + terrainOffset.X,
                 Y = maxHeight * heightScale + terrainOffset.Y,
-                Z = (y + size) * patchScale + terrainOffset.Z
+                Z = (y + size) * mapScale + terrainOffset.Z
             };
             var center = max - min;
             var radius = center.Length() * 0.5f;

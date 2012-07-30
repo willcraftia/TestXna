@@ -207,7 +207,7 @@ namespace TiledTerrainDemo.DemoLandscape
                     selection.GetSelectedNode(i, out selectedNode);
 
                     selectedNode.GetBoundingBox(
-                        ref selection.TerrainOffset, settings.PatchScale, settings.HeightScale, out box);
+                        ref selection.TerrainOffset, settings.MapScale, settings.HeightScale, out box);
                     var level = selectedNode.Level;
                     level %= 4;
                     boundingBoxDrawer.Draw(ref box, debugEffect, ref debugLevelColors[level]);
