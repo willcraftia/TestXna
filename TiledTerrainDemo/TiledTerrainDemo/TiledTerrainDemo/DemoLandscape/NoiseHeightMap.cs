@@ -15,9 +15,9 @@ namespace TiledTerrainDemo.DemoLandscape
 {
     public sealed class NoiseHeightMap : IMap<float>, IDisposable
     {
-        NoiseMapBuilder builder = new NoiseMapBuilder();
+        public readonly float[] Values;
 
-        Map<float> noiseMap;
+        NoiseMapBuilder builder = new NoiseMapBuilder();
 
         int width;
 
@@ -27,8 +27,7 @@ namespace TiledTerrainDemo.DemoLandscape
 
         FlipTexture2D flipTexture;
 
-        // TODO
-        public bool textureDirty;
+        bool textureDirty;
 
         public GraphicsDevice GraphicsDevice { get; set; }
 
@@ -60,20 +59,20 @@ namespace TiledTerrainDemo.DemoLandscape
             {
                 // Clamp.
                 if (x < 0) return 0;
-                if (noiseMap.Width <= x) return 1;
+                if (width <= x) return 1;
                 if (y < 0) return 0;
-                if (noiseMap.Height <= y) return 1;
+                if (height <= y) return 1;
 
-                return noiseMap[x, y];
+                return Values[x + y * width];
             }
             set
             {
                 // Clamp.
-                if (x < 0 || noiseMap.Width <= x ||
-                    y < 0 || noiseMap.Height <= y)
+                if (x < 0 || width <= x ||
+                    y < 0 || height <= y)
                     return;
 
-                noiseMap[x, y] = value;
+                Values[x + y * width] = value;
             }
         }
 
@@ -86,14 +85,18 @@ namespace TiledTerrainDemo.DemoLandscape
             }
         }
 
-        public NoiseHeightMap(GraphicsDevice graphicsDevice, CDLODSettings settings)
+        public NoiseHeightMap(GraphicsDevice graphicsDevice, int width, int height)
         {
-            GraphicsDevice = graphicsDevice;
-            width = settings.HeightMapWidth;
-            height = settings.HeightMapHeight;
+            if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
+            if (width < 0) throw new ArgumentOutOfRangeException("width");
+            if (height < 0) throw new ArgumentOutOfRangeException("height");
 
-            noiseMap = new Map<float>(width, height);
-            builder.Destination = noiseMap;
+            GraphicsDevice = graphicsDevice;
+            this.width = width;
+            this.height = height;
+
+            Values = new float[width * height];
+            builder.Destination = this;
 
             flipTexture = new FlipTexture2D(graphicsDevice, width, height, false, SurfaceFormat.Single);
         }
@@ -117,12 +120,61 @@ namespace TiledTerrainDemo.DemoLandscape
             textureDirty = true;
         }
 
-        public void RefreshTexture()
+        public void MergeLeftNeighbor(IMap<float> neighbor)
+        {
+            var rightEdge = width - 1;
+            
+            for (int y = 0; y < height; y++)
+                MergeHeight(this, 0, y, neighbor, rightEdge, y);
+
+            textureDirty = true;
+        }
+
+        public void MergeRightNeighbor(IMap<float> neighbor)
+        {
+            var rightEdge = width - 1;
+
+            for (int y = 0; y < height; y++)
+                MergeHeight(this, rightEdge, y, neighbor, 0, y);
+
+            textureDirty = true;
+        }
+
+        public void MergeTopNeighbor(IMap<float> neighbor)
+        {
+            var bottomEdge = height - 1;
+
+            for (int x = 0; x < width; x++)
+                MergeHeight(this, x, 0, neighbor, x, bottomEdge);
+
+            textureDirty = true;
+        }
+
+        public void MergeBottomNeighbor(IMap<float> neighbor)
+        {
+            var bottomEdge = height - 1;
+
+            for (int x = 0; x < width; x++)
+                MergeHeight(this, x, bottomEdge, neighbor, x, 0);
+
+            textureDirty = true;
+        }
+
+        void MergeHeight(IMap<float> map0, int x0, int y0, IMap<float> map1, int x1, int y1)
+        {
+            var h0 = map0[x0, y0];
+            var h1 = map1[x1, y1];
+            var h = (h0 + h1) * 0.5f;
+            map0[x0, y0] = h;
+            map1[x1, y1] = h;
+        }
+
+        void RefreshTexture()
         {
             if (!textureDirty) return;
 
             flipTexture.Flip();
-            flipTexture.Texture.SetData(noiseMap.Values);
+            flipTexture.Texture.SetData(Values);
 
             textureDirty = false;
         }

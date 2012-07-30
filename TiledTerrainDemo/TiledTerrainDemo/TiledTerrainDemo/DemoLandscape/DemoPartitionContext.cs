@@ -65,14 +65,14 @@ namespace TiledTerrainDemo.DemoLandscape
 
             var heightColors = new HeightColorCollection();
             // default settings.
-            heightColors.AddColor(-1.0000f, new Color(  0,   0, 128, 255));
-            heightColors.AddColor(-0.2500f, new Color(  0,   0, 255, 255));
-            heightColors.AddColor( 0.0000f, new Color(  0, 128, 255, 255));
-            heightColors.AddColor( 0.0625f, new Color(240, 240,  64, 255));
-            heightColors.AddColor( 0.1250f, new Color( 32, 160,   0, 255));
-            heightColors.AddColor( 0.3750f, new Color(224, 224,   0, 255));
-            heightColors.AddColor( 0.7500f, new Color(128, 128, 128, 255));
-            heightColors.AddColor( 1.0000f, new Color(255, 255, 255, 255));
+            heightColors.AddColor(-1.0000f, Color.Navy);
+            heightColors.AddColor(-0.2500f, Color.Blue);
+            heightColors.AddColor( 0.0000f, Color.LightSeaGreen);
+            heightColors.AddColor( 0.0625f, Color.Khaki);
+            heightColors.AddColor( 0.1250f, Color.DarkGreen);
+            heightColors.AddColor( 0.3750f, Color.DarkGoldenrod);
+            heightColors.AddColor( 0.7500f, Color.Gray);
+            heightColors.AddColor( 1.0000f, Color.White);
 
             TerrainRenderer.InitializeHeightColors(heightColors);
 
