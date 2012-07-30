@@ -96,7 +96,6 @@
     <Compile Include="Billow.cs" />
     <Compile Include="Bounds.cs" />
     <Compile Include="ClassicPerlin.cs" />
-    <Compile Include="ThermalErosion.cs" />
     <Compile Include="Heterofractal.cs" />
     <Compile Include="HybridMultifractal.cs" />
     <Compile Include="IModule.cs" />
