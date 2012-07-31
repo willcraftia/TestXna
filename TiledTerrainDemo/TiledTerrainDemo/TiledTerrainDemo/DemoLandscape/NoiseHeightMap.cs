@@ -115,7 +115,7 @@ namespace TiledTerrainDemo.DemoLandscape
             };
 
             builder.Build();
-            Erosion.ErodeThermal(this, 0.05f, 10);
+            //Erosion.ErodeThermal(this, 0.05f, 10);
 
             textureDirty = true;
         }
@@ -123,7 +123,7 @@ namespace TiledTerrainDemo.DemoLandscape
         public void MergeLeftNeighbor(IMap<float> neighbor)
         {
             var rightEdge = width - 1;
-            
+
             for (int y = 0; y < height; y++)
                 MergeHeight(this, 0, y, neighbor, rightEdge, y);
 

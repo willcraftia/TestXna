@@ -7,6 +7,7 @@ using Willcraftia.Xna.Framework;
 using Willcraftia.Xna.Framework.Landscape;
 using Willcraftia.Xna.Framework.Terrain;
 using Willcraftia.Xna.Framework.Terrain.CDLOD;
+using Willcraftia.Xna.Framework.Terrain.Erosion;
 
 #endregion
 
@@ -26,6 +27,8 @@ namespace MDTerrainDemo
 
         MidpointDisplacement md = new MidpointDisplacement();
 
+        FastThermalErosion fastThermalErosion = new FastThermalErosion();
+
         public DemoPartition(DemoPartitionContext context)
         {
             if (context == null)
@@ -44,6 +47,9 @@ namespace MDTerrainDemo
 
             md.Destination = heightMap;
             md.Seed = context.MDSeed;
+
+            fastThermalErosion.HeightMap = heightMap;
+            fastThermalErosion.Talus = 0.5f;
         }
 
         public override void Draw(GameTime gameTime)
@@ -73,7 +79,7 @@ namespace MDTerrainDemo
             md.BoundY = Y * (settings.HeightMapHeight - 1);
             md.Build();
 
-            Erosion.ErodeThermal(heightMap, 0.5f, 5);
+            fastThermalErosion.Build();
 
             texture.SetData(heightMap.Values);
 

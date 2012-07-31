@@ -7,7 +7,9 @@ using Microsoft.Xna.Framework.Graphics.PackedVector;
 using Willcraftia.Xna.Framework;
 using Willcraftia.Xna.Framework.Noise;
 using Willcraftia.Xna.Framework.Landscape;
+using Willcraftia.Xna.Framework.Terrain;
 using Willcraftia.Xna.Framework.Terrain.CDLOD;
+using Willcraftia.Xna.Framework.Terrain.Erosion;
 
 #endregion
 
@@ -22,6 +24,22 @@ namespace TiledTerrainDemo.DemoLandscape
         NoiseHeightMap heightMap;
 
         NormalMap normalMap;
+
+        NoiseRainMap noiseRainMap;
+
+        Map<float> uniformRainMap;
+
+        Map<float> terrainRainMap;
+
+        Perlin rainNoise = new Perlin();
+
+        HydraulicErosion hydraulicErosion;
+
+        FastHydraulicErosion fastHydraulicErosion;
+
+        MusgraveHydraulicErosion musgraveHydraulicErosion;
+
+        FastThermalErosion fastThermalErosion;
 
         CDLODTerrain terrain;
 
@@ -39,6 +57,44 @@ namespace TiledTerrainDemo.DemoLandscape
             normalMap = new NormalMap(context.GraphicsDevice, settings.HeightMapWidth, settings.HeightMapHeight);
             normalMap.HeightMap = heightMap;
             normalMap.Amplitude = settings.HeightScale;
+
+            noiseRainMap = new NoiseRainMap(settings.HeightMapWidth, settings.HeightMapHeight);
+            noiseRainMap.NoiseSource = rainNoise.Sample;
+            noiseRainMap.RainAmount = 0.5f;
+
+            uniformRainMap = new Map<float>(settings.HeightMapWidth, settings.HeightMapHeight);
+            uniformRainMap.Fill(0.1f);
+
+            terrainRainMap = new Map<float>(settings.HeightMapWidth, settings.HeightMapHeight);
+
+            hydraulicErosion = new HydraulicErosion(settings.HeightMapWidth, settings.HeightMapHeight);
+            hydraulicErosion.HeightMap = heightMap;
+            //hydraulicErosion.RainMap = noiseRainMap;
+            //hydraulicErosion.RainMap = uniformRainMap;
+            hydraulicErosion.RainMap = terrainRainMap;
+            hydraulicErosion.IterationCount = 50;
+            hydraulicErosion.Solubility = 0.01f;
+            hydraulicErosion.SedimentCapacity = 0.1f;
+
+            fastHydraulicErosion = new FastHydraulicErosion(settings.HeightMapWidth, settings.HeightMapHeight);
+            fastHydraulicErosion.HeightMap = heightMap;
+            //fastHydraulicErosion.RainMap = noiseRainMap;
+            //fastHydraulicErosion.RainMap = uniformRainMap;
+            fastHydraulicErosion.RainMap = terrainRainMap;
+            fastHydraulicErosion.IterationCount = 10;
+            fastHydraulicErosion.Solubility = 0.1f;
+
+            musgraveHydraulicErosion = new MusgraveHydraulicErosion(settings.HeightMapWidth, settings.HeightMapHeight);
+            musgraveHydraulicErosion.HeightMap = heightMap;
+            //musgraveHydraulicErosion.RainMap = noiseRainMap;
+            //musgraveHydraulicErosion.RainMap = uniformRainMap;
+            musgraveHydraulicErosion.RainMap = terrainRainMap;
+            musgraveHydraulicErosion.IterationCount = 10;
+            musgraveHydraulicErosion.SedimentCapacityFactor = 1;
+
+            fastThermalErosion = new FastThermalErosion();
+            fastThermalErosion.HeightMap = heightMap;
+            fastThermalErosion.IterationCount = 10;
 
             terrain = new CDLODTerrain(context.Settings);
             terrain.HeightMap = heightMap;
@@ -137,6 +193,25 @@ namespace TiledTerrainDemo.DemoLandscape
                 Height = context.NoiseHeight
             };
             heightMap.Build();
+
+            // Erode.
+            noiseRainMap.Bounds = new Bounds
+            {
+                X = context.NoiseMinX + X * context.NoiseWidth,
+                Y = context.NoiseMinY + Y * context.NoiseHeight,
+                Width = context.NoiseWidth * 0.5f,
+                Height = context.NoiseHeight * 0.5f
+            };
+            noiseRainMap.Build();
+
+            heightMap.CopyTo(terrainRainMap);
+            terrainRainMap.Normalize().Clamp();
+
+            //hydraulicErosion.Build();
+            //fastHydraulicErosion.Build();
+            musgraveHydraulicErosion.Build();
+
+            //fastThermalErosion.Build();
         }
 
         void LoadNormalMap()

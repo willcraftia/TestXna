@@ -43,5 +43,10 @@ namespace Willcraftia.Xna.Framework
 
             Values = new T[width * height];
         }
+
+        public void Clear()
+        {
+            Array.Clear(Values, 0, Values.Length);
+        }
     }
 }

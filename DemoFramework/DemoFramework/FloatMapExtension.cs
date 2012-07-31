@@ -61,6 +61,15 @@ namespace Willcraftia.Xna.Framework
             }
         }
 
+        //public static IMap<float> Transform(this IMap<float> map, Func<float, float> operation)
+        //{
+        //    for (int y = 0; y < map.Height; y++)
+        //        for (int x = 0; x < map.Width; x++)
+        //            map[x, y] = operation(map[x, y]);
+
+        //    return map;
+        //}
+
         public static IMap<float> Fill(this IMap<float> map, float value)
         {
             for (int y = 0; y < map.Height; y++)
@@ -157,23 +166,35 @@ namespace Willcraftia.Xna.Framework
 
         public static IMap<float> Clamp(this IMap<float> map)
         {
+            return Clamp(map, 0, 1);
+        }
+
+        public static IMap<float> Clamp(this IMap<float> map, float min, float max)
+        {
             for (int y = 0; y < map.Height; y++)
             {
                 for (int x = 0; x < map.Width; x++)
                 {
                     var v = map[x, y];
-                    if (v < 0)
+                    if (v < min)
                     {
-                        map[x, y] = 0;
+                        map[x, y] = min;
                     }
-                    else if (1 < v)
+                    else if (max < v)
                     {
-                        map[x, y] = 1;
+                        map[x, y] = max;
                     }
                 }
             }
 
             return map;
+        }
+
+        public static void CopyTo(this IMap<float> map, IMap<float> destination)
+        {
+            for (int y = 0; y < map.Height; y++)
+                for (int x = 0; x < map.Width; x++)
+                    destination[x, y] = map[x, y];
         }
     }
 }

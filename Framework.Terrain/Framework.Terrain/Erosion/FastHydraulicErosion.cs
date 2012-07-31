@@ -1,0 +1,157 @@
+﻿#region Using
+
+using System;
+
+#endregion
+
+namespace Willcraftia.Xna.Framework.Terrain.Erosion
+{
+    public sealed class FastHydraulicErosion
+    {
+        int width;
+
+        int height;
+
+        IMap<float> heightMap;
+
+        IMap<float> rainMap;
+
+        float solubility = 0.01f;
+
+        float evaporation = 0.5f;
+
+        int iterationCount = 10;
+
+        Map<float> waterMap;
+
+        public IMap<float> HeightMap
+        {
+            get { return heightMap; }
+            set { heightMap = value; }
+        }
+
+        public IMap<float> RainMap
+        {
+            get { return rainMap; }
+            set { rainMap = value; }
+        }
+
+        public float Solubility
+        {
+            get { return solubility; }
+            set { solubility = value; }
+        }
+
+        public float Evaporation
+        {
+            get { return evaporation; }
+            set { evaporation = value; }
+        }
+
+        public int IterationCount
+        {
+            get { return iterationCount; }
+            set { iterationCount = value; }
+        }
+
+        public FastHydraulicErosion(int width, int height)
+        {
+            this.width = width;
+            this.height = height;
+
+            waterMap = new Map<float>(width, height);
+        }
+
+        public void Build()
+        {
+            waterMap.Clear();
+
+            for (int i = 0; i < iterationCount; i++)
+                Erode();
+        }
+
+        void Erode()
+        {
+            // step 1
+            waterMap.Add(rainMap);
+
+            // step 2
+            for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
+                    heightMap[x, y] -= solubility * waterMap[x, y];
+
+            // step 3
+            for (int y = 1; y < height - 2; y++)
+            {
+                for (int x = 1; x < width - 2; x++)
+                {
+                    var a = heightMap[x, y] + waterMap[x, y];
+                    var a1 = heightMap[x, y + 1] + waterMap[x, y + 1];
+                    var a2 = heightMap[x - 1, y] + waterMap[x - 1, y];
+                    var a3 = heightMap[x + 1, y] + waterMap[x + 1, y];
+                    var a4 = heightMap[x, y - 1] + waterMap[x, y - 1];
+
+                    var d1 = a - a1;
+                    var d2 = a - a2;
+                    var d3 = a - a3;
+                    var d4 = a - a4;
+
+                    float dMax = 0;
+                    int offsetX = 0;
+                    int offsetY = 0;
+                    if (dMax < d1)
+                    {
+                        dMax = d1;
+                        offsetX = 0;
+                        offsetY = 1;
+                    }
+                    if (dMax < d2)
+                    {
+                        dMax = d2;
+                        offsetX = -1;
+                        offsetY = 0;
+                    }
+                    if (dMax < d3)
+                    {
+                        dMax = d3;
+                        offsetX = 1;
+                        offsetY = 0;
+                    }
+                    if (dMax < d4)
+                    {
+                        dMax = d4;
+                        offsetX = 0;
+                        offsetY = -1;
+                    }
+
+                    if (0 < dMax)
+                    {
+                        if (waterMap[x, y] < dMax)
+                        {
+                            waterMap[x + offsetX, y + offsetY] += waterMap[x, y];
+                            waterMap[x, y] = 0;
+                        }
+                        else
+                        {
+                            waterMap[x + offsetX, y + offsetY] += dMax * 0.5f;
+                            waterMap[x, y] = dMax * 0.5f;
+                        }
+                    }
+                }
+            }
+
+            // step 4
+            var sedimentCapacity = solubility;
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    var waterLost = waterMap[x, y] * evaporation;
+
+                    waterMap[x, y] -= waterLost;
+                    heightMap[x, y] += waterLost * sedimentCapacity;
+                }
+            }
+        }
+    }
+}
