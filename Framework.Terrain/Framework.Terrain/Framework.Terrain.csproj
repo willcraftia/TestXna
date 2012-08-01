@@ -96,6 +96,7 @@
     <Compile Include="Erosion\FastThermalErosion.cs" />
     <Compile Include="Erosion\HydraulicErosion.cs" />
     <Compile Include="Erosion\MusgraveHydraulicErosion.cs" />
+    <Compile Include="Erosion\ThermalErosion.cs" />
     <Compile Include="MidpointDisplacement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\GradientColorCollection.cs" />

@@ -39,6 +39,8 @@ namespace TiledTerrainDemo.DemoLandscape
 
         MusgraveHydraulicErosion musgraveHydraulicErosion = new MusgraveHydraulicErosion();
 
+        ThermalErosion thermalErosion = new ThermalErosion();
+
         FastThermalErosion fastThermalErosion = new FastThermalErosion();
 
         CDLODTerrain terrain;
@@ -81,6 +83,8 @@ namespace TiledTerrainDemo.DemoLandscape
             //musgraveHydraulicErosion.RainMap = noiseRainMap;
             //musgraveHydraulicErosion.RainMap = uniformRainMap;
             musgraveHydraulicErosion.RainMap = terrainRainMap;
+
+            thermalErosion.HeightMap = heightMap;
 
             fastThermalErosion.HeightMap = heightMap;
 
@@ -199,7 +203,8 @@ namespace TiledTerrainDemo.DemoLandscape
             //fastHydraulicErosion.Build();
             //musgraveHydraulicErosion.Build();
 
-            fastThermalErosion.Build();
+            thermalErosion.Build();
+            //fastThermalErosion.Build();
         }
 
         void LoadNormalMap()
