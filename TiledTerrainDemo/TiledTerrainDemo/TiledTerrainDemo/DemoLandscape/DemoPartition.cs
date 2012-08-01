@@ -33,13 +33,13 @@ namespace TiledTerrainDemo.DemoLandscape
 
         Perlin rainNoise = new Perlin();
 
-        HydraulicErosion hydraulicErosion;
+        HydraulicErosion hydraulicErosion = new HydraulicErosion();
 
-        FastHydraulicErosion fastHydraulicErosion;
+        FastHydraulicErosion fastHydraulicErosion = new FastHydraulicErosion();
 
-        MusgraveHydraulicErosion musgraveHydraulicErosion;
+        MusgraveHydraulicErosion musgraveHydraulicErosion = new MusgraveHydraulicErosion();
 
-        FastThermalErosion fastThermalErosion;
+        FastThermalErosion fastThermalErosion = new FastThermalErosion();
 
         CDLODTerrain terrain;
 
@@ -67,27 +67,22 @@ namespace TiledTerrainDemo.DemoLandscape
 
             terrainRainMap = new Map<float>(settings.HeightMapWidth, settings.HeightMapHeight);
 
-            hydraulicErosion = new HydraulicErosion(settings.HeightMapWidth, settings.HeightMapHeight);
             hydraulicErosion.HeightMap = heightMap;
             //hydraulicErosion.RainMap = noiseRainMap;
             //hydraulicErosion.RainMap = uniformRainMap;
             hydraulicErosion.RainMap = terrainRainMap;
 
-            fastHydraulicErosion = new FastHydraulicErosion(settings.HeightMapWidth, settings.HeightMapHeight);
             fastHydraulicErosion.HeightMap = heightMap;
             //fastHydraulicErosion.RainMap = noiseRainMap;
             //fastHydraulicErosion.RainMap = uniformRainMap;
             fastHydraulicErosion.RainMap = terrainRainMap;
 
-            musgraveHydraulicErosion = new MusgraveHydraulicErosion(settings.HeightMapWidth, settings.HeightMapHeight);
             musgraveHydraulicErosion.HeightMap = heightMap;
             //musgraveHydraulicErosion.RainMap = noiseRainMap;
             //musgraveHydraulicErosion.RainMap = uniformRainMap;
             musgraveHydraulicErosion.RainMap = terrainRainMap;
 
-            fastThermalErosion = new FastThermalErosion();
             fastThermalErosion.HeightMap = heightMap;
-            fastThermalErosion.IterationCount = 10;
 
             terrain = new CDLODTerrain(context.Settings);
             terrain.HeightMap = heightMap;
@@ -200,11 +195,11 @@ namespace TiledTerrainDemo.DemoLandscape
             heightMap.CopyTo(terrainRainMap);
             terrainRainMap.Normalize().Clamp();
 
-            hydraulicErosion.Build();
+            //hydraulicErosion.Build();
             //fastHydraulicErosion.Build();
             //musgraveHydraulicErosion.Build();
 
-            //fastThermalErosion.Build();
+            fastThermalErosion.Build();
         }
 
         void LoadNormalMap()

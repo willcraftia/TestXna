@@ -1,6 +1,7 @@
 ﻿#region Using
 
 using System;
+using System.Diagnostics;
 
 #endregion
 
@@ -72,21 +73,34 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
             set { iterationCount = value; }
         }
 
-        public MusgraveHydraulicErosion(int width, int height)
-        {
-            this.width = width;
-            this.height = height;
-
-            waterMap = new Map<float>(width, height);
-            sedimentMap = new Map<float>(width, height);
-        }
-
         public void Build()
         {
-            waterMap.Clear();
+            Debug.Assert(heightMap != null);
+            Debug.Assert(rainMap != null);
+            Debug.Assert(heightMap.Width == rainMap.Width && heightMap.Height == rainMap.Height);
+            Debug.Assert(0 <= rainMap.Min());
+
+            width = heightMap.Width;
+            height = heightMap.Height;
+
+            InitializeWorkingMaps();
 
             for (int i = 0; i < iterationCount; i++)
                 Erode();
+        }
+
+        void InitializeWorkingMaps()
+        {
+            if (waterMap == null || waterMap.Width != width || waterMap.Height != height)
+            {
+                waterMap = new Map<float>(width, height);
+                sedimentMap = new Map<float>(width, height);
+            }
+            else
+            {
+                waterMap.Clear();
+                sedimentMap.Clear();
+            }
         }
 
         void Erode()

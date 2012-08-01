@@ -10,7 +10,7 @@ using Willcraftia.Xna.Framework.Graphics;
 
 #endregion
 
-namespace Willcraftia.Xna.Framework.Debug
+namespace Willcraftia.Xna.Framework.Diagnostics
 {
     /// <summary>
     /// FPS を計測して画面に表示するクラスです。

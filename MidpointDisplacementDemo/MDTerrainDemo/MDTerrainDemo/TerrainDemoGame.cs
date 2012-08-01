@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Willcraftia.Xna.Framework;
 using Willcraftia.Xna.Framework.Cameras;
-using Willcraftia.Xna.Framework.Debug;
+using Willcraftia.Xna.Framework.Diagnostics;
 using Willcraftia.Xna.Framework.Graphics;
 using Willcraftia.Xna.Framework.Landscape;
 using Willcraftia.Xna.Framework.Terrain.CDLOD;

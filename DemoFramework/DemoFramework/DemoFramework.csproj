@@ -96,10 +96,10 @@
     <Compile Include="Cameras\PerspectiveFov.cs" />
     <Compile Include="Cameras\ProjectionBase.cs" />
     <Compile Include="Cameras\ViewBase.cs" />
-    <Compile Include="Debug\DebugHorizontalAlignment.cs" />
-    <Compile Include="Debug\DebugLayout.cs" />
-    <Compile Include="Debug\DebugVerticalAlignment.cs" />
-    <Compile Include="Debug\FpsCounter.cs" />
+    <Compile Include="Diagnostics\DebugHorizontalAlignment.cs" />
+    <Compile Include="Diagnostics\DebugLayout.cs" />
+    <Compile Include="Diagnostics\DebugVerticalAlignment.cs" />
+    <Compile Include="Diagnostics\FpsCounter.cs" />
     <Compile Include="Graphics\FlipTexture2D.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Graphics\Texture2DHelper.cs" />

@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace Willcraftia.Xna.Framework.Debug
+namespace Willcraftia.Xna.Framework.Diagnostics
 {
     public enum DebugHorizontalAlignment
     {

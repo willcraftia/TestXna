@@ -1,6 +1,7 @@
 ﻿#region Using
 
 using System;
+using System.Diagnostics;
 
 #endregion
 
@@ -8,22 +9,20 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
 {
     public sealed class FastThermalErosion
     {
+        public const float DefaultTalus = 0.05f;
+
+        public const int DefaultIterationCount = 50;
+
         IMap<float> heightMap;
 
-        int iterationCount = 10;
+        float talus = DefaultTalus;
 
-        float talus = 0.05f;
+        int iterationCount = DefaultIterationCount;
 
         public IMap<float> HeightMap
         {
             get { return heightMap; }
             set { heightMap = value; }
-        }
-
-        public int IterationCount
-        {
-            get { return iterationCount; }
-            set { iterationCount = value; }
         }
 
         public float Talus
@@ -32,8 +31,16 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
             set { talus = value; }
         }
 
+        public int IterationCount
+        {
+            get { return iterationCount; }
+            set { iterationCount = value; }
+        }
+
         public void Build()
         {
+            Debug.Assert(heightMap != null);
+
             for (int i = 0; i < iterationCount; i++)
                 Erode();
         }

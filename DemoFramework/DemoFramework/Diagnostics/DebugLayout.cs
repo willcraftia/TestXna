@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 #endregion
 
-namespace Willcraftia.Xna.Framework.Debug
+namespace Willcraftia.Xna.Framework.Diagnostics
 {
     /// <summary>
     /// 簡易なレイアウト計算を行う構造体です。

@@ -1,6 +1,7 @@
 ﻿#region Using
 
 using System;
+using System.Diagnostics;
 
 #endregion
 
@@ -60,17 +61,17 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
             set { iterationCount = value; }
         }
 
-        public FastHydraulicErosion(int width, int height)
-        {
-            this.width = width;
-            this.height = height;
-
-            waterMap = new Map<float>(width, height);
-        }
-
         public void Build()
         {
-            waterMap.Clear();
+            Debug.Assert(heightMap != null);
+            Debug.Assert(rainMap != null);
+            Debug.Assert(heightMap.Width == rainMap.Width && heightMap.Height == rainMap.Height);
+            Debug.Assert(0 <= rainMap.Min());
+
+            width = heightMap.Width;
+            height = heightMap.Height;
+
+            InitializeWorkingMap();
 
             for (int i = 0; i < iterationCount; i++)
                 Erode();
@@ -78,6 +79,18 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
             for (int y = 0; y < height; y++)
                 for (int x = 0; x < width; x++)
                     heightMap[x, y] += waterMap[x, y] * solubility;
+        }
+
+        void InitializeWorkingMap()
+        {
+            if (waterMap == null || waterMap.Width != width || waterMap.Height != height)
+            {
+                waterMap = new Map<float>(width, height);
+            }
+            else
+            {
+                waterMap.Clear();
+            }
         }
 
         void Erode()
