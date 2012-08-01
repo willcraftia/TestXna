@@ -8,6 +8,14 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
 {
     public sealed class HydraulicErosion
     {
+        public const float DefaultSolubility = 0.05f;
+
+        public const float DefaultEvaporation = 0.9f;
+
+        public const float DefaultSedimentCapacity = 0.05f;
+
+        public const int DefaultIterationCount = 50;
+
         int width;
 
         int height;
@@ -16,13 +24,13 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
 
         IMap<float> rainMap;
 
-        float solubility = 0.01f;
+        float solubility = DefaultSolubility;
 
-        float evaporation = 0.5f;
+        float evaporation = DefaultEvaporation;
 
-        float sedimentCapacity = 0.01f;
+        float sedimentCapacity = DefaultSedimentCapacity;
 
-        int iterationCount = 10;
+        int iterationCount = DefaultIterationCount;
 
         Map<float> waterMap;
 
@@ -82,17 +90,35 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
         public void Build()
         {
             waterMap.Clear();
+            sedimentMap.Clear();
 
             for (int i = 0; i < iterationCount; i++)
                 Erode();
+
+            for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
+                    heightMap[x, y] += Math.Max(0, sedimentMap[x, y]);
         }
 
         void Erode()
         {
             // step 1
-            waterMap.Add(rainMap);
-
+            Rain();
             // step 2
+            ConvertToSediment();
+            // step 3
+            MoveWater();
+            // step 4
+            Evarporate();
+        }
+
+        void Rain()
+        {
+            waterMap.Add(rainMap);
+        }
+
+        void ConvertToSediment()
+        {
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -102,27 +128,21 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
                     sedimentMap[x, y] += sediment;
                 }
             }
+        }
 
-            // step 3
+        void MoveWater()
+        {
             deltaWaterMap.Clear();
             deltaSedimentMap.Clear();
             for (int y = 1; y < height - 2; y++)
             {
                 for (int x = 1; x < width - 2; x++)
                 {
-                    float w = waterMap[x, y];
-                    if (w <= 0) continue;
-
-                    //var a = heightMap[x, y] + waterMap[x, y];
-                    //var a1 = heightMap[x, y + 1] + waterMap[x, y + 1];
-                    //var a2 = heightMap[x - 1, y] + waterMap[x - 1, y];
-                    //var a3 = heightMap[x + 1, y] + waterMap[x + 1, y];
-                    //var a4 = heightMap[x, y - 1] + waterMap[x, y - 1];
-                    var a = heightMap[x, y] + waterMap[x, y] + sedimentMap[x, y];
-                    var a1 = heightMap[x, y + 1] + waterMap[x, y + 1] + sedimentMap[x, y + 1];
-                    var a2 = heightMap[x - 1, y] + waterMap[x - 1, y] + sedimentMap[x - 1, y];
-                    var a3 = heightMap[x + 1, y] + waterMap[x + 1, y] + sedimentMap[x + 1, y];
-                    var a4 = heightMap[x, y - 1] + waterMap[x, y - 1] + sedimentMap[x, y - 1];
+                    var a = heightMap[x, y] + waterMap[x, y];
+                    var a1 = heightMap[x, y + 1] + waterMap[x, y + 1];
+                    var a2 = heightMap[x - 1, y] + waterMap[x - 1, y];
+                    var a3 = heightMap[x + 1, y] + waterMap[x + 1, y];
+                    var a4 = heightMap[x, y - 1] + waterMap[x, y - 1];
 
                     var d1 = a - a1;
                     var d2 = a - a2;
@@ -157,53 +177,38 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
                         cellCount++;
                     }
 
-                    float aAverage = (cellCount != 0) ? aTotal / cellCount : 0;
-                    float wTotal = (cellCount != 0) ? Math.Min(w, a - aAverage) : 0;
+                    if (cellCount == 0) continue;
+
+                    float w = waterMap[x, y];
+                    float wTotal = Math.Min(w, a - aTotal / cellCount);
                     if (wTotal <= 0) continue;
 
-                    deltaWaterMap[x, y] -= wTotal;
+                    float unitW = wTotal / dTotal;
+                    float unitM = sedimentMap[x, y] / w;
 
-                    float m = sedimentMap[x, y];
-
-                    float mTotal = 0;
-                    if (0 < d1)
-                    {
-                        var dw = wTotal * d1 / dTotal;
-                        deltaWaterMap[x, y + 1] += dw;
-                        var dm = m * dw / w;
-                        mTotal += dm;
-                        deltaSedimentMap[x, y + 1] += dm;
-                    }
-                    if (0 < d2)
-                    {
-                        var dw = wTotal * d2 / dTotal;
-                        deltaWaterMap[x - 1, y] += dw;
-                        var dm = m * dw / w;
-                        mTotal += dm;
-                        deltaSedimentMap[x - 1, y] += dm;
-                    }
-                    if (0 < d3)
-                    {
-                        var dw = wTotal * d3 / dTotal;
-                        deltaWaterMap[x + 1, y] += dw;
-                        var dm = m * dw / w;
-                        mTotal += dm;
-                        deltaSedimentMap[x + 1, y] += dm;
-                    }
-                    if (0 < d4)
-                    {
-                        var dw = wTotal * d4 / dTotal;
-                        deltaWaterMap[x, y - 1] += dw;
-                        var dm = m * dw / w;
-                        mTotal += dm;
-                        deltaSedimentMap[x, y - 1] += dm;
-                    }
-
-                    deltaSedimentMap[x, y] -= mTotal;
+                    if (0 < d1) MoveWater(x, y, x, y + 1, d1, unitW, unitM);
+                    if (0 < d2) MoveWater(x, y, x - 1, y, d2, unitW, unitM);
+                    if (0 < d3) MoveWater(x, y, x + 1, y, d3, unitW, unitM);
+                    if (0 < d4) MoveWater(x, y, x, y - 1, d4, unitW, unitM);
                 }
             }
+        }
 
-            // step 4
+        void MoveWater(int x, int y, int neighborX, int neighborY, float d, float unitW, float unitM)
+        {
+            var dw = d * unitW;
+            var dm = dw * unitM;
+
+            deltaWaterMap[x, y] -= dw;
+            deltaWaterMap[neighborX, neighborY] += dw;
+
+            deltaSedimentMap[x, y] -= dm;
+            deltaSedimentMap[neighborX, neighborY] += dm;
+        }
+
+        void Evarporate()
+        {
+            // update water/sediment maps.
             waterMap.Add(deltaWaterMap);
             sedimentMap.Add(deltaSedimentMap);
 
@@ -211,12 +216,14 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
             {
                 for (int x = 0; x < width; x++)
                 {
+                    // evarporate.
                     waterMap[x, y] *= (1 - evaporation);
 
+                    // decide dm, the amount of the sediment depositing.
                     var mMax = sedimentCapacity * waterMap[x, y];
-                    var deltaM = Math.Max(0, sedimentMap[x, y] - mMax);
-                    sedimentMap[x, y] -= deltaM;
-                    heightMap[x, y] += deltaM;
+                    var dm = Math.Max(0, sedimentMap[x, y] - mMax);
+                    sedimentMap[x, y] -= dm;
+                    heightMap[x, y] += dm;
                 }
             }
         }

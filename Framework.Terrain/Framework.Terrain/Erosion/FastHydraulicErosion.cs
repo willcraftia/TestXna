@@ -8,6 +8,12 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
 {
     public sealed class FastHydraulicErosion
     {
+        public const float DefaultSolubility = 0.05f;
+
+        public const float DefaultEvaporation = 0.9f;
+
+        public const int DefaultIterationCount = 50;
+
         int width;
 
         int height;
@@ -16,11 +22,11 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
 
         IMap<float> rainMap;
 
-        float solubility = 0.01f;
+        float solubility = DefaultSolubility;
 
-        float evaporation = 0.5f;
+        float evaporation = DefaultEvaporation;
 
-        int iterationCount = 10;
+        int iterationCount = DefaultIterationCount;
 
         Map<float> waterMap;
 
@@ -68,19 +74,38 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
 
             for (int i = 0; i < iterationCount; i++)
                 Erode();
+
+            for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
+                    heightMap[x, y] += waterMap[x, y] * solubility;
         }
 
         void Erode()
         {
             // step 1
-            waterMap.Add(rainMap);
-
+            Rain();
             // step 2
+            ConvertToSediment();
+            // step 3
+            MoveWater();
+            // step 4
+            Evarporate();
+        }
+
+        void Rain()
+        {
+            waterMap.Add(rainMap);
+        }
+
+        void ConvertToSediment()
+        {
             for (int y = 0; y < height; y++)
                 for (int x = 0; x < width; x++)
                     heightMap[x, y] -= solubility * waterMap[x, y];
+        }
 
-            // step 3
+        void MoveWater()
+        {
             for (int y = 1; y < height - 2; y++)
             {
                 for (int x = 1; x < width - 2; x++)
@@ -124,23 +149,24 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
                         offsetY = -1;
                     }
 
-                    if (0 < dMax)
+                    if (dMax <= 0) continue;
+
+                    if (waterMap[x, y] < dMax)
                     {
-                        if (waterMap[x, y] < dMax)
-                        {
-                            waterMap[x + offsetX, y + offsetY] += waterMap[x, y];
-                            waterMap[x, y] = 0;
-                        }
-                        else
-                        {
-                            waterMap[x + offsetX, y + offsetY] += dMax * 0.5f;
-                            waterMap[x, y] = dMax * 0.5f;
-                        }
+                        waterMap[x + offsetX, y + offsetY] += waterMap[x, y];
+                        waterMap[x, y] = 0;
+                    }
+                    else
+                    {
+                        waterMap[x + offsetX, y + offsetY] += dMax * 0.5f;
+                        waterMap[x, y] = dMax * 0.5f;
                     }
                 }
             }
+        }
 
-            // step 4
+        void Evarporate()
+        {
             var sedimentCapacity = solubility;
             for (int y = 0; y < height; y++)
             {

@@ -8,6 +8,14 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
 {
     public sealed class MusgraveHydraulicErosion
     {
+        public const float DefaultSedimentCapacity = 0.1f;
+
+        public const float DefaultDeposition = 0.1f;
+
+        public const float DefaultSoilSoftness = 0.3f;
+
+        public const int DefaultIterationCount = 50;
+
         int width;
 
         int height;
@@ -16,13 +24,13 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
 
         IMap<float> rainMap;
 
-        float sedimentCapacityFactor = 0.1f;
+        float sedimentCapacity = DefaultSedimentCapacity;
 
-        float depositionFactor = 0.1f;
+        float deposition = DefaultDeposition;
 
-        float soilSoftnessFactor = 0.3f;
+        float soilSoftness = DefaultSoilSoftness;
 
-        int iterationCount = 10;
+        int iterationCount = DefaultIterationCount;
 
         Map<float> waterMap;
 
@@ -40,10 +48,22 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
             set { rainMap = value; }
         }
 
-        public float SedimentCapacityFactor
+        public float SedimentCapacity
         {
-            get { return sedimentCapacityFactor; }
-            set { sedimentCapacityFactor = value; }
+            get { return sedimentCapacity; }
+            set { sedimentCapacity = value; }
+        }
+
+        public float Deposition
+        {
+            get { return deposition; }
+            set { deposition = value; }
+        }
+
+        public float SoilSoftness
+        {
+            get { return soilSoftness; }
+            set { soilSoftness = value; }
         }
 
         public int IterationCount
@@ -77,9 +97,6 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
             {
                 for (int x = 1; x < width - 2; x++)
                 {
-                    float w = waterMap[x, y];
-                    //if (w <= 0) continue;
-
                     // altitude.
                     var a = heightMap[x, y] + waterMap[x, y];
                     var a1 = heightMap[x, y + 1] + waterMap[x, y + 1];
@@ -124,7 +141,7 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
                     if (cellCount == 0) continue;
 
                     var average = totalAltitude / cellCount;
-                    float targetWater = Math.Min(w, a - average);
+                    float targetWater = Math.Min(waterMap[x, y], a - average);
                     float unitWater = targetWater / totalDiff;
                     float unitSediment = sedimentMap[x, y] / totalDiff;
 
@@ -143,9 +160,9 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
         {
             if (dw <= 0)
             {
-                var deposition = depositionFactor * s;
-                heightMap[x, y] += deposition;
-                sedimentMap[x, y] -= deposition;
+                var depo = deposition * s;
+                heightMap[x, y] += depo;
+                sedimentMap[x, y] -= depo;
             }
             else
             {
@@ -154,18 +171,18 @@ namespace Willcraftia.Xna.Framework.Terrain.Erosion
                 waterMap[neighborX, neighborY] += dw;
 
                 // calculate the sediment capacity of dw.
-                var c = dw * sedimentCapacityFactor;
+                var c = dw * sedimentCapacity;
 
                 if (c <= s)
                 {
-                    var deposition = depositionFactor * (s - c);
+                    var depo = deposition * (s - c);
                     sedimentMap[neighborX, neighborY] += c;
-                    heightMap[x, y] += deposition;
-                    sedimentMap[x, y] -= c + deposition;
+                    heightMap[x, y] += depo;
+                    sedimentMap[x, y] -= c + depo;
                 }
                 else
                 {
-                    var soil = soilSoftnessFactor * (c - s);
+                    var soil = soilSoftness * (c - s);
                     sedimentMap[neighborX, neighborY] += s + soil;
                     heightMap[x, y] -= soil;
                     sedimentMap[x, y] -= s;

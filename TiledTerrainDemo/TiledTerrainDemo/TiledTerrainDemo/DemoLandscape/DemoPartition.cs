@@ -63,7 +63,7 @@ namespace TiledTerrainDemo.DemoLandscape
             noiseRainMap.RainAmount = 0.5f;
 
             uniformRainMap = new Map<float>(settings.HeightMapWidth, settings.HeightMapHeight);
-            uniformRainMap.Fill(0.1f);
+            uniformRainMap.Fill(0.8f);
 
             terrainRainMap = new Map<float>(settings.HeightMapWidth, settings.HeightMapHeight);
 
@@ -72,25 +72,18 @@ namespace TiledTerrainDemo.DemoLandscape
             //hydraulicErosion.RainMap = noiseRainMap;
             //hydraulicErosion.RainMap = uniformRainMap;
             hydraulicErosion.RainMap = terrainRainMap;
-            hydraulicErosion.IterationCount = 50;
-            hydraulicErosion.Solubility = 0.01f;
-            hydraulicErosion.SedimentCapacity = 0.1f;
 
             fastHydraulicErosion = new FastHydraulicErosion(settings.HeightMapWidth, settings.HeightMapHeight);
             fastHydraulicErosion.HeightMap = heightMap;
             //fastHydraulicErosion.RainMap = noiseRainMap;
             //fastHydraulicErosion.RainMap = uniformRainMap;
             fastHydraulicErosion.RainMap = terrainRainMap;
-            fastHydraulicErosion.IterationCount = 10;
-            fastHydraulicErosion.Solubility = 0.1f;
 
             musgraveHydraulicErosion = new MusgraveHydraulicErosion(settings.HeightMapWidth, settings.HeightMapHeight);
             musgraveHydraulicErosion.HeightMap = heightMap;
             //musgraveHydraulicErosion.RainMap = noiseRainMap;
             //musgraveHydraulicErosion.RainMap = uniformRainMap;
             musgraveHydraulicErosion.RainMap = terrainRainMap;
-            musgraveHydraulicErosion.IterationCount = 10;
-            musgraveHydraulicErosion.SedimentCapacityFactor = 1;
 
             fastThermalErosion = new FastThermalErosion();
             fastThermalErosion.HeightMap = heightMap;
@@ -207,9 +200,9 @@ namespace TiledTerrainDemo.DemoLandscape
             heightMap.CopyTo(terrainRainMap);
             terrainRainMap.Normalize().Clamp();
 
-            //hydraulicErosion.Build();
+            hydraulicErosion.Build();
             //fastHydraulicErosion.Build();
-            musgraveHydraulicErosion.Build();
+            //musgraveHydraulicErosion.Build();
 
             //fastThermalErosion.Build();
         }
