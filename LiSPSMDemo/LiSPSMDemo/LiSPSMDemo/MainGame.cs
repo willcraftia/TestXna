@@ -10,12 +10,27 @@ using Microsoft.Xna.Framework.Input;
 
 namespace LiSPSMDemo
 {
+    /// <summary>
+    /// ゲーム クラス。
+    /// 原型は XNA Shadow Mapping サンプル。
+    /// ここでは、原型に対して VSM、LiSPSM のロジックをサンプルとして追加している。
+    /// </summary>
     public class MainGame : Microsoft.Xna.Framework.Game
     {
         #region DrawModelEffect
 
+        /// <summary>
+        /// モデル描画エフェクト管理クラス。
+        /// </summary>
         sealed class DrawModelEffect
         {
+            #region DirtyFlags
+
+            /// <summary>
+            /// プロパティのダーティ フラグ。
+            /// ダーティ フラグでプロパティの変更を管理し、
+            /// 変更のあったプロパティのみをエフェクトへ再適用します。
+            /// </summary>
             [Flags]
             enum DirtyFlags
             {
@@ -29,6 +44,8 @@ namespace LiSPSMDemo
                 Texture             = (1 << 7),
                 ShadowMap           = (1 << 8),
             }
+
+            #endregion
 
             Effect sourceEffect;
 
@@ -74,6 +91,9 @@ namespace LiSPSMDemo
 
             EffectTechnique varianceTechnique;
 
+            /// <summary>
+            /// ワールド行列。
+            /// </summary>
             public Matrix World
             {
                 get { return world; }
@@ -85,6 +105,9 @@ namespace LiSPSMDemo
                 }
             }
 
+            /// <summary>
+            /// ビュー行列。
+            /// </summary>
             public Matrix View
             {
                 get { return view; }
@@ -96,6 +119,9 @@ namespace LiSPSMDemo
                 }
             }
 
+            /// <summary>
+            /// 射影行列。
+            /// </summary>
             public Matrix Projection
             {
                 get { return projection; }
@@ -107,6 +133,9 @@ namespace LiSPSMDemo
                 }
             }
 
+            /// <summary>
+            /// ライト空間行列 (ライト カメラのビュー×射影行列)。
+            /// </summary>
             public Matrix LightViewProjection
             {
                 get { return lightViewProjection; }
@@ -118,6 +147,9 @@ namespace LiSPSMDemo
                 }
             }
 
+            /// <summary>
+            /// ライトの進行方向。
+            /// </summary>
             public Vector3 LightDirection
             {
                 get { return lightDirection; }
@@ -129,6 +161,9 @@ namespace LiSPSMDemo
                 }
             }
 
+            /// <summary>
+            /// 深度バイアス。
+            /// </summary>
             public float DepthBias
             {
                 get { return depthBias; }
@@ -140,6 +175,9 @@ namespace LiSPSMDemo
                 }
             }
 
+            /// <summary>
+            /// 環境光の色。
+            /// </summary>
             public Vector4 AmbientColor
             {
                 get { return ambientColor; }
@@ -151,6 +189,9 @@ namespace LiSPSMDemo
                 }
             }
 
+            /// <summary>
+            /// モデルのテクスチャ。
+            /// </summary>
             public Texture2D Texture
             {
                 get { return texture; }
@@ -162,6 +203,9 @@ namespace LiSPSMDemo
                 }
             }
 
+            /// <summary>
+            /// シャドウ マップ。
+            /// </summary>
             public Texture2D ShadowMap
             {
                 get { return shadowMap; }
@@ -173,8 +217,15 @@ namespace LiSPSMDemo
                 }
             }
 
+            /// <summary>
+            /// 使用するシャドウ マップの種類。
+            /// </summary>
             public ShadowMapEffectForm ShadowMapEffectForm { get; set; }
 
+            /// <summary>
+            /// エフェクト (DrawModel.fx) を指定してインスタンスを生成します。
+            /// </summary>
+            /// <param name="sourceEffect">エフェクト。</param>
             public DrawModelEffect(Effect sourceEffect)
             {
                 this.sourceEffect = sourceEffect;
@@ -197,6 +248,9 @@ namespace LiSPSMDemo
                     DirtyFlags.DepthBias | DirtyFlags.AmbientColor;
             }
 
+            /// <summary>
+            /// エフェクトの状態をグラフィックス デバイスへ適用します。
+            /// </summary>
             public void Apply()
             {
                 if ((dirtyFlags & DirtyFlags.World) != 0)
@@ -262,89 +316,225 @@ namespace LiSPSMDemo
 
         #region LightCameraType
 
+        /// <summary>
+        /// ライト カメラの種類。
+        /// </summary>
         enum LightCameraType
         {
+            /// <summary>
+            /// LiSPSMLightCamera を用いる。
+            /// </summary>
             LiSPSM = 0,
+
+            /// <summary>
+            /// FocusedLightCamera を用いる。
+            /// </summary>
             Focused = 1,
+
+            /// <summary>
+            /// BasicLightCamera を用いる。
+            /// </summary>
             Basic = 2,
         }
 
         #endregion
 
+        /// <summary>
+        /// シャドウ マップのサイズ (正方形)。
+        /// </summary>
         const int shadowMapSize = 2048;
 
+        /// <summary>
+        /// ウィンドウの幅。
+        /// </summary>
         const int windowWidth = 800;
 
+        /// <summary>
+        /// ウィンドウの高さ。
+        /// </summary>
         const int windowHeight = 480;
 
+        /// <summary>
+        /// グラフィックス デバイス マネージャ。
+        /// </summary>
         GraphicsDeviceManager graphics;
 
+        /// <summary>
+        /// スプライト バッチ。
+        /// </summary>
         SpriteBatch spriteBatch;
 
+        /// <summary>
+        /// フォント。
+        /// </summary>
         SpriteFont spriteFont;
 
+        /// <summary>
+        /// 表示カメラの位置。
+        /// </summary>
         Vector3 cameraPosition = new Vector3(0, 70, 100);
 
+        /// <summary>
+        /// 表示カメラの視線方向。
+        /// </summary>
         Vector3 cameraForward = new Vector3(0, -0.4472136f, -0.8944272f);
 
+        /// <summary>
+        /// 表示カメラの視錐台。
+        /// </summary>
         BoundingFrustum cameraFrustum = new BoundingFrustum(Matrix.Identity);
 
+        /// <summary>
+        /// 表示カメラの近平面までの距離。
+        /// </summary>
         float cameraNear = 1.0f;
 
+        /// <summary>
+        /// 表示カメラの遠平面までの距離。
+        /// </summary>
         float cameraFar = 1000.0f;
 
-        Vector3 lightDir = new Vector3(-0.3333333f, 0.6666667f, 0.6666667f);
+        /// <summary>
+        /// ライトの進行方向 (XNA Shadow Mapping では原点から見たライトの方向)。
+        /// 単位ベクトル。
+        /// </summary>
+        Vector3 lightDirection = new Vector3(0.3333333f, -0.6666667f, -0.6666667f);
 
+        /// <summary>
+        /// ライトによる投影を処理する距離。
+        /// </summary>
         float lightFar = 500.0f;
 
+        /// <summary>
+        /// 前回の更新処理におけるキーボード状態。
+        /// </summary>
         KeyboardState lastKeyboardState = new KeyboardState();
 
+        /// <summary>
+        /// 前回の更新処理におけるゲーム パッド状態。
+        /// </summary>
         GamePadState lastGamePadState = new GamePadState();
 
+        /// <summary>
+        /// 現在の更新処理におけるキーボード状態。
+        /// </summary>
         KeyboardState currentKeyboardState;
 
+        /// <summary>
+        /// 現在の更新処理におけるゲーム パッド状態。
+        /// </summary>
         GamePadState currentGamePadState;
 
+        /// <summary>
+        /// シャドウ マップ エフェクト。
+        /// </summary>
         ShadowMapEffect shadowMapEffect;
 
+        /// <summary>
+        /// モデル描画エフェクト。
+        /// </summary>
         DrawModelEffect drawModelEffect;
 
+        /// <summary>
+        /// グリッド モデル (格子状の床)。
+        /// </summary>
         Model gridModel;
 
+        /// <summary>
+        /// デュード モデル (人)。
+        /// </summary>
         Model dudeModel;
 
+        /// <summary>
+        /// 明示するシーン領域。
+        /// </summary>
         BoundingBox sceneBox;
 
+        /// <summary>
+        /// 表示カメラの視錐台をシーン領域として用いるか否かを示す値。
+        /// true (表示カメラの視錐台をシーン領域として用いる場合)、
+        /// false (sceneBox で明示した領域をシーン領域として用いる場合)。
+        /// </summary>
         bool useCameraFrustumSceneBox;
 
+        /// <summary>
+        /// 視錐台や境界ボックスの頂点を得るための一時作業配列。
+        /// </summary>
         Vector3[] corners;
 
+        /// <summary>
+        /// デュード モデルの回転量。
+        /// </summary>
         float rotateDude = 0.0f;
 
+        /// <summary>
+        /// 基礎的なシャドウ マップのレンダ ターゲット。
+        /// </summary>
         RenderTarget2D bsmRenderTarget;
 
+        /// <summary>
+        /// VSM のレンダ ターゲット。
+        /// </summary>
         RenderTarget2D vsmRenderTarget;
 
+        /// <summary>
+        /// 現在選択されているシャドウ マップのレンダ ターゲット。
+        /// </summary>
         RenderTarget2D currentShadowRenderTarget;
 
+        /// <summary>
+        /// デュード モデルに適用するワールド行列。
+        /// </summary>
         Matrix world;
 
+        /// <summary>
+        /// 表示カメラのビュー行列。
+        /// </summary>
         Matrix view;
 
+        /// <summary>
+        /// 表示カメラの射影行列。
+        /// </summary>
         Matrix projection;
 
+        /// <summary>
+        /// 基礎的な簡易ライト カメラ。
+        /// シーン領域へ焦点を合わせない。
+        /// XNA Shadow Mapping のライト カメラ算出と同程度の品質。
+        /// </summary>
         BasicLightCamera basicLightCamera;
 
+        /// <summary>
+        /// シーン領域へ焦点を合わせるライト カメラ。
+        /// 焦点合わせにより、BasicLightCamera よりも高品質となる。
+        /// </summary>
         FocusedLightCamera focusedLightCamera;
 
+        /// <summary>
+        /// LiSPSM ライト カメラ。
+        /// 焦点合わせおよび LiSPSM による補正により、
+        /// FocusedLightCamera よりも高品質となる。
+        /// </summary>
         LiSPSMLightCamera lispsmLightCamera;
 
+        /// <summary>
+        /// 現在選択されているライト カメラの種類。
+        /// </summary>
         LightCameraType currentLightCameraType;
 
+        /// <summary>
+        /// 現在のライト空間行列 (ビュー×射影行列)。
+        /// </summary>
         Matrix lightViewProjection;
 
+        /// <summary>
+        /// VSM で用いるガウシアン ブラー。
+        /// </summary>
         GaussianBlur gaussianBlur;
 
+        /// <summary>
+        /// 現在選択されているシャドウ マップの種類。
+        /// </summary>
         ShadowMapEffectForm shadowMapEffectForm;
 
         public MainGame()
@@ -362,27 +552,28 @@ namespace LiSPSMDemo
 
             // gridModel が半径約 183 であるため、
             // これを含むように簡易シーン AABB を決定。
+            // なお、広大な世界を扱う場合には、表示カメラの視錐台に含まれるオブジェクト、
+            // および、それらに投影しうるオブジェクトを動的に選択および決定し、
+            // 適切な最小シーン領域を算出して利用する。
             sceneBox = new BoundingBox(new Vector3(-200), new Vector3(200));
 
             useCameraFrustumSceneBox = true;
 
-            // lightDir はライトの進行方向ではなく、原点からのライトの位置方向。
-            var L = -lightDir;
-            L.Normalize();
+            // ライト カメラの初期化。
 
             basicLightCamera = new BasicLightCamera();
-            basicLightCamera.LightDirection = L;
+            basicLightCamera.LightDirection = lightDirection;
 
             focusedLightCamera = new FocusedLightCamera();
             focusedLightCamera.EyeNearDistance = cameraNear;
             focusedLightCamera.EyeFarDistance = cameraFar;
-            focusedLightCamera.LightDirection = L;
+            focusedLightCamera.LightDirection = lightDirection;
             focusedLightCamera.LightFarDistance = lightFar;
 
             lispsmLightCamera = new LiSPSMLightCamera();
             lispsmLightCamera.EyeNearDistance = cameraNear;
             lispsmLightCamera.EyeFarDistance = cameraFar;
-            lispsmLightCamera.LightDirection = L;
+            lispsmLightCamera.LightDirection = lightDirection;
             lispsmLightCamera.LightFarDistance = lightFar;
 
             currentLightCameraType = LightCameraType.LiSPSM;
@@ -395,7 +586,7 @@ namespace LiSPSMDemo
             shadowMapEffect = new ShadowMapEffect(Content.Load<Effect>("ShadowMap"));
 
             drawModelEffect = new DrawModelEffect(Content.Load<Effect>("DrawModel"));
-            drawModelEffect.LightDirection = lightDir;
+            drawModelEffect.LightDirection = lightDirection;
             drawModelEffect.DepthBias = 0.001f;
             drawModelEffect.AmbientColor = new Vector4(0.15f, 0.15f, 0.15f, 1.0f);
 
@@ -405,14 +596,18 @@ namespace LiSPSMDemo
             gridModel = Content.Load<Model>("grid");
             dudeModel = Content.Load<Model>("dude");
 
+            // 基礎的なシャドウ マップは R 値のみを用いる。
             bsmRenderTarget = new RenderTarget2D(
                 GraphicsDevice, shadowMapSize, shadowMapSize,
                 false, SurfaceFormat.Single, DepthFormat.Depth24Stencil8);
 
+            // VSM は RG 値の二つを用いる。
             vsmRenderTarget = new RenderTarget2D(
                 GraphicsDevice, shadowMapSize, shadowMapSize,
                 false, SurfaceFormat.Vector2, DepthFormat.Depth24Stencil8);
 
+            // ガウシアン ブラーは VSM で用いるため、
+            // 内部で使用するレンダ ターゲットは VSM に合わせる。
             gaussianBlur = new GaussianBlur(GraphicsDevice,
                 vsmRenderTarget.Width, vsmRenderTarget.Height,
                 SurfaceFormat.Vector2, Content.Load<Effect>("GaussianBlur"));
@@ -422,8 +617,10 @@ namespace LiSPSMDemo
 
         protected override void Update(GameTime gameTime)
         {
+            // キーボード状態およびゲーム パッド状態のハンドリング。
             HandleInput(gameTime);
 
+            // 表示カメラの更新。
             UpdateCamera(gameTime);
 
             base.Update(gameTime);
@@ -431,11 +628,14 @@ namespace LiSPSMDemo
 
         protected override void Draw(GameTime gameTime)
         {
+            // ライト カメラによるライト空間行列の算出。
             lightViewProjection = CreateLightViewProjectionMatrix();
 
+            // 念のため状態を初期状態へ。
             GraphicsDevice.BlendState = BlendState.Opaque;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
+            // 選択されているシャドウ マップの種類に応じてレンダ ターゲットを切り替え。
             switch (shadowMapEffectForm)
             {
                 case ShadowMapEffectForm.Basic:
@@ -446,12 +646,16 @@ namespace LiSPSMDemo
                     break;
             }
 
+            // シャドウ マップの描画。
             CreateShadowMap();
 
+            // シャドウ マップを用いたシーンの描画。
             DrawWithShadowMap();
 
+            // シャドウ マップを画面左上に表示。
             DrawShadowMapToScreen();
 
+            // HUD のテキストを描画。
             DrawOverlayText();
 
             base.Draw(gameTime);
@@ -459,6 +663,7 @@ namespace LiSPSMDemo
 
         Matrix CreateLightViewProjectionMatrix()
         {
+            // ライト カメラへ指定するシーン領域。
             BoundingBox actualSceneBox;
 
             if (useCameraFrustumSceneBox)
@@ -494,7 +699,7 @@ namespace LiSPSMDemo
             // カメラの行列を更新。
             lightCamera.Update(view, projection, actualSceneBox);
 
-            // ライトのビュー×射影行列。
+            // ライト空間行列の算出。
             Matrix lightViewProjection;
             Matrix.Multiply(ref lightCamera.LightView, ref lightCamera.LightProjection, out lightViewProjection);
 
@@ -503,15 +708,24 @@ namespace LiSPSMDemo
 
         void CreateShadowMap()
         {
+            // 選択中のシャドウ マップ レンダ ターゲットを設定。
             GraphicsDevice.SetRenderTarget(currentShadowRenderTarget);
 
+            // レンダ ターゲットの R あるいは RG を 1 で埋める (1 は最遠の深度)。
+            // 同時に、深度ステンシルの深度も 1 へ。
             GraphicsDevice.Clear(Color.White);
 
+            // デュード モデルのワールド行列。
             world = Matrix.CreateRotationY(MathHelper.ToRadians(rotateDude));
+
+            // 投影オブジェクトとしてデュード モデルを描画。
+            // グリッド モデルは非投影オブジェクト。
             DrawModel(dudeModel, true);
 
+            // レンダ ターゲットをデフォルトへ戻す。
             GraphicsDevice.SetRenderTarget(null);
 
+            // VSM を選択している場合はシャドウ マップへブラーを適用。
             if (shadowMapEffectForm == ShadowMapEffectForm.Variance)
             {
                 gaussianBlur.Filter(currentShadowRenderTarget, currentShadowRenderTarget);
@@ -522,11 +736,14 @@ namespace LiSPSMDemo
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            // シャドウ マップに対するサンプラ。
             GraphicsDevice.SamplerStates[1] = SamplerState.PointClamp;
 
+            // シャドウ マップと共にグリッド モデルを描画。
             world = Matrix.Identity;
             DrawModel(gridModel, false);
 
+            // シャドウ マップと共にデュード モデルを描画。
             world = Matrix.CreateRotationY(MathHelper.ToRadians(rotateDude));
             DrawModel(dudeModel, false);
         }
@@ -535,13 +752,18 @@ namespace LiSPSMDemo
         {
             if (createShadowMap)
             {
+                // シャドウ マップ エフェクトの準備。
                 shadowMapEffect.World = world;
                 shadowMapEffect.LightViewProjection = lightViewProjection;
                 shadowMapEffect.Form = shadowMapEffectForm;
+
+                // 全てのモデルのメッシュ パートに対して同一の状態を用いるため、
+                // ここで状態を適用。
                 shadowMapEffect.Apply();
             }
             else
             {
+                // モデル描画エフェクトの準備。
                 drawModelEffect.World = world;
                 drawModelEffect.View = view;
                 drawModelEffect.Projection = projection;
@@ -549,6 +771,10 @@ namespace LiSPSMDemo
                 drawModelEffect.ShadowMap = currentShadowRenderTarget;
                 drawModelEffect.ShadowMapEffectForm = shadowMapEffectForm;
             }
+
+            // モデルを描画。
+            // モデルは XNB 標準状態で読み込んでいるため、
+            // メッシュ パートのエフェクトには BasicEffect が設定されている。
 
             foreach (var mesh in model.Meshes)
             {
@@ -559,7 +785,10 @@ namespace LiSPSMDemo
 
                     if (!createShadowMap)
                     {
+                        // BasicEffect に設定されているモデルのテクスチャを取得して設定。
                         drawModelEffect.Texture = (meshPart.Effect as BasicEffect).Texture;
+
+                        // 状態の変更を適用。
                         drawModelEffect.Apply();
                     }
 
@@ -571,6 +800,7 @@ namespace LiSPSMDemo
 
         void DrawShadowMapToScreen()
         {
+            // 現在のフレームで生成したシャドウ マップを画面左上に表示。
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.PointClamp, null, null);
             spriteBatch.Draw(currentShadowRenderTarget, new Rectangle(0, 0, 128, 128), Color.White);
             spriteBatch.End();
@@ -578,6 +808,7 @@ namespace LiSPSMDemo
 
         void DrawOverlayText()
         {
+            // HUD のテキストを表示。
             var text = "B = Light camera type (" + currentLightCameraType + ")\n" +
                 "X = Shadow map form (" + shadowMapEffectForm + ")\n" +
                 "Y = Use camera frustum as scene box (" + useCameraFrustumSceneBox + ")\n" +

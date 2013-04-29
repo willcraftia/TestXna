@@ -53,7 +53,7 @@ float4 BasicPS(VSOutput input) : COLOR0
 { 
     float4 diffuseColor = tex2D(TextureSampler, input.TexCoord);
 
-    float diffuseIntensity = saturate(dot(LightDirection, input.Normal));
+    float diffuseIntensity = saturate(dot(-LightDirection, input.Normal));
     float4 diffuse = diffuseIntensity * diffuseColor + AmbientColor;
 
     float4 lightingPosition = mul(input.WorldPos, LightViewProjection);
@@ -94,7 +94,7 @@ float4 VariancePS(VSOutput input) : COLOR0
 { 
     float4 diffuseColor = tex2D(TextureSampler, input.TexCoord);
 
-    float diffuseIntensity = saturate(dot(LightDirection, input.Normal));
+    float diffuseIntensity = saturate(dot(-LightDirection, input.Normal));
     float4 diffuse = diffuseIntensity * diffuseColor + AmbientColor;
 
     float4 lightingPosition = mul(input.WorldPos, LightViewProjection);
