@@ -63,6 +63,7 @@ namespace LiSPSMDemo
 
         /// <summary>
         /// ライトの遠平面までの距離を取得または設定します。
+        /// デフォルトは 0 です。
         /// </summary>
         /// <remarks>
         /// この値を 0 より大きくした場合、その距離で凸体 B がクリップされます。
@@ -70,6 +71,21 @@ namespace LiSPSMDemo
         /// シャドウ マップの精度を向上させることができます。
         /// </remarks>
         public float LightFarDistance { get; set; }
+
+        /// <summary>
+        /// 凸体 B のライトの光源へ向かっての押し出しの距離を取得または設定します。
+        /// 0 未満を指定した場合、凸体 B の押し出しを行いません。
+        /// 0 を指定した場合、LightFarDistance で BodyBExtrudeDistance を代替しますが、
+        /// LightFarDistance が 0 ならば凸体 B の押し出しを行いません。
+        /// 0 より大きな値を指定した場合、BodyBExtrudeDistance に従って凸体 B を押し出します。
+        /// デフォルトは 0 です。
+        /// </summary>
+        /// <remarks>
+        /// 方向性光源の場合、ライトの光源へ向かって凸体 B を押し出さなければ、
+        /// 影に対して表示カメラを接近させた場合に、
+        /// 期待する影に対する投影オブジェクトがシャドウ マップに含まれない問題が発生します。
+        /// </remarks>
+        public float BodyBExtrudeDistance { get; set; }
 
         public FocusedLightCamera()
         {
@@ -82,6 +98,7 @@ namespace LiSPSMDemo
             EyeNearDistance = 1.0f;
             EyeFarDistance = 1000.0f;
             LightFarDistance = 0.0f;
+            BodyBExtrudeDistance = 0.0f;
         }
 
         protected override void Update()
@@ -153,6 +170,23 @@ namespace LiSPSMDemo
             var ray = new Ray();
             ray.Direction = -lightDirection;
 
+            // 凸体 B のライト光源への押し出しの度合い。
+            // Ogre では LightFarDistance を指定しない場合に、
+            // (EyeNearDistance * 3000) により度合いを決定しているが、
+            // EyeNearDistance = 1.0f などの場合には距離が長くなり過ぎるため、
+            // ここでは BodyBExtrudeDistance による明示で代替している。
+            // ただし、LightFarDistance を明示し、BodyBExtrudeDistance を負値とした場合、
+            // LightFarDistance を優先して代替する。
+            float extrudeDistance = 0.0f;
+            if (BodyBExtrudeDistance == 0.0f && 0.0f < farDistance)
+            {
+                extrudeDistance = farDistance;
+            }
+            else if (0.0f < BodyBExtrudeDistance)
+            {
+                extrudeDistance = BodyBExtrudeDistance;
+            }
+
             for (int ip = 0; ip < bodyB.Polygons.Count; ip++)
             {
                 var polygon = bodyB.Polygons[ip];
@@ -168,17 +202,29 @@ namespace LiSPSMDemo
                         bodyBPoints.Add(v);
                     }
 
-                    Vector3 newPoint;
-
-                    // ライトが存在する方向へレイを伸ばし、シーン AABB との交点を追加。
-                    float? intersect;
-                    ray.Intersects(ref sceneBox, out intersect);
-
-                    if (intersect != null)
+                    if (0.0f < extrudeDistance)
                     {
-                        RayHelper.GetPoint(ref ray, intersect.Value, out newPoint);
+                        Vector3 newPoint;
 
-                        bodyBPoints.Add(newPoint);
+                        // ライトが存在する方向へレイを伸ばし、押し出し点を算出。
+                        float? intersect;
+                        ray.Position = v;
+                        ray.Intersects(ref sceneBox, out intersect);
+
+                        if (intersect != null)
+                        {
+                            // LiSPSM オリジナルではシーン AABB との交点を追加しているが、
+                            // レイの始点の時点でシーン AABB と交差する物
+                            // (つまり、凸体 B の各頂点が全てシーン AABB に隣接) ばかりとなり、
+                            // 結果として期待する押し出しが行われず、問題の解決にならない。
+                            //
+                            // 以下、オリジナルの場合。
+                            // RayHelper.GetPoint(ref ray, intersect.Value, out newPoint);
+
+                            RayHelper.GetPoint(ref ray, extrudeDistance, out newPoint);
+
+                            bodyBPoints.Add(newPoint);
+                        }
                     }
                 }
             }
