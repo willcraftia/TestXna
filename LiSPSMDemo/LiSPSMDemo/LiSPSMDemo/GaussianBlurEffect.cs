@@ -8,10 +8,17 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LiSPSMDemo
 {
+    /// <summary>
+    /// ガウシアン ブラー エフェクト。
+    /// </summary>
     public sealed class GaussianBlurEffect
     {
         #region DirtyFlags
 
+        /// <summary>
+        /// ダーティ フラグ。
+        /// 変更された状態のみを最適用するために用います。
+        /// </summary>
         [Flags]
         enum DirtyFlags
         {
@@ -22,12 +29,24 @@ namespace LiSPSMDemo
 
         #endregion
 
+        /// <summary>
+        /// 最大適用半径。
+        /// </summary>
         public const int MaxRadius = 15;
 
+        /// <summary>
+        /// 最大カーネル サイズ。
+        /// </summary>
         public const int MaxKernelSize = MaxRadius * 2 + 1;
 
+        /// <summary>
+        /// デフォルトの適用半径。
+        /// </summary>
         public const int DefaultRadius = 7;
 
+        /// <summary>
+        /// デフォルトの適用量。
+        /// </summary>
         public const float DefaultAmount = 2.0f;
 
         Effect sourceEffect;
@@ -54,6 +73,9 @@ namespace LiSPSMDemo
 
         public GaussianBlurEffectPass Pass { get; set; }
 
+        /// <summary>
+        /// 適用半径。
+        /// </summary>
         public int Radius
         {
             get { return radius; }
@@ -69,6 +91,9 @@ namespace LiSPSMDemo
             }
         }
 
+        /// <summary>
+        /// 適用量。
+        /// </summary>
         public float Amount
         {
             get { return amount; }
@@ -84,6 +109,9 @@ namespace LiSPSMDemo
             }
         }
 
+        /// <summary>
+        /// ブラー対象テクスチャの幅。
+        /// </summary>
         public int Width
         {
             get { return width; }
@@ -99,6 +127,9 @@ namespace LiSPSMDemo
             }
         }
 
+        /// <summary>
+        /// ブラー対象テクスチャの高さ。
+        /// </summary>
         public int Height
         {
             get { return height; }
@@ -114,6 +145,10 @@ namespace LiSPSMDemo
             }
         }
 
+        /// <summary>
+        /// エフェクト (GaussianBlur.fx) を指定してインスタンスを生成します。
+        /// </summary>
+        /// <param name="sourceEffect">エフェクト。</param>
         public GaussianBlurEffect(Effect sourceEffect)
         {
             if (sourceEffect == null) throw new ArgumentNullException("sourceEffect");

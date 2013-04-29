@@ -8,10 +8,17 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LiSPSMDemo
 {
+    /// <summary>
+    /// シャドウ マップ エフェクト。
+    /// </summary>
     public sealed class ShadowMapEffect
     {
         #region DirtyFlags
 
+        /// <summary>
+        /// ダーティ フラグ。
+        /// 変更された状態のみを最適用するために用います。
+        /// </summary>
         [Flags]
         enum DirtyFlags
         {
@@ -37,6 +44,9 @@ namespace LiSPSMDemo
 
         EffectTechnique varianceTechnique;
 
+        /// <summary>
+        /// ワールド行列。
+        /// </summary>
         public Matrix World
         {
             get { return world; }
@@ -50,6 +60,9 @@ namespace LiSPSMDemo
             }
         }
 
+        /// <summary>
+        /// ライト空間行列 (ライトのビュー×射影行列)。
+        /// </summary>
         public Matrix LightViewProjection
         {
             get { return lightViewProjection; }
@@ -63,8 +76,15 @@ namespace LiSPSMDemo
             }
         }
 
+        /// <summary>
+        /// 使用するシャドウ マップの種類。
+        /// </summary>
         public ShadowMapEffectForm Form { get; set; }
 
+        /// <summary>
+        /// エフェクト (ShadowMap.fx) を指定してインスタンスを生成します。
+        /// </summary>
+        /// <param name="sourceEffect">エフェクト。</param>
         public ShadowMapEffect(Effect sourceEffect)
         {
             if (sourceEffect == null) throw new ArgumentNullException("sourceEffect");

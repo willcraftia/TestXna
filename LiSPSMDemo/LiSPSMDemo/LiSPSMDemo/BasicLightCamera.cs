@@ -7,6 +7,9 @@ using Microsoft.Xna.Framework;
 
 namespace LiSPSMDemo
 {
+    /// <summary>
+    /// 基礎的なライト カメラ。
+    /// </summary>
     public sealed class BasicLightCamera : LightCamera
     {
         Vector3[] corners;

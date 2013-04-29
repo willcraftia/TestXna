@@ -8,6 +8,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LiSPSMDemo
 {
+    /// <summary>
+    /// ガウシアン ブラー。
+    /// </summary>
     public sealed class GaussianBlur : IDisposable
     {
         Effect effect;
@@ -18,20 +21,38 @@ namespace LiSPSMDemo
 
         SpriteBatch spriteBatch;
 
+        /// <summary>
+        /// グラフィックス デバイス。
+        /// </summary>
         public GraphicsDevice GraphicsDevice { get; private set; }
 
+        /// <summary>
+        /// ブラー対象テクスチャの幅。
+        /// </summary>
         public int Width { get; private set; }
 
+        /// <summary>
+        /// ブラー対象テクスチャの高さ。
+        /// </summary>
         public int Height { get; private set; }
 
+        /// <summary>
+        /// ブラー対象テクスチャのフォーマット。
+        /// </summary>
         public SurfaceFormat Format { get; private set; }
 
+        /// <summary>
+        /// ブラー適用半径。
+        /// </summary>
         public int Radius
         {
             get { return gaussianBlurEffect.Radius; }
             set { gaussianBlurEffect.Radius = value; }
         }
 
+        /// <summary>
+        /// ブラー適用量。
+        /// </summary>
         public float Amount
         {
             get { return gaussianBlurEffect.Amount; }
@@ -59,6 +80,13 @@ namespace LiSPSMDemo
             backingRenderTarget = new RenderTarget2D(graphicsDevice, width, height, false, format, DepthFormat.None);
         }
 
+        /// <summary>
+        /// ブラーを適用します。
+        /// 内部では、まず水平方向を処理し、これを内部レンダ ターゲットへ描画します。
+        /// 続いて、内部レンダ ターゲットに対して垂直方向を処理し、これを指定のレンダ ターゲットへ描画します。
+        /// </summary>
+        /// <param name="source">ブラー対象テクスチャ。</param>
+        /// <param name="destination">結果の描画先となるレンダ ターゲット。</param>
         public void Filter(Texture2D source, RenderTarget2D destination)
         {
             var previousBlendState = GraphicsDevice.BlendState;

@@ -8,6 +8,9 @@ using Microsoft.Xna.Framework;
 
 namespace LiSPSMDemo
 {
+    /// <summary>
+    /// シーン領域への焦点合わせを伴うライト カメラ。
+    /// </summary>
     public class FocusedLightCamera : LightCamera
     {
         // y -> -z
@@ -215,6 +218,7 @@ namespace LiSPSMDemo
             Vector3 up = Vector3.Up;
             Vector3 direction;
 
+            // 焦点合わせ。
             GetCameraDirectionLS(ref lightSpace, out direction);
             MatrixHelper.CreateLook(ref position, ref direction, ref up, out result);
         }

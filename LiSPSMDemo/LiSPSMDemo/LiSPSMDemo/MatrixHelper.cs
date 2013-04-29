@@ -9,6 +9,15 @@ namespace LiSPSMDemo
 {
     public static class MatrixHelper
     {
+        /// <summary>
+        /// カメラの位置、視線方向、UP ベクトルでビュー行列を生成します。
+        /// これは、Matrix.CreateLookAt(position, position + direction, up) と等価です。
+        /// なお、Matrix.CreateLookAt はその内部で position と target から direction を算出しています。
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="direction"></param>
+        /// <param name="up"></param>
+        /// <param name="result"></param>
         public static void CreateLook(ref Vector3 position, ref Vector3 direction, ref Vector3 up, out Matrix result)
         {
             Vector3 xaxis, yaxis, zaxis;

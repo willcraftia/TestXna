@@ -7,6 +7,10 @@ using System.Collections.Generic;
 
 namespace LiSPSMDemo
 {
+    /// <summary>
+    /// オブジェクトのプーリングを管理するクラスです。
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public sealed class Pool<T> : IEnumerable<T> where T : class
     {
         // 0 は容量制限無し。
@@ -27,6 +31,11 @@ namespace LiSPSMDemo
 
         public int TotalObjectCount { get; private set; }
 
+        /// <summary>
+        /// オブジェクトの生成関数を指定してインスタンス生成します。
+        /// オブジェクトの生成関数は、プールで新たなインスタンスの生成が必要となった場合に呼び出されます。
+        /// </summary>
+        /// <param name="createFunction">オブジェクトの生成関数。</param>
         public Pool(Func<T> createFunction)
         {
             if (createFunction == null) throw new ArgumentNullException("createFunction");
@@ -36,17 +45,13 @@ namespace LiSPSMDemo
             MaxCapacity = DefaultMaxCapacity;
         }
 
-        public void Prepare(int initialCapacity)
-        {
-            if (initialCapacity < 0 || (MaxCapacity != 0 && MaxCapacity < initialCapacity))
-                throw new ArgumentOutOfRangeException("initialCapacity");
-
-            InitialCapacity = initialCapacity;
-
-            for (int i = 0; i < initialCapacity; i++)
-                objects.Enqueue(CreateObject());
-        }
-
+        /// <summary>
+        /// プールからオブジェクトを取得します。
+        /// プールが空の場合、オブジェクトを新たに生成して返します。
+        /// ただし、MaxCapacity に 0 以上を指定し、かつ、
+        /// プールから生成したオブジェクトの総数が上限を越える場合には、null を返します。
+        /// </summary>
+        /// <returns></returns>
         public T Borrow()
         {
             while (0 < MaxCapacity && MaxCapacity < TotalObjectCount && 0 < objects.Count)
@@ -61,6 +66,10 @@ namespace LiSPSMDemo
             return CreateObject();
         }
 
+        /// <summary>
+        /// オブジェクトをプールへ戻します。
+        /// </summary>
+        /// <param name="obj"></param>
         public void Return(T obj)
         {
             if (MaxCapacity == 0 || TotalObjectCount <= MaxCapacity)
@@ -73,6 +82,9 @@ namespace LiSPSMDemo
             }
         }
 
+        /// <summary>
+        /// プール内の全てのオブジェクトを破棄します。
+        /// </summary>
         public void Clear()
         {
             foreach (var obj in objects) DisposeObject(obj);

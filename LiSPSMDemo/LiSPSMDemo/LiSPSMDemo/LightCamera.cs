@@ -7,6 +7,9 @@ using Microsoft.Xna.Framework;
 
 namespace LiSPSMDemo
 {
+    /// <summary>
+    /// ライト カメラの基底クラスです。
+    /// </summary>
     public abstract class LightCamera
     {
         // 光源カメラのビュー行列

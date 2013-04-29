@@ -7,6 +7,9 @@ using Microsoft.Xna.Framework;
 
 namespace LiSPSMDemo
 {
+    /// <summary>
+    /// LiSPSM を用いるライト カメラです。
+    /// </summary>
     public sealed class LiSPSMLightCamera : FocusedLightCamera
     {
         /// <summary>
@@ -14,8 +17,14 @@ namespace LiSPSMDemo
         /// </summary>
         float adjustOptimalNFactor;
 
+        /// <summary>
+        /// GetNearCameraPointWS の結果のキャッシュ。
+        /// </summary>
         Vector3 cachedNearCameraPointWS;
 
+        /// <summary>
+        /// cachedNearCameraPointWS が有効であるか否かを示す値。
+        /// </summary>
         bool nearCameraPointWSCalculated;
 
         /// <summary>
@@ -87,6 +96,7 @@ namespace LiSPSMDemo
             // 凸体 LVS の算出。
             CalculateBodyLVS();
 
+            // 算出された最適 N に対して適用する補正係数の算出。
             ResolveAdjustOptimalNFactor();
 
             Matrix lightSpace;
@@ -122,6 +132,12 @@ namespace LiSPSMDemo
 
         void ResolveAdjustOptimalNFactor()
         {
+            // 表示カメラの視線とライト方向が並行であると見なせる場合、
+            // 算出された最適 N 値に対して補正を掛ける。
+            // ここでは、その補正係数を算出。
+            // 視線とライトが並行であるか否かは、
+            // その内積の絶対値が EyeDotLightThreshold の指定を超えているか否かで決定。
+
             adjustOptimalNFactor = 1.0f;
 
             if (AdjustOptimalN)
@@ -156,6 +172,7 @@ namespace LiSPSMDemo
             // 錐台 P の d (近平面から遠平面までの距離)。
             var d = Math.Abs(bodyBBoxLS.Max.Z - bodyBBoxLS.Min.Z);
 
+            // 凸体 LVS に対して焦点合わせ。
             Vector3 cameraPointWS;
             if (nearCameraPointWSCalculated)
             {
@@ -191,6 +208,7 @@ namespace LiSPSMDemo
         {
             if (UseExplicitN)
             {
+                // 外部で明示した N を利用。
                 return ExplicitN;
             }
 
@@ -198,10 +216,12 @@ namespace LiSPSMDemo
 
             if (UseOldOptimalNFormula)
             {
+                // 古い LiSPSM の最適 N 算出式。
                 optimalN = CalculateOldOptimalN();
             }
             else
             {
+                // 新しい LiSPSM の最適 N 算出式。
                 optimalN = CalculateOptimalN(ref lightSpace, ref bodyBBoxLS);
             }
 
@@ -217,6 +237,7 @@ namespace LiSPSMDemo
             Matrix inverseLightSpace;
             Matrix.Invert(ref lightSpace, out inverseLightSpace);
 
+            // 凸体 LVS に対して焦点合わせ。
             Vector3 cameraPointWS;
             if (nearCameraPointWSCalculated)
             {
