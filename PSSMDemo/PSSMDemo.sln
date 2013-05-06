@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSSMDemo", "PSSMDemo\PSSMDemo\PSSMDemo.csproj", "{E69A32A1-16B7-45EE-B675-BF228B408E6D}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "PSSMDemoContent", "PSSMDemo\PSSMDemoContent\PSSMDemoContent.contentproj", "{67236A09-4EDC-473F-93C5-6C39773B069A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E69A32A1-16B7-45EE-B675-BF228B408E6D}.Debug|x86.ActiveCfg = Debug|x86
+		{E69A32A1-16B7-45EE-B675-BF228B408E6D}.Debug|x86.Build.0 = Debug|x86
+		{E69A32A1-16B7-45EE-B675-BF228B408E6D}.Release|x86.ActiveCfg = Release|x86
+		{E69A32A1-16B7-45EE-B675-BF228B408E6D}.Release|x86.Build.0 = Release|x86
+		{67236A09-4EDC-473F-93C5-6C39773B069A}.Debug|x86.ActiveCfg = Debug|x86
+		{67236A09-4EDC-473F-93C5-6C39773B069A}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
